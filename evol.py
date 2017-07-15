@@ -24,11 +24,18 @@ Can we implement these?
 - tabu list
 - simulated annealing 
 - cuckoo search 
+- ant colony 
+- evolutionary strategies 
 
 Features: 
 - logging (to tensorflow?) 
 - parallelism (usefull for every expensive eval_funcs) 
+- multiple dispatch for the survive method 
+- helper functions 
 
+Individual.properties = age, partners, children, group
+Population.properties = list[Individual], groups{key:list[Individual]}
+Algorithm.properties = parallelism, population, iteration, min_score, max_score, best_score_sofar, minimize[bool]
 '''
 
 class Individual:
