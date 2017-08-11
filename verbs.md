@@ -125,8 +125,9 @@ Note that function `f` will be run for every combination of groups.
 Randomly selects from each population and swaps! 
 
 ```
-swap(num=2)
+swap(num=2, picker=None: f(Population) -> [Individuals])
 ```
+If picker is None, pick randomly (or set random picker as default).
 
 ### merge
 
