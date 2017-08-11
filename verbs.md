@@ -148,3 +148,11 @@ perservere(fraction=None, n=None, luck=True)
 ```
 produce_groups(seq[Population] -> Population, n_groups=10, **kwargs)
 ```
+
+# Evolution
+
+All of the above, plus:
+
+## Store
+
+Store the population somewhere
