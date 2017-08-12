@@ -5,8 +5,26 @@ from evol import Population
 def init_func():
     return 1
 
+
 def eval_func(x):
     return x
+
+
+def pick_two_random_parents(population):
+    return random.choices(population, k=2)
+
+
+def pick_n_random_parents(population, n_parents=2):
+    return random.choices(population, k=n_parents)
+
+
+def combine_two_parents(mom, dad):
+    return (mom+dad)/2
+
+
+def general_combiner(*parents):
+    return sum(parents)/len(parents)
+
 
 class TestPopulationSimple(unittest.TestCase):
 
@@ -59,7 +77,7 @@ class TestPopulationSurvive(unittest.TestCase):
         self.assertEqual(len(pop3.survive(fraction=0.5, n=190, luck=True)), 100)
 
     def test_survive_throws_correct_errors(self):
-        """if n/fraction > pop_size or n/fraction == 0"""
+        """If the resulting population is zero or larger than initial we need to see errors."""
         pop1 = Population(init_function=init_func, eval_function=eval_func, size=200)
         with self.assertRaises(RuntimeError):
             pop1.survive(n=0)
@@ -69,3 +87,10 @@ class TestPopulationSurvive(unittest.TestCase):
         pop3 = Population(init_function=init_func, eval_function=eval_func, size=200)
         with self.assertRaises(ValueError):
             pop3.survive()
+
+class TestPopulationBreed(unittest.TestCase):
+
+    def test_survive_n_works(self):
+        pop1 = Population(init_function=init_func, eval_function=eval_func, size=200)
+        pop1.survive(n=50).breed(parent_picker=pick_two_random_parents, combiner=combine_two_parents)
+        self.assertEqual(len(pop1), 200)

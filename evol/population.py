@@ -84,14 +84,18 @@ class Population:
         return self
 
     def breed(self, parent_picker, combiner, population_size=None) -> 'Population':
-        """breed(parent_picker=f(Population) -> seq[chromosome],
+        """breed(parent_picker=f(Population) -> seq[individuals],
                                              f(*seq[chromosome]) -> chromosome,
                                                                     population_size = None, ** kwargs) <- TODO: kwargs
         """
         if population_size:
             self.intended_size = population_size
+        # we copy the population to prevent newly created members to participate in the breed step
+        population_copy = deepcopy(self)
         for _ in range(len(self.individuals), self.intended_size):
-            self.individuals.append(combiner(*parent_picker(self)))
+            chromosomes = [individual.chromosome for individual in parent_picker(population_copy)]
+            print(chromosomes)
+            self.individuals.append(combiner(*chromosomes))
         return self
 
     def mutate(self, func, **kwargs) -> 'Population':
