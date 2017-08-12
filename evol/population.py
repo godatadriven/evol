@@ -73,6 +73,8 @@ class Population:
         self.evaluate(lazy=True)
         if resulting_size == 0:
             raise RuntimeError('no one survived!')
+        if resulting_size > len(self.individuals):
+            raise ValueError('everyone survives! must provide "fraction" and/or "n" < population size')
         if luck:
             self.individuals = choices(self.individuals, k=resulting_size,
                                        weights=[individual.fitness for individual in self.individuals])
