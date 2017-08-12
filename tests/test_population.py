@@ -90,7 +90,15 @@ class TestPopulationSurvive(unittest.TestCase):
 
 class TestPopulationBreed(unittest.TestCase):
 
-    def test_survive_n_works(self):
+    def test_breed_amount_works(self):
         pop1 = Population(init_function=init_func, eval_function=eval_func, size=200)
         pop1.survive(n=50).breed(parent_picker=pick_two_random_parents, combiner=combine_two_parents)
         self.assertEqual(len(pop1), 200)
+        pop2 = Population(init_function=init_func, eval_function=eval_func, size=200)
+        pop2.survive(n=50).breed(parent_picker=pick_two_random_parents, combiner=combine_two_parents, population_size=400)
+        self.assertEqual(len(pop2), 400)
+        self.assertEqual(pop2.intended_size, 400)
+
+    def test_breed_works_with_kwargs(self):
+        # TODO
+        pass

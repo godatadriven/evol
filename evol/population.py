@@ -91,9 +91,9 @@ class Population:
         if population_size:
             self.intended_size = population_size
         # we copy the population to prevent newly created members to participate in the breed step
-        population_copy = deepcopy(self)
+        size_before_breed = len(self.individuals)
         for _ in range(len(self.individuals), self.intended_size):
-            chromosomes = [individual.chromosome for individual in parent_picker(population_copy)]
+            chromosomes = [individual.chromosome for individual in parent_picker(self.individuals[:size_before_breed])]
             print(chromosomes)
             self.individuals.append(combiner(*chromosomes))
         return self
