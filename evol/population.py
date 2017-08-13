@@ -93,9 +93,11 @@ class Population:
         # we copy the population to prevent newly created members to participate in the breed step
         size_before_breed = len(self.individuals)
         for _ in range(len(self.individuals), self.intended_size):
-            chromosomes = [individual.chromosome for individual in parent_picker(self.individuals[:size_before_breed])]
-            print(chromosomes)
-            self.individuals.append(combiner(*chromosomes))
+            parents = parent_picker(self.individuals[:size_before_breed])
+            if not hasattr(parents, '__len__'):
+                parents = [parents]
+            chromosomes = [individual.chromosome for individual in parents]
+            self.individuals.append(Individual(init_function=lambda : combiner(*chromosomes)))
         return self
 
     def mutate(self, func, **kwargs) -> 'Population':
