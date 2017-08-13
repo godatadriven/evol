@@ -90,7 +90,7 @@ class Population:
         """
         if population_size:
             self.intended_size = population_size
-        # we copy the population to prevent newly created members to participate in the breed step
+        # we ensure that we only select the same group before breeding starts
         size_before_breed = len(self.individuals)
         for _ in range(len(self.individuals), self.intended_size):
             parents = parent_picker(self.individuals[:size_before_breed])
