@@ -62,9 +62,10 @@ def run_pheromone(num_towns=21, population_size=20, num_iter=200, seed=42):
         for indiviual in pop:
             scores.append(indiviual.fitness)
             iterations.append(iter)
-        pop.survive(fraction=0.5)
+        pop.survive(fraction=0.2)
         for indiviual in pop:
             update_pheromones(indiviual.chromosome)
+        pop.survive(n=1)
         pop.breed(parent_picker=lambda x: random.choice(x), combiner=combiner).evaluate()
 
     plt.scatter(iterations, scores, s=1, alpha=0.3)
