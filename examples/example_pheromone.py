@@ -52,9 +52,8 @@ def run_pheromone(num_towns=21, population_size=20, num_iter=200, seed=42):
         return order
 
 
-    pop = Population(init_function=init_func,
-                     eval_function=eval_func,
-                     size=population_size, maximize=False).evaluate()
+    pop = Population(chromosomes=[init_func() for _ in range(population_size)],
+                     eval_function=eval_func, maximize=False).evaluate()
     scores = []
     iterations = []
     for iter in range(num_iter):
