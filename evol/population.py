@@ -5,11 +5,11 @@ from random import choices
 
 class Population:
 
-    def __init__(self, init_function, eval_function, size=100, maximize=True):
+    def __init__(self, chromosomes, eval_function, maximize=True):
         self.eval_function = eval_function
         self.generation = 0
-        self.individuals = [Individual(init_function=init_function) for _ in range(size)]
-        self.intended_size = size
+        self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
+        self.intended_size = len(chromosomes)
         self.maximize = maximize
 
     def __iter__(self):
@@ -97,7 +97,7 @@ class Population:
             if not hasattr(parents, '__len__'):
                 parents = [parents]
             chromosomes = [individual.chromosome for individual in parents]
-            self.individuals.append(Individual(init_function=lambda : combiner(*chromosomes)))
+            self.individuals.append(Individual(chromosome=combiner(*chromosomes)))
         return self
 
     def mutate(self, func, **kwargs) -> 'Population':

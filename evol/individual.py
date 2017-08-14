@@ -3,9 +3,9 @@ from uuid import uuid4
 
 class Individual:
 
-    def __init__(self, init_function):
+    def __init__(self, chromosome):
         self.age = 0
-        self.chromosome = init_function()
+        self.chromosome = chromosome
         self.fitness = None
         self.id = f"{str(uuid4())[:6]}"
 
