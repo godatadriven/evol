@@ -24,6 +24,11 @@ class Population:
     def __repr__(self):
         return f"<Population object with size {len(self)}>"
 
+    @classmethod
+    def generate(cls, init_func, eval_func, size=100) -> 'Population':
+        chromosomes = [init_func() for _ in range(size)]
+        return cls(chromosomes=chromosomes, eval_function=eval_func)
+
     def evolve(self, evolution: Evolution):
         result = deepcopy(self)
         for step in evolution:
