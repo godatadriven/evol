@@ -13,9 +13,9 @@ from evol import Population
 
 def run_annealing(num_towns=21, population_size=100, num_iter=1000, start_temperature=100, decay=0.99, seed=42):
     """Runs a simulated annealing on a simple TSP."""
+    random.seed(seed)
     num_towns = num_towns
     coordinates = [(random.random(), random.random()) for i in range(num_towns)]
-    random.seed(seed)
     temperature = start_temperature
 
     def init_func():

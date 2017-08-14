@@ -15,9 +15,9 @@ from evol import Population
 
 def run_pheromone(num_towns=21, population_size=20, num_iter=200, seed=42):
     """Runs a pheromone tactic against a simple TSP."""
+    random.seed(seed)
     num_towns = num_towns
     coordinates = [(random.random(), random.random()) for i in range(num_towns)]
-    random.seed(seed)
 
     pheromones = {arc:1 for arc in it.product(range(num_towns), range(num_towns)) if arc[0] != arc[1]}
 
