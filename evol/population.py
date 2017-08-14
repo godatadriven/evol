@@ -69,7 +69,7 @@ class Population:
         elif n is None:
             resulting_size = round(fraction*len(self.individuals))
         else:
-            resulting_size =  min(round(fraction*len(self.individuals)), n)
+            resulting_size = min(round(fraction*len(self.individuals)), n)
         self.evaluate(lazy=True)
         if resulting_size == 0:
             raise RuntimeError('no one survived!')
