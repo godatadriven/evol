@@ -29,7 +29,7 @@ class Population:
         chromosomes = [init_func() for _ in range(size)]
         return cls(chromosomes=chromosomes, eval_function=eval_func)
 
-    def evolve(self, evolution: Evolution):
+    def evolve(self, evolution: Evolution) -> 'Population':
         result = deepcopy(self)
         for step in evolution:
             step.apply(result)
