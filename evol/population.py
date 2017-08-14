@@ -5,11 +5,11 @@ from random import choices
 
 class Population:
 
-    def __init__(self, init_function, eval_function, size=100, maximize=True):
+    def __init__(self, chromosomes, eval_function, maximize=True):
         self.eval_function = eval_function
         self.generation = 0
-        self.individuals = [Individual(init_function=init_function) for _ in range(size)]
-        self.intended_size = size
+        self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
+        self.intended_size = len(chromosomes)
         self.maximize = maximize
 
     def __iter__(self):
@@ -24,7 +24,12 @@ class Population:
     def __repr__(self):
         return f"<Population object with size {len(self)}>"
 
-    def evolve(self, evolution: Evolution):
+    @classmethod
+    def generate(cls, init_func, eval_func, size=100) -> 'Population':
+        chromosomes = [init_func() for _ in range(size)]
+        return cls(chromosomes=chromosomes, eval_function=eval_func)
+
+    def evolve(self, evolution: Evolution) -> 'Population':
         result = deepcopy(self)
         for step in evolution:
             step.apply(result)
@@ -84,14 +89,20 @@ class Population:
         return self
 
     def breed(self, parent_picker, combiner, population_size=None) -> 'Population':
-        """breed(parent_picker=f(Population) -> seq[chromosome],
+        """breed(parent_picker=f(Population) -> seq[individuals],
                                              f(*seq[chromosome]) -> chromosome,
                                                                     population_size = None, ** kwargs) <- TODO: kwargs
         """
         if population_size:
             self.intended_size = population_size
+        # we ensure that we only select the same group before breeding starts
+        size_before_breed = len(self.individuals)
         for _ in range(len(self.individuals), self.intended_size):
-            self.individuals.append(combiner(*parent_picker(self)))
+            parents = parent_picker(self.individuals[:size_before_breed])
+            if not hasattr(parents, '__len__'):
+                parents = [parents]
+            chromosomes = [individual.chromosome for individual in parents]
+            self.individuals.append(Individual(chromosome=combiner(*chromosomes)))
         return self
 
     def mutate(self, func, **kwargs) -> 'Population':
