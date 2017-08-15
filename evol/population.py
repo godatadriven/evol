@@ -1,4 +1,5 @@
 from evol import Individual, Evolution
+from evol.helpers.utils import select_arguments
 from copy import deepcopy
 from random import choices
 
@@ -88,21 +89,23 @@ class Population:
             self.individuals = sorted_individuals[:resulting_size]
         return self
 
-    def breed(self, parent_picker, combiner, population_size=None) -> 'Population':
+    def breed(self, parent_picker, combiner, population_size=None, **kwargs) -> 'Population':
         """breed(parent_picker=f(Population) -> seq[individuals],
                                              f(*seq[chromosome]) -> chromosome,
-                                                                    population_size = None, ** kwargs) <- TODO: kwargs
+                                                                    population_size = None, **kwargs)
         """
+        parent_picker = select_arguments(parent_picker)
+        combiner = select_arguments(combiner)
         if population_size:
             self.intended_size = population_size
         # we ensure that we only select the same group before breeding starts
         size_before_breed = len(self.individuals)
         for _ in range(len(self.individuals), self.intended_size):
-            parents = parent_picker(self.individuals[:size_before_breed])
+            parents = parent_picker(self.individuals[:size_before_breed], **kwargs)
             if not hasattr(parents, '__len__'):
                 parents = [parents]
             chromosomes = [individual.chromosome for individual in parents]
-            self.individuals.append(Individual(chromosome=combiner(*chromosomes)))
+            self.individuals.append(Individual(chromosome=combiner(*chromosomes, **kwargs)))
         return self
 
     def mutate(self, func, **kwargs) -> 'Population':
