@@ -95,6 +95,7 @@ class TestPopulationSurvive(unittest.TestCase):
         with self.assertRaises(ValueError):
             pop3.survive()
 
+
 class TestPopulationBreed(unittest.TestCase):
 
     def test_breed_amount_works(self):
@@ -107,5 +108,11 @@ class TestPopulationBreed(unittest.TestCase):
         self.assertEqual(pop2.intended_size, 400)
 
     def test_breed_works_with_kwargs(self):
-        # TODO
-        pass
+        pop1 = Population(chromosomes=chromosomes, eval_function=eval_func)
+        pop1.survive(n=50).breed(parent_picker=pick_n_random_parents, combiner=combine_two_parents, n_parents=2)
+        self.assertEqual(len(pop1), 200)
+        pop2 = Population(chromosomes=chromosomes, eval_function=eval_func)
+        pop2.survive(n=50).breed(parent_picker=pick_n_random_parents, combiner=general_combiner, population_size=400,
+                                 n_parents=3)
+        self.assertEqual(len(pop2), 400)
+        self.assertEqual(pop2.intended_size, 400)
