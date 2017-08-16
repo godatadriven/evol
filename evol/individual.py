@@ -12,7 +12,7 @@ class Individual:
     def __repr__(self):
         return f"<individual id:{self.id} fitness:{self.fitness}>"
 
-    def evaluate(self, eval_function, lazy):
+    def evaluate(self, eval_function, lazy=False):
         if self.fitness is None or not lazy:
             self.fitness = eval_function(self.chromosome)
 
