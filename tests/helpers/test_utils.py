@@ -23,5 +23,5 @@ class TestSelectArguments(TestCase):
     def test_all_kwargs(self):
         @select_arguments
         def fct(a, **kwargs):
-            return sorted(list(kwargs.keys()))
-        self.assertEqual(fct(a=1, b=2, c=3), ['b', 'c'])
+            return a, sorted(list(kwargs.keys()))
+        self.assertEqual(fct(a=1, b=2, c=3), (1, ['b', 'c']))
