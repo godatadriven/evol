@@ -106,6 +106,7 @@ class Population:
                 parents = [parents]
             chromosomes = [individual.chromosome for individual in parents]
             self.individuals.append(Individual(chromosome=combiner(*chromosomes, **kwargs)))
+            # TODO: increase generation and individual's ages
         return self
 
     def mutate(self, func, **kwargs) -> 'Population':
