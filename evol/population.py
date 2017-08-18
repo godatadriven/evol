@@ -1,4 +1,4 @@
-from evol import Individual, Evolution
+from evol import Individual  #, Evolution
 from evol.helpers.utils import select_arguments
 from copy import deepcopy
 from random import choices
@@ -30,11 +30,12 @@ class Population:
         chromosomes = [init_func() for _ in range(size)]
         return cls(chromosomes=chromosomes, eval_function=eval_func)
 
-    def evolve(self, evolution: Evolution) -> 'Population':
-        result = deepcopy(self)
-        for step in evolution:
-            step.apply(result)
-        return result
+    # TODO: fix import loop
+    # def evolve(self, evolution: Evolution) -> 'Population':
+    #     result = deepcopy(self)
+    #     for step in evolution:
+    #         step.apply(result)
+    #     return result
 
     def evaluate(self, lazy: bool=False) -> 'Population':
         """Evaluate the individuals in the population
@@ -63,7 +64,7 @@ class Population:
 
     def update(self, func, **kwargs) -> 'Population':
         """update(f(**kwargs), **kwargs)"""
-        func(**kwargs)
+        func(self, **kwargs)
         return self
 
     def survive(self, fraction=None, n=None, luck=False) -> 'Population':
