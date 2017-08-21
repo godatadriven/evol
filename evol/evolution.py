@@ -10,6 +10,11 @@ class Evolution:
     def __init__(self):
         self.chain = []
 
+    def __copy__(self):
+        result = Evolution()
+        result.chain = copy(self.chain)
+        return result
+
     def __iter__(self):
         return self.chain.__iter__()
 
