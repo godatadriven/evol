@@ -10,7 +10,7 @@ import fire
 import itertools as it
 import matplotlib.pylab as plt
 
-from evol import Population
+from evol import Population, Evolution
 
 
 def run_pheromone(num_towns=21, population_size=20, num_iter=200, seed=42):
@@ -36,10 +36,11 @@ def run_pheromone(num_towns=21, population_size=20, num_iter=200, seed=42):
         for i in range(len(iter) - 1):
             yield iter[i], iter[i+1]
 
-    def update_pheromones(chromosome):
-        for gene1, gene2 in sliding_window(chromosome):
-            pheromones[(gene1, gene2)] += 1
-            pheromones[(gene2, gene1)] += 1
+    def update_pheromones(population):
+        for individual in pop:
+            for gene1, gene2 in sliding_window(individual.chromosome):
+                pheromones[(gene1, gene2)] += 1
+                pheromones[(gene2, gene1)] += 1
 
     def combiner(parent):
         order = [0]
@@ -51,9 +52,18 @@ def run_pheromone(num_towns=21, population_size=20, num_iter=200, seed=42):
             order.append(next_town[0])
         return order
 
-
     pop = Population(chromosomes=[init_func() for _ in range(population_size)],
                      eval_function=eval_func, maximize=False).evaluate()
+
+    evo = (
+        Evolution()
+        .survive(0.2)
+        .update(update_pheromones)
+        .survive(n=1)
+        .breed(parent_picker=lambda x: random.choice(x), combiner=combiner)
+        .evaluate()
+    )
+
     scores = []
     iterations = []
     for iter in range(num_iter):
@@ -61,11 +71,7 @@ def run_pheromone(num_towns=21, population_size=20, num_iter=200, seed=42):
         for indiviual in pop:
             scores.append(indiviual.fitness)
             iterations.append(iter)
-        pop.survive(fraction=0.2)
-        for indiviual in pop:
-            update_pheromones(indiviual.chromosome)
-        pop.survive(n=1)
-        pop.breed(parent_picker=lambda x: random.choice(x), combiner=combiner).evaluate()
+        pop = evo.evolve(pop)
 
     plt.scatter(iterations, scores, s=1, alpha=0.3)
     plt.title("population fitness vs. iteration")
