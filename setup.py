@@ -6,5 +6,5 @@ setup(name='evol',
       author='Vincent D. Warmerdam',
       author_email='vincentwarmerdam@gmail.com',
       url='https://github.com/koaning/evol',
-      packages=['evol',],
+      packages=['evol', 'evol.helpers'],
       install_requires=['pytest'],)
