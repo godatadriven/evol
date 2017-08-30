@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 
 from .population import Population
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep, UpdateStep
@@ -33,8 +33,12 @@ class Evolution:
     def update(self, func, name=None, **kwargs) -> 'Evolution':
         return self._add_step(UpdateStep(name=name, func=func, **kwargs))
 
-    def survive(self, fraction=None, n=None, luck=False, name=None) -> 'Evolution':
-        return self._add_step(SurviveStep(name=name, fraction=fraction, n=n, luck=luck))
+    def survive(self, fraction=None, n=None, luck=False, name=None, evaluate=True) -> 'Evolution':
+        if evaluate:
+            after_evaluate = self.evaluate(lazy=True)
+        else:
+            after_evaluate = self
+        return after_evaluate._add_step(SurviveStep(name=name, fraction=fraction, n=n, luck=luck))
 
     def breed(self, parent_picker, combiner, population_size=None, name=None, **kwargs) -> 'Evolution':
         return self._add_step(BreedStep(name=name, parent_picker=parent_picker, combiner=combiner,
@@ -44,7 +48,7 @@ class Evolution:
         return self._add_step(MutateStep(name=name, func=func, **kwargs))
 
     def evolve(self, population: Population, n: int=1):
-        result = copy(population)  # Should this be deepcopy?
+        result = deepcopy(population)  # Todo: write a proper Population.__copy__
         for i in range(n):
             for step in self.chain:
                 result = step.apply(result)
