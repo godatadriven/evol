@@ -1,7 +1,7 @@
-from evol import Individual  #, Evolution
-from evol.helpers.utils import select_arguments
-from copy import deepcopy
 from random import choices
+
+from evol import Individual
+from evol.helpers.utils import select_arguments
 
 
 class Population:
