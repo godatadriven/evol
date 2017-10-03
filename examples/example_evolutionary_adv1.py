@@ -13,7 +13,7 @@ import matplotlib.pylab as plt
 from evol import Population, Evolution
 
 
-def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
+def run_pheromone(num_towns=42, population_size=100, num_iter=200, seed=42):
     """Runs a pheromone tactic against a simple TSP."""
     random.seed(seed)
     coordinates = [(random.random(), random.random()) for i in range(num_towns)]
@@ -85,4 +85,4 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
     plt.show()
 
 if __name__ == "__main__":
-    fire.Fire(run_evolutionary)
+    fire.Fire(run_pheromone)

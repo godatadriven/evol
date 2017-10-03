@@ -15,7 +15,7 @@ class TestEvolution(TestCase):
     def test_evolve(self):
         evo = Evolution().mutate(lambda x: x+1)
         pop = Population(chromosomes=[0, 1, 2, 3], eval_function=lambda x: x)
-        new_pop = evo.evolve(pop)
+        new_pop = evo.evolve(pop, inplace=False)
         # New population has evolved
         self.assertListEqual([i.chromosome for i in new_pop], [1, 2, 3, 4])
         # Old population is unchanged
@@ -24,7 +24,7 @@ class TestEvolution(TestCase):
     def test_multiple_evolve(self):
         evo = Evolution().mutate(lambda x: x+1)
         pop = Population(chromosomes=[0, 1, 2, 3], eval_function=lambda x: x)
-        new_pop = evo.evolve(pop, n=100)
+        new_pop = evo.evolve(pop, n=100, inplace=False)
         # New population has evolved
         self.assertListEqual([i.chromosome for i in new_pop], [100, 101, 102, 103])
         # Old population is unchanged

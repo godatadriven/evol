@@ -47,12 +47,18 @@ class Evolution:
     def mutate(self, func, name=None, **kwargs) -> 'Evolution':
         return self._add_step(MutateStep(name=name, func=func, **kwargs))
 
-    def evolve(self, population: Population, n: int=1):
-        result = deepcopy(population)  # Todo: write a proper Population.__copy__
+    def evolve(self, population: Population, n: int=1, inplace=True):
+        if inplace:
+            result = population
+        else:
+            result = deepcopy(population)  # TODO: write a proper Population.__copy__
         for i in range(n):
             for step in self.chain:
                 result = step.apply(result)
         return result
+
+    def chain(self, evo: 'Evolution', n:int = 1) -> 'Evolution':
+        pass
 
     def _add_step(self, step):
         result = copy(self)
