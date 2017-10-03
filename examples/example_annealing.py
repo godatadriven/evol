@@ -11,7 +11,7 @@ import matplotlib.pylab as plt
 from evol import Population
 
 
-def run_annealing(num_towns=21, population_size=100, num_iter=1000, start_temperature=100, decay=0.99, seed=42):
+def run_annealing(num_towns=42, population_size=200, num_iter=200, start_temperature=1, decay=0.995, seed=42):
     """Runs a simulated annealing on a simple TSP."""
     random.seed(seed)
     num_towns = num_towns
@@ -50,12 +50,13 @@ def run_annealing(num_towns=21, population_size=100, num_iter=1000, start_temper
         pop.mutate(anneal, temperature=temperature).evaluate()
         for indiviual in pop:
             scores.append(indiviual.fitness)
-            temperatures.append(iter)
+            temperatures.append(temperature)
         print(f"iteration: {iter} temperature: {temperature} score:{min([i.fitness for i in pop])}")
         temperature = temperature * decay
 
     plt.scatter(temperatures, scores, s=1, alpha=0.1)
     plt.title("population fitness vs. iteration")
+    plt.xscale('log')
     plt.show()
 
 if __name__ == "__main__":
