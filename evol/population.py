@@ -13,6 +13,7 @@ class Population:
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
         self.intended_size = len(chromosomes)
         self.maximize = maximize
+        # TODO: add best ever score and the best ever individual
 
     def __iter__(self):
         return self.individuals.__iter__()

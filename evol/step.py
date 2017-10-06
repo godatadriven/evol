@@ -7,6 +7,9 @@ class EvolutionStep:
         self.name = name
         self.kwargs = kwargs
 
+    def __str__(self):
+        return f"{self.__class__.__name__} with name {self.name}"
+
 
 class EvaluationStep(EvolutionStep):
 
@@ -54,3 +57,10 @@ class MutateStep(EvolutionStep):
 
     def apply(self, population) -> Population:
         return population.mutate(**self.kwargs)
+
+
+class RepeatStep(EvolutionStep):
+
+    def apply(self, population) -> Population:
+        return population.evolve(**self.kwargs)
+    # TODO: make a nice __repr__ that is recusive for repeat step and shows repeats 'n'

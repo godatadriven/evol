@@ -2,7 +2,7 @@ from copy import copy, deepcopy
 
 from .population import Population
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep, UpdateStep
-from .step import SurviveStep, BreedStep, MutateStep
+from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
 
 class Evolution:
@@ -47,7 +47,7 @@ class Evolution:
     def mutate(self, func, name=None, **kwargs) -> 'Evolution':
         return self._add_step(MutateStep(name=name, func=func, **kwargs))
 
-    def evolve(self, population: Population, n: int=1, inplace=True):
+    def evolve(self, population: Population, n: int=1, inplace=True) -> 'Population':
         if inplace:
             result = population
         else:
@@ -57,8 +57,8 @@ class Evolution:
                 result = step.apply(result)
         return result
 
-    def chain(self, evo: 'Evolution', n:int = 1) -> 'Evolution':
-        pass
+    def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':
+        return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
 
     def _add_step(self, step):
         result = copy(self)
@@ -66,5 +66,5 @@ class Evolution:
         return result
 
     def __repr__(self):
-        result = "<Evolution object with steps>"
-        return result + "\n".join([f"  -{step.name}" for step in self.chain])
+        result = "<Evolution object with steps>\n"
+        return result + "\n".join([f"  -{str(step)}" for step in self.chain])
