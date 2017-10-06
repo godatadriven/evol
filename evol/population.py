@@ -127,7 +127,9 @@ class ContestPopulation(Population):
         self.matches_per_round = matches_per_round
         self.individuals_per_match = individuals_per_match
 
-    def evaluate(self, lazy: bool=False) -> 'Population':
+    def evaluate(self, lazy: bool=False) -> 'ContestPopulation':
+        if lazy and all(individual.fitness is not None for individual in self):
+            return self
         for individual in self.individuals:
             individual.fitness = 0
         for _ in range(self.matches_per_round):
@@ -138,3 +140,24 @@ class ContestPopulation(Population):
                 for competitor, score in zip(competitors, scores):
                     competitor.fitness += score
         return self
+
+    def map(self, func, **kwargs) -> 'Population':
+        """map(f(Individual, **kwargs) -> Individual, **kwargs)"""
+        Population.map(self, func=func, **kwargs)
+        self.reset_fitness()
+        return self
+
+    def filter(self, func, **kwargs) -> 'Population':
+        """filter(f(Individual, **kwargs) -> bool, **kwargs)"""
+        Population.filter(self, func=func, **kwargs)
+        self.reset_fitness()
+        return self
+
+    def survive(self, fraction=None, n=None, luck=False) -> 'ContestPopulation':
+        Population.survive(self, fraction=fraction, n=n, luck=luck)
+        self.reset_fitness()
+        return self  # If we return the result of Population.survive PyCharm complains that it is of type 'Population'
+
+    def reset_fitness(self):
+        for individual in self:
+            individual.fitness = None
