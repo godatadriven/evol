@@ -1,5 +1,6 @@
-from random import choices
+from random import choices, randint
 from copy import deepcopy
+from itertools import cycle, islice
 
 from evol import Individual
 from evol.helpers.utils import select_arguments
@@ -49,7 +50,7 @@ class Population:
         """
         for individual in self.individuals:
             individual.evaluate(eval_function=self.eval_function, lazy=lazy)
-        return self  # do we want to copy here?
+        return self
 
     def apply(self, func, **kwargs) -> 'Population':
         """apply(f(Population, **kwargs) -> Population, **kwargs)"""
@@ -117,4 +118,23 @@ class Population:
         """mutate(f(chromosome) -> chromosome, ** kwargs)"""
         for individual in self.individuals:
             individual.mutate(func, **kwargs)
+        return self
+
+
+class ContestPopulation(Population):
+    def __init__(self, chromosomes, eval_function, matches_per_round=10, individuals_per_match=2, maximize=True):
+        Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize)
+        self.matches_per_round = matches_per_round
+        self.individuals_per_match = individuals_per_match
+
+    def evaluate(self, lazy: bool=False) -> 'Population':
+        for individual in self.individuals:
+            individual.fitness = 0
+        for _ in range(self.matches_per_round):
+            offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(self.individuals_per_match - 1)]
+            generators = [islice(cycle(self.individuals), offset, None) for offset in offsets]
+            for competitors in islice(zip(*generators), len(self.individuals)):
+                scores = self.eval_function(*competitors)
+                for competitor, score in zip(competitors, scores):
+                    competitor.fitness += score
         return self
