@@ -28,6 +28,16 @@ class Population:
     def __repr__(self):
         return f"<Population object with size {len(self)}>"
 
+    @property
+    def min_individual(self):
+        self.evaluate(lazy=True)
+        return min(self, key=lambda x: x.fitness)
+
+    @property
+    def max_individual(self):
+        self.evaluate(lazy=True)
+        return max(self, key=lambda x: x.fitness)
+
     @classmethod
     def generate(cls, init_func, eval_func, size=100) -> 'Population':
         chromosomes = [init_func() for _ in range(size)]
