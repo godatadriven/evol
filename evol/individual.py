@@ -18,7 +18,7 @@ class Individual:
         """Evaluate the fitness of the individual.
 
         :param eval_function: Function that reduces a chromosome to a fitness.
-        :type eval_function: Callable[float]
+        :type eval_function: Callable[chromosome] -> float
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
         :type lazy: bool
         """
