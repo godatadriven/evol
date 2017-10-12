@@ -57,8 +57,9 @@ class Population:
 
         :param evolution: Evolution to follow
         :type evolution: Evolution
-        :param n:
-        :return:
+        :param n: Times to apply the evolution. Defaults to 1.
+        :type n: int
+        :return: Population
         """
         result = deepcopy(self)
         for evo_batch in range(n):
