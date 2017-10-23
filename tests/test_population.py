@@ -1,6 +1,6 @@
-import unittest
-import random
-from evol import Population
+from unittest import TestCase
+from random import random, choices
+from evol import Population, ContestPopulation
 
 def init_func():
     return 1
@@ -11,11 +11,11 @@ def eval_func(x):
 
 
 def pick_two_random_parents(population):
-    return random.choices(population, k=2)
+    return choices(population, k=2)
 
 
 def pick_n_random_parents(population, n_parents=2):
-    return random.choices(population, k=n_parents)
+    return choices(population, k=n_parents)
 
 
 def combine_two_parents(mom, dad):
@@ -27,17 +27,12 @@ def general_combiner(*parents):
 
 chromosomes = [init_func() for _ in range(200)]
 
-class TestPopulationClassMethod(unittest.TestCase):
-    def test_classmethod_works(self):
-        population = Population.generate(init_func=init_func, eval_func=eval_func, size=100)
-        self.assertEqual(len(population), 100)
 
-
-class TestPopulationSimple(unittest.TestCase):
+class TestPopulationSimple(TestCase):
 
     def test_filter_works(self):
         pop = Population(chromosomes=chromosomes, eval_function=eval_func)
-        self.assertTrue(len(pop.filter(func=lambda i: random.random() > 0.5)) < 200)
+        self.assertTrue(len(pop.filter(func=lambda i: random() > 0.5)) < 200)
 
     def test_individuals_are_not_initially_evaluated(self):
         pop = Population(chromosomes, eval_function=eval_func)
@@ -57,7 +52,7 @@ class TestPopulationSimple(unittest.TestCase):
         self.assertEqual([f*2 for f in values_before], values_after)
 
 
-class TestPopulationSurvive(unittest.TestCase):
+class TestPopulationSurvive(TestCase):
 
     def test_survive_n_works(self):
         pop1 = Population(chromosomes=chromosomes, eval_function=eval_func)
@@ -96,7 +91,7 @@ class TestPopulationSurvive(unittest.TestCase):
             pop3.survive()
 
 
-class TestPopulationBreed(unittest.TestCase):
+class TestPopulationBreed(TestCase):
 
     def test_breed_amount_works(self):
         pop1 = Population(chromosomes=chromosomes, eval_function=eval_func)
@@ -116,3 +111,15 @@ class TestPopulationBreed(unittest.TestCase):
                                  n_parents=3)
         self.assertEqual(len(pop2), 400)
         self.assertEqual(pop2.intended_size, 400)
+
+
+class TestContestPopulation(TestCase):
+
+    def test_init(self):
+        cp = ContestPopulation([0, 1, 2], lambda x: x, contests_per_round=15, individuals_per_contest=15)
+        self.assertEqual(cp.contests_per_round, 15)
+        self.assertEqual(cp.individuals_per_contest, 15)
+
+    def check_no_fitness(self, population):
+        for individual in population:
+            self.assertIsNone(individual.fitness)
