@@ -60,7 +60,7 @@ class TestPopulationEvaluate(TestCase):
 
     def test_evaluate_lazy(self):
         pop = Population(self.chromosomes, eval_function=lambda x: x)
-        pop.evaluate()
+        pop.evaluate(lazy=True)  # should evaluate
 
         def raise_function(x):
             raise Exception
