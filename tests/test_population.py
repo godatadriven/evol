@@ -1,5 +1,5 @@
 from unittest import TestCase
-from random import random, choices
+from random import random, choices, seed
 from evol import Population, ContestPopulation
 
 def init_func():
@@ -111,6 +111,42 @@ class TestPopulationBreed(TestCase):
                                  n_parents=3)
         self.assertEqual(len(pop2), 400)
         self.assertEqual(pop2.intended_size, 400)
+
+
+class TestPopulationMutate(TestCase):
+
+    def setUp(self):
+        self.population = Population(chromosomes=[1 for _ in range(100)],
+                                     eval_function=float)
+
+    def test_mutate_lambda(self):
+        pop = self.population.mutate(lambda x: x+1)
+        for chromosome in pop.chromosomes:
+            self.assertEqual(chromosome, 2)
+
+    def test_mutate_inplace(self):
+        self.population.mutate(lambda x: x+1)
+        for chromosome in self.population.chromosomes:
+            self.assertEqual(chromosome, 2)
+
+    def test_mutate_func(self):
+        def mutate_func(x):
+            return -x
+        self.population.mutate(mutate_func)
+        for chromosome in self.population.chromosomes:
+            self.assertEqual(chromosome, -1)
+
+    def test_mutate_probability(self):
+        seed(0)
+        pop = self.population.mutate(lambda x: x+1, probability=0.5)
+        self.assertEqual(pop.min_individual.chromosome, 1)
+        self.assertEqual(pop.max_individual.chromosome, 2)
+
+    def test_mutate_zero_probability(self):
+        seed(0)
+        self.population.mutate(lambda x: x+1, probability=0)
+        for chromosome in self.population.chromosomes:
+            self.assertEqual(chromosome, 1)
 
 
 class TestContestPopulation(TestCase):
