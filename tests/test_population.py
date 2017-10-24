@@ -143,7 +143,6 @@ class TestPopulationMutate(TestCase):
         self.assertEqual(pop.max_individual.chromosome, 2)
 
     def test_mutate_zero_probability(self):
-        seed(0)
         self.population.mutate(lambda x: x+1, probability=0)
         for chromosome in self.population.chromosomes:
             self.assertEqual(chromosome, 1)
