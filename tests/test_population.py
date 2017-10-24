@@ -34,22 +34,41 @@ class TestPopulationSimple(TestCase):
         pop = Population(chromosomes=chromosomes, eval_function=eval_func)
         self.assertTrue(len(pop.filter(func=lambda i: random() > 0.5)) < 200)
 
+
+class TestPopulationEvaluate(TestCase):
+
+    def setUp(self):
+        self.chromosomes = list(range(100))
+
     def test_individuals_are_not_initially_evaluated(self):
-        pop = Population(chromosomes, eval_function=eval_func)
+        pop = Population(self.chromosomes, eval_function=lambda x: x)
         self.assertTrue(all([i.fitness is None for i in pop]))
 
-    def test_explicit_evaluate_works(self):
-        pop = Population(chromosomes=chromosomes, eval_function=eval_func)
+    def test_evaluate_lambda(self):
+        pop = Population(self.chromosomes, eval_function=lambda x: x)
         pop.evaluate()
-        self.assertTrue(all([i.fitness is not None for i in pop]))
+        for individual in pop:
+            self.assertEqual(individual.chromosome, individual.fitness)
 
-    def test_mutate_works(self):
-        pop = Population(chromosomes=chromosomes, eval_function=eval_func)
+    def test_evaluate_func(self):
+        def evaluation_function(x):
+            return x*x
+        pop = Population(self.chromosomes, eval_function=evaluation_function)
         pop.evaluate()
-        values_before = [i.fitness for i in pop]
-        pop.mutate(lambda x: x*2).evaluate()
-        values_after = [i.fitness for i in pop]
-        self.assertEqual([f*2 for f in values_before], values_after)
+        for individual in pop:
+            self.assertEqual(evaluation_function(individual.chromosome), individual.fitness)
+
+    def test_evaluate_lazy(self):
+        pop = Population(self.chromosomes, eval_function=lambda x: x)
+        pop.evaluate()
+
+        def raise_function(x):
+            raise Exception
+
+        pop.eval_function = raise_function
+        pop.evaluate(lazy=True)  # should not evaluate
+        with self.assertRaises(Exception):
+            pop.evaluate(lazy=False)
 
 
 class TestPopulationSurvive(TestCase):
