@@ -123,6 +123,7 @@ class TestPopulationMutate(TestCase):
         pop = self.population.mutate(lambda x: x+1)
         for chromosome in pop.chromosomes:
             self.assertEqual(chromosome, 2)
+        self.assertEqual(len(pop), 100)
 
     def test_mutate_inplace(self):
         self.population.mutate(lambda x: x+1)
@@ -135,12 +136,14 @@ class TestPopulationMutate(TestCase):
         self.population.mutate(mutate_func)
         for chromosome in self.population.chromosomes:
             self.assertEqual(chromosome, -1)
+        self.assertEqual(len(self.population), 100)
 
     def test_mutate_probability(self):
         seed(0)
         pop = self.population.mutate(lambda x: x+1, probability=0.5)
         self.assertEqual(pop.min_individual.chromosome, 1)
         self.assertEqual(pop.max_individual.chromosome, 2)
+        self.assertEqual(len(pop), 100)
 
     def test_mutate_zero_probability(self):
         self.population.mutate(lambda x: x+1, probability=0)
