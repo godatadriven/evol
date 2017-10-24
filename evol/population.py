@@ -47,6 +47,11 @@ class Population:
         self.evaluate(lazy=True)
         return max(self, key=lambda x: x.fitness)
 
+    @property
+    def chromosomes(self):
+        for individual in self.individuals:
+            yield individual.chromosome
+
     @classmethod
     def generate(cls, init_func, eval_func, size=100) -> 'Population':
         chromosomes = [init_func() for _ in range(size)]
