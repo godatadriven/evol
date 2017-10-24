@@ -148,6 +148,13 @@ class TestPopulationMutate(TestCase):
         for chromosome in self.population.chromosomes:
             self.assertEqual(chromosome, 1)
 
+    def test_mutate_func_kwargs(self):
+        def mutate_func(x, y=0):
+            return x+y
+        self.population.mutate(mutate_func, y=16)
+        for chromosome in self.population.chromosomes:
+            self.assertEqual(chromosome, 17)
+
 
 class TestContestPopulation(TestCase):
 
