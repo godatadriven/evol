@@ -3,37 +3,17 @@ from random import random, choices, seed
 from evol import Population, ContestPopulation
 
 
-def init_func():
-    return 1
-
-
-def eval_func(x):
-    return x
-
-
-def pick_two_random_parents(population):
-    return choices(population, k=2)
-
-
-def pick_n_random_parents(population, n_parents=2):
-    return choices(population, k=n_parents)
-
-
-def combine_two_parents(mom, dad):
-    return (mom+dad)/2
-
-
-def general_combiner(*parents):
-    return sum(parents)/len(parents)
-
-
 class TestPopulationSimple(TestCase):
 
     def setUp(self):
         self.chromosomes = list(range(100))
 
+        def eval_func(x):
+            return x
+        self.eval_func = eval_func
+
     def test_filter_works(self):
-        pop = Population(chromosomes=self.chromosomes, eval_function=eval_func)
+        pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         self.assertTrue(len(pop.filter(func=lambda i: random() > 0.5)) < 200)
 
 
@@ -64,7 +44,7 @@ class TestPopulationEvaluate(TestCase):
         pop = Population(self.chromosomes, eval_function=lambda x: x)
         pop.evaluate(lazy=True)  # should evaluate
 
-        def raise_function(x):
+        def raise_function(_):
             raise Exception
 
         pop.eval_function = raise_function
@@ -76,41 +56,45 @@ class TestPopulationEvaluate(TestCase):
 class TestPopulationSurvive(TestCase):
 
     def setUp(self):
-        self.chromosomes = list(range(100))
+        self.chromosomes = list(range(200))
+
+        def eval_func(x):
+            return x
+        self.eval_func = eval_func
 
     def test_survive_n_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
+        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         self.assertEqual(len(pop1), 200)
         self.assertEqual(len(pop2.survive(n=50)), 50)
         self.assertEqual(len(pop3.survive(n=150, luck=True)), 150)
 
     def test_survive_p_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
+        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         self.assertEqual(len(pop1), 200)
         self.assertEqual(len(pop2.survive(fraction=0.5)), 100)
         self.assertEqual(len(pop3.survive(fraction=0.1, luck=True)), 20)
 
     def test_survive_n_and_p_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
+        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         self.assertEqual(len(pop1.survive(fraction=0.5, n=200)), 100)
         self.assertEqual(len(pop2.survive(fraction=0.9, n=10)), 10)
         self.assertEqual(len(pop3.survive(fraction=0.5, n=190, luck=True)), 100)
 
     def test_survive_throws_correct_errors(self):
         """If the resulting population is zero or larger than initial we need to see errors."""
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
+        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         with self.assertRaises(RuntimeError):
             pop1.survive(n=0)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
+        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         with self.assertRaises(ValueError):
             pop2.survive(n=250)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
+        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         with self.assertRaises(ValueError):
             pop3.survive()
 
@@ -118,25 +102,37 @@ class TestPopulationSurvive(TestCase):
 class TestPopulationBreed(TestCase):
 
     def setUp(self):
-        self.chromosomes = list(range(100))
+        self.chromosomes = list(range(200))
+
+        def eval_func(x):
+            return x
+        self.eval_func = eval_func
+
+        def pick_n_random_parents(population, n_parents=2):
+            return choices(population, k=n_parents)
+        self.pick_n_random_parents = pick_n_random_parents
 
     def test_breed_amount_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop1.survive(n=50).breed(parent_picker=pick_two_random_parents, combiner=combine_two_parents)
+        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop1.survive(n=50).breed(parent_picker=lambda population: choices(population, k=2),
+                                 combiner=lambda mom, dad: (mom + dad) / 2)
         self.assertEqual(len(pop1), 200)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop2.survive(n=50).breed(parent_picker=pick_two_random_parents, combiner=combine_two_parents,
-                                 population_size=400)
+        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop2.survive(n=50).breed(parent_picker=lambda population: choices(population, k=2),
+                                 combiner=lambda mom, dad: (mom + dad) / 2, population_size=400)
         self.assertEqual(len(pop2), 400)
         self.assertEqual(pop2.intended_size, 400)
 
     def test_breed_works_with_kwargs(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop1.survive(n=50).breed(parent_picker=pick_n_random_parents, combiner=combine_two_parents, n_parents=2)
+        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop1.survive(n=50).breed(parent_picker=self.pick_n_random_parents,
+                                 combiner=lambda mom, dad: (mom + dad) / 2,
+                                 n_parents=2)
         self.assertEqual(len(pop1), 200)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=eval_func)
-        pop2.survive(n=50).breed(parent_picker=pick_n_random_parents, combiner=general_combiner, population_size=400,
-                                 n_parents=3)
+        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop2.survive(n=50).breed(parent_picker=self.pick_n_random_parents,
+                                 combiner=lambda *parents: sum(parents)/len(parents),
+                                 population_size=400, n_parents=3)
         self.assertEqual(len(pop2), 400)
         self.assertEqual(pop2.intended_size, 400)
 
