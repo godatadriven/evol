@@ -1,18 +1,18 @@
 # evol.py
 
-> A few good composable functions is better than a lot of static ones.
-
 `Evol` is functional dsl for composable evolutionary algorithms written in python.
 
 
 ## The Gist
 
-The main idea is that you should be able to define an evolutionary algorithm with a language such that you can write complex algorithms rather simply.
+The main idea is that you should be able to define an evolutionary algorithm with a tool such that you can write complex algorithms in a composable way.
 
-Here's a nice example.
+Here's a brief example of what the code might look like.
 
 ```
-population = Population(eval_func=eval_func, init_func=init_func, size=100)
+from evol import Population, Evolution
+
+population = Population(init_func=init_func, eval_func=eval_func, size=100)
 
 evo1 = (Evolution(name="evo1")
        .survive(0.6)
@@ -24,8 +24,8 @@ evo2 = (Evolution(name="evo2")
        .breed(parentpicker=parent_picker, create_chromosome=combiner, n_max=100)
        .mutate(lambda x: change(x, 0.01)))
 
-alg = Algorithm(population=population, evolution=evo1, verbose=True)
-alg.run(100).change_evolution(evo2).run(50)
+for i in range(10):
+    population.evolve(evo1, n=10).evolve(evo2, n=100)
 ```
 
 ## How does it compare to ...
