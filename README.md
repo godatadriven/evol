@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/koaning/evol.svg?branch=master)](https://travis-ci.org/koaning/evol)
+[![Build Status](https://travis-ci.org/godatadriven/evol.svg?branch=master)](https://travis-ci.org/godatadriven/evol)
 
 # evol.py
 
