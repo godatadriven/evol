@@ -5,4 +5,4 @@ script:
   - python setup.py install
   - pytest
   - python examples/number_of_parents.py --n_parents=3
-  - python examples/example_evolutionary_01.py
+  - python examples/very_basic_tsp.py
