@@ -39,7 +39,7 @@ for i in range(10):
     population.evolve(evo1, n=10).evolve(evo2, n=100)
 ```
 
-For more details you can read the [docs](godatadriven.github.io/evol/) but we advice everyone to get start by first checking out the examples in the `/examples` directory. These stand alone examples should show the spirit of usage better than the docs.
+For more details you can read the [docs](https://godatadriven.github.io/evol/) but we advice everyone to get start by first checking out the examples in the `/examples` directory. These stand alone examples should show the spirit of usage better than the docs.
 
 ## How does it compare to ...
 
