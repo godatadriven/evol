@@ -5,10 +5,10 @@ from uuid import uuid4
 class Individual:
     """Represents an individual in a population. The individual has a chromosome."""
 
-    def __init__(self, chromosome):
+    def __init__(self, chromosome, fitness=None):
         self.age = 0
         self.chromosome = chromosome
-        self.fitness = None
+        self.fitness = fitness
         self.id = f"{str(uuid4())[:6]}"
 
     def __repr__(self):
