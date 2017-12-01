@@ -1,7 +1,17 @@
 from collections import defaultdict
 from itertools import tee, islice, cycle
-from random import choice
+from random import choice, randint
 from typing import Iterable, Tuple, Generator, Any, Set, List, Dict
+
+
+def select_partition(length: int) -> Tuple[int, int]:
+    """Select a partition of a chromosome.
+
+    :param length: Length of the chromosome.
+    :return: Start and end index of the partition.
+    """
+    x, y = randint(0, length), randint(0, length)
+    return (x, y) if x < y else (y, x)
 
 
 def construct_neighbors(*chromosome: Tuple[Any]) -> defaultdict:

@@ -1,8 +1,24 @@
-from itertools import tee
+from itertools import islice, tee
 from random import choice
 from typing import Any, Tuple
 
 from ._utils import select_node, construct_neighbors, multiple_offspring, identify_cycles, cycle_parity
+from ._utils import select_partition
+
+
+def order_one_crossover(parent_1: Tuple, parent_2: Tuple) -> Tuple:
+    """Combine two chromosomes using order-1 crossover.
+
+    http://www.rubicite.com/Tutorials/GeneticAlgorithms/CrossoverOperators/Order1CrossoverOperator.aspx
+
+    :param parent_1: First parent.
+    :param parent_2: Second parent.
+    :return: Child chromosome.
+    """
+    start, end = select_partition(len(parent_1))
+    selected_partition = parent_1[start:end]
+    remaining_elements = filter(lambda element: element not in selected_partition, parent_2)
+    return tuple(islice(remaining_elements, 0, start)) + selected_partition + tuple(remaining_elements)
 
 
 def edge_recombination(*parents: Tuple) -> Tuple:
@@ -11,7 +27,7 @@ def edge_recombination(*parents: Tuple) -> Tuple:
     http://www.rubicite.com/Tutorials/GeneticAlgorithms/CrossoverOperators/EdgeRecombinationCrossoverOperator.aspx
 
     :param parents: Chromosomes to combine.
-    :return: New chromosome.
+    :return: Child chromosome.
     """
     return tuple(select_node(
         start_node=choice([chromosome[0] for chromosome in parents]),
