@@ -1,81 +1,123 @@
 """
-python examples/example_pheromone.py
-python examples/example_pheromone.py --population-size=35 --num-iter=1000
-python examples/example_pheromone.py --population-size=100 --num-iter=1000
+There are a few things to notice with this example. 
+
+1. from the command line you can re-run and see a different matplotlib plot
+2. `n_crossover` is set via the `.breed()` method
+3. the functions you need for this application can be tested with unittests
+
 """
 
 import random
 import math
-import fire
-import itertools as it
-import matplotlib.pylab as plt
+import argparse
 
 from evol import Population, Evolution
 
 
-def run_pheromone(num_towns=42, population_size=100, num_iter=200, seed=42):
-    """Runs a pheromone tactic against a simple TSP."""
+def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
+    """
+    Runs a simple evolutionary algorithm against a simple TSP problem.
+    The goal is to explain the `evol` library, this is not an algorithm
+    that should perform well.
+    """
+
+    # First we generate random towns as candidates with a seed
     random.seed(seed)
-    num_towns = num_towns
     coordinates = [(random.random(), random.random()) for i in range(num_towns)]
 
-    pheromones = {arc:1 for arc in it.product(range(num_towns), range(num_towns)) if arc[0] != arc[1]}
-
-    def init_func():
+    # Next we define a few functions that we will need in order to create an algorithm.
+    # Think of these functions as if they are lego blocks.
+    def init_func(num_towns):
+        """
+        This function generates an individual  
+        """
         order = list(range(num_towns))
         random.shuffle(order)
         return order
 
-    def eval_func(order):
-        return sum([dist(coordinates[order[i]], coordinates[order[i - 1]]) for i, t in enumerate(order)])
-
     def dist(t1, t2):
+        """
+        Calculates the distance between two towns. 
+        """
         return math.sqrt((t1[0] - t2[0]) ** 2 + (t1[1] - t2[1]) ** 2)
 
-    def sliding_window(iter):
-        for i in range(len(iter) - 1):
-            yield iter[i], iter[i+1]
+    def eval_func(order):
+        """
+        Evaluates a candidate chromosome, which is a list that represents town orders.
+        """
+        return sum([dist(coordinates[order[i]], coordinates[order[i - 1]]) for i, t in enumerate(order)])
 
-    def update_pheromones(population):
-        for individual in pop:
-            for gene1, gene2 in sliding_window(individual.chromosome):
-                pheromones[(gene1, gene2)] += 1
-                pheromones[(gene2, gene1)] += 1
+    def pick_random(parents):
+        """
+        This function selects two parents  
+        """
+        return random.choice(parents), random.choice(parents)
 
-    def combiner(parent):
-        order = [0]
-        for town in range(num_towns-1):
-            next_dict = {towns[1]: val for towns,val in pheromones.items()
-                         if (towns[1] not in order) and (towns[0] == order[-1])}
-            next_town = random.choices(population=list(next_dict.keys()),
-                                       weights=list(next_dict.values()))
-            order.append(next_town[0])
-        return order
+    def partition(lst, n_crossover):
+        division = len(lst) / n_crossover
+        return [lst[round(division * i):round(division * (i + 1))] for i in range(n_crossover)]
 
-    pop = Population(chromosomes=[init_func() for _ in range(population_size)],
+    def crossover_ox(mom_order, dad_order, n_crossover):
+        idx_split = partition(range(len(mom_order)), n_crossover=n_crossover)
+        dad_idx = sum([list(d) for i, d in enumerate(idx_split) if i % 2 == 0], [])
+        path = [-1 for _ in range(len(mom_order))]
+        for idx in dad_idx:
+            path[idx] = dad_order[idx]
+        cities_visited = {p for p in path if p != -1}
+        for i, d in enumerate(path):
+            if d == -1:
+                city = [p for p in mom_order if p not in cities_visited][0]
+                path[i] = city
+                cities_visited.add(city)
+        return path
+
+    def random_flip(chromosome):
+        result = chromosome[:]
+        idx1, idx2 = random.choices(list(range(len(chromosome))), k =2)
+        result[idx1], result[idx2] = result[idx2], result[idx1]
+        return result
+
+    pop = Population(chromosomes=[init_func(num_towns) for _ in range(population_size)],
                      eval_function=eval_func, maximize=False).evaluate()
 
     evo = (
         Evolution()
-        .survive(0.2)
-        .update(update_pheromones)
-        .survive(n=1)
-        .breed(parent_picker=lambda x: random.choice(x), combiner=combiner)
-        .evaluate()
+            .survive(fraction=0.1)
+            .breed(parent_picker=pick_random, combiner=crossover_ox, n_crossover=2)
+            .mutate(random_flip)
+            .evaluate()
     )
 
+    print("will start the evolutionary program")
     scores = []
     iterations = []
-    for iter in range(num_iter):
-        print(f"iteration: {iter} best score: {min([individual.fitness for individual in pop])}")
+    for i in range(num_iter):
+        print(f"iteration: {i} best score: {min([individual.fitness for individual in pop])}")
         for indiviual in pop:
             scores.append(indiviual.fitness)
-            iterations.append(iter)
+            iterations.append(i)
         pop = evo.evolve(pop)
 
-    plt.scatter(iterations, scores, s=1, alpha=0.3)
-    plt.title("population fitness vs. iteration")
-    plt.show()
+    try:
+        import matplotlib.pylab as plt
+        plt.scatter(iterations, scores, s=1, alpha=0.3)
+        plt.title("population fitness vs. iteration")
+        plt.show()
+    except ImportError:
+        print("If you install matplotlib you will get a pretty plot.")
 
 if __name__ == "__main__":
-    fire.Fire(run_pheromone)
+    parser = argparse.ArgumentParser(description='Run an example evol algorithm against a simple TSP problem.')
+    parser.add_argument('--num_towns', type=int, default=42,
+                        help='the number of towns to generate for the TSP problem')
+    parser.add_argument('--population_size', type=int, default=100,
+                        help='the number of candidates to start the algorithm with')
+    parser.add_argument('--num_iter', type=int, default=100,
+                        help='the number of evolutionary cycles to run')
+    parser.add_argument('--seed', type=int, default=42,
+                        help='the random seed for all this')
+
+    args = parser.parse_args()
+    print(f"i am aware of these arguments: {args}")
+    run_evolutionary(num_towns=args.num_towns, population_size=args.population_size,
+                     num_iter=args.num_iter, seed=args.seed)
