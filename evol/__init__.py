@@ -1,8 +1,7 @@
 """
-Evol 
----------------------------------------
+![Imgur](https://i.imgur.com/7MHcIq1.png)
 
-This documentation has been automatically generated via `pdoc`.
+`Evol` is clear dsl for composable evolutionary algorithms that optimised for joy.
 
 Evol is a library that helps you make evolutionary algorithms. The
 goal is to have a library that is fun and clear to use, but not fast. 
@@ -38,11 +37,6 @@ Updating documentation is currently a manual step. From the `docs` folder:
     rm -rf evol
 
 If you want to confirm that it works you can open the `index.html` file.
-
-You can generate the docs by running the following code in the
-/docs folder. 
-
-    pdoc --html evol
 """
 
 from .individual import Individual
