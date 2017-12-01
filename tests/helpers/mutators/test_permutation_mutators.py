@@ -1,6 +1,6 @@
 from random import seed
 
-from evol.helpers.mutators.permutation import inversion
+from evol.helpers.mutators.permutation import inversion, swap_elements
 
 
 def test_inversion_int():
@@ -15,3 +15,17 @@ def test_inversion_str():
     x = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J')
     a = inversion(x)
     assert a == ('A', 'B', 'C', 'H', 'G', 'F', 'E', 'D', 'I', 'J')
+
+
+def test_swap_elements_int():
+    seed(0)
+    x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+    a = swap_elements(x)
+    assert a == (0, 1, 2, 3, 4, 5, 9, 7, 8, 6)
+
+
+def test_swap_elements_str():
+    seed(0)
+    x = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J')
+    a = swap_elements(x)
+    assert a == ('A', 'B', 'C', 'D', 'E', 'F', 'J', 'H', 'I', 'G')
