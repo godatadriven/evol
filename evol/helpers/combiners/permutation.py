@@ -3,7 +3,7 @@ from random import choice
 from typing import Any, Tuple
 
 from ._utils import select_node, construct_neighbors, multiple_offspring, identify_cycles, cycle_parity
-from ._utils import select_partition
+from .._utils import select_partition
 
 
 def order_one_crossover(parent_1: Tuple, parent_2: Tuple) -> Tuple:
@@ -16,7 +16,7 @@ def order_one_crossover(parent_1: Tuple, parent_2: Tuple) -> Tuple:
     :return: Child chromosome.
     """
     start, end = select_partition(len(parent_1))
-    selected_partition = parent_1[start:end]
+    selected_partition = parent_1[start:end+1]
     remaining_elements = filter(lambda element: element not in selected_partition, parent_2)
     return tuple(islice(remaining_elements, 0, start)) + selected_partition + tuple(remaining_elements)
 
