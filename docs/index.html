@@ -6,7 +6,7 @@
     <title>evol API documentation</title>
     <meta name="description" content="![Imgur](https://i.imgur.com/7MHcIq1.png)
 
-This documentation has been automatically generated via `..." />
+`Evol` is clear dsl for composable evolutionary algorithm..." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -997,7 +997,7 @@ table {
   <header id="section-intro">
   <h1 class="title"><span class="name">evol</span> module</h1>
   <p><img alt="Imgur" src="https://i.imgur.com/7MHcIq1.png" /></p>
-<p>This documentation has been automatically generated via <code>pdoc</code>.</p>
+<p><code>Evol</code> is clear dsl for composable evolutionary algorithms that optimised for joy.</p>
 <p>Evol is a library that helps you make evolutionary algorithms. The
 goal is to have a library that is fun and clear to use, but not fast. </p>
 <p>If you're looking at the library for the first time we recommend
@@ -1005,6 +1005,66 @@ that you first take a look at the examples in the /examples folder
 on github. It is usually a better starting point to get started. </p>
 <p>Any details can be discovered on the docs. We hope that this 
 library makes it fun to write heuristics again.</p>
+<h2>The Gist</h2>
+<p>The main idea is that you should be able to define a complex algorithm 
+in a composable way. To explain what we mean by this:  let's consider 
+two evolutionary algorithms for travelling salesman problems.</p>
+<p>The first approach takes a collections of solutions and applies:</p>
+<ol>
+<li>a survival where only the top 50% solutions survive </li>
+<li>the population reproduces using a crossover of genes </li>
+<li>certain members mutate</li>
+<li>repeat this, maybe 1000 times or more!</li>
+</ol>
+<p><img src="https://i.imgur.com/is9g07u.png" alt="Drawing" style="width: 100%;"/></p>
+<p>We can also think of another approach: </p>
+<ol>
+<li>pick the best solution of the population </li>
+<li>make random changes to this parent and generate new solutions </li>
+<li>repeat this, maybe 1000 times or more!</li>
+</ol>
+<p><img src="https://i.imgur.com/JRSWbTd.png" alt="Drawing" style="width: 100%;"/></p>
+<p>One could even combine the two algorithms into a new one: </p>
+<ol>
+<li>run algorithm 1 50 times</li>
+<li>run algorithm 2 10 times</li>
+<li>repeat this, maybe 1000 times or more!</li>
+</ol>
+<p><img src="https://i.imgur.com/SZTBWX2.png" alt="Drawing" style="width: 100%;"/></p>
+<p>You might notice that many parts of these algorithms are similar and it is 
+the goal of this library is to automate these parts. In fact, you can 
+expect the code for these algorithms to look something like this. </p>
+<p>A speudo-example of what is decribed about looks a bit like this: </p>
+<pre><code>import random
+from evol import Population, Evolution
+
+population = Population(init_func=init_func, eval_func=eval_func, size=100)
+
+def pick_n_parents(population, num_parents):
+    return [random.choice(population) for i in range(num_parents)]
+
+def crossover(*parents):
+    ...
+
+def random_copy(parent):
+    ...
+
+evo1 = (Evolution(name="first_algorithm")
+       .survive(fraction=0.5)
+       .breed(parentpicker=pick_n_parents, 
+              combiner=combiner, 
+              num_parents=2, n_max=100)
+       .mutate(lambda x: add_noise(x, 0.1)))
+
+evo2 = (Evolution(name="second_algorithm")
+       .survive(n=1)
+       .breed(parentpicker=pick_n_parents, 
+              combiner=random_copy, 
+              num_parents=1, n_max=100))
+
+for i in range(1001):
+    population.evolve(evo1, n=50).evolve(evo2, n=10)
+</code></pre>
 <h2>Contributing Guide</h2>
 <h3>Local development</h3>
 <p>Python can help you. Don't reinstall all the time, rather use a 
@@ -1028,7 +1088,7 @@ rm -rf evol
     <pre><code>"""
 ![Imgur](https://i.imgur.com/7MHcIq1.png)
 
-This documentation has been automatically generated via `pdoc`.
+`Evol` is clear dsl for composable evolutionary algorithms that optimised for joy.
 
 Evol is a library that helps you make evolutionary algorithms. The
 goal is to have a library that is fun and clear to use, but not fast. 
@@ -1039,7 +1099,77 @@ on github. It is usually a better starting point to get started.
 
 Any details can be discovered on the docs. We hope that this 
 library makes it fun to write heuristics again.
+
+The Gist
+---------------------------------------
  
+The main idea is that you should be able to define a complex algorithm 
+in a composable way. To explain what we mean by this:  let's consider 
+two evolutionary algorithms for travelling salesman problems.
+ 
+The first approach takes a collections of solutions and applies:
+
+1. a survival where only the top 50% solutions survive 
+2. the population reproduces using a crossover of genes 
+3. certain members mutate
+4. repeat this, maybe 1000 times or more!
+
+<img src="https://i.imgur.com/is9g07u.png" alt="Drawing" style="width: 100%;"/>
+
+We can also think of another approach: 
+
+1. pick the best solution of the population 
+2. make random changes to this parent and generate new solutions 
+3. repeat this, maybe 1000 times or more!
+
+<img src="https://i.imgur.com/JRSWbTd.png" alt="Drawing" style="width: 100%;"/>
+
+One could even combine the two algorithms into a new one: 
+
+1. run algorithm 1 50 times
+2. run algorithm 2 10 times
+3. repeat this, maybe 1000 times or more!
+
+<img src="https://i.imgur.com/SZTBWX2.png" alt="Drawing" style="width: 100%;"/>
+
+You might notice that many parts of these algorithms are similar and it is 
+the goal of this library is to automate these parts. In fact, you can 
+expect the code for these algorithms to look something like this. 
+
+A speudo-example of what is decribed about looks a bit like this: 
+
+    import random
+    from evol import Population, Evolution
+
+    population = Population(init_func=init_func, eval_func=eval_func, size=100)
+    
+    def pick_n_parents(population, num_parents):
+        return [random.choice(population) for i in range(num_parents)]
+    
+    def crossover(*parents):
+        ...
+    
+    def random_copy(parent):
+        ...
+
+    evo1 = (Evolution(name="first_algorithm")
+           .survive(fraction=0.5)
+           .breed(parentpicker=pick_n_parents, 
+                  combiner=combiner, 
+                  num_parents=2, n_max=100)
+           .mutate(lambda x: add_noise(x, 0.1)))
+
+    evo2 = (Evolution(name="second_algorithm")
+           .survive(n=1)
+           .breed(parentpicker=pick_n_parents, 
+                  combiner=random_copy, 
+                  num_parents=1, n_max=100))
+
+    for i in range(1001):
+        population.evolve(evo1, n=50).evolve(evo2, n=10)
+
+
+
 Contributing Guide
 ---------------------------------------
 

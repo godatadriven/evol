@@ -1,10 +1,9 @@
 
 [![Build Status](https://travis-ci.org/godatadriven/evol.svg?branch=master)](https://travis-ci.org/godatadriven/evol)
 
-# evol.py
+![Imgur](https://i.imgur.com/7MHcIq1.png)
 
-
-`Evol` is functional dsl for composable evolutionary algorithms written in python.
+`Evol` is clear dsl for composable evolutionary algorithms that optimised for joy.
 
 ## Installation
 
@@ -17,6 +16,12 @@ pip install evol
 ## The Gist
 
 The main idea is that you should be able to define an evolutionary algorithm with a tool such that you can write complex algorithms in a composable way.
+
+<img src="https://i.imgur.com/is9g07u.png" alt="Drawing" style="width: 100%;"/>
+
+<img src="https://i.imgur.com/JRSWbTd.png" alt="Drawing" style="width: 100%;"/>
+
+<img src="https://i.imgur.com/X52bGxF.png" alt="Drawing" style="width: 100%;"/>
 
 Here's a brief example of what the code might look like.
 
