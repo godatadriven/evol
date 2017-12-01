@@ -189,7 +189,10 @@ class Population:
             if not hasattr(parents, '__len__'):
                 parents = [parents]
             chromosomes = [individual.chromosome for individual in parents]
-            self.individuals.append(Individual(chromosome=combiner(*chromosomes, **kwargs)))
+            if getattr(combiner, 'multiple_offspring', False):
+                self.individuals += [Individual(chromosome=child) for child in combiner(*chromosomes, **kwargs)]
+            else:
+                self.individuals.append(Individual(chromosome=combiner(*chromosomes, **kwargs)))
             # TODO: increase generation and individual's ages
         return self
 
