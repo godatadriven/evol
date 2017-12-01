@@ -22,9 +22,7 @@ Contributing Guide
 Python can help you. Don't reinstall all the time, rather use a 
 virtulenv that has a link to the code.
 
-```
-python setup.py develop
-```
+    python setup.py develop
 
 When you submit a pull request it will be tested in travis. Once 
 the build is green the review can start. Please try to keep your 
@@ -35,21 +33,16 @@ commits need to be discussed in github before we can accept them.
 
 Updating documentation is currently a manual step. From the `docs` folder:
 
-```
-pdoc --html --overwrite evol
-cp -rf evol/* .
-rm -rf evol
-```
+    pdoc --html --overwrite evol
+    cp -rf evol/* .
+    rm -rf evol
 
 If you want to confirm that it works you can open the `index.html` file.
 
 You can generate the docs by running the following code in the
 /docs folder. 
 
-```
-pdoc --html evol
-```
-
+    pdoc --html evol
 """
 
 from .individual import Individual
