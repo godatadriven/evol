@@ -6,6 +6,13 @@
 
 `Evol` is functional dsl for composable evolutionary algorithms written in python.
 
+## Installation
+
+We currently support python3.6 and you can install it via pip.
+
+```
+pip install evol
+```
 
 ## The Gist
 
@@ -31,6 +38,8 @@ evo2 = (Evolution(name="evo2")
 for i in range(10):
     population.evolve(evo1, n=10).evolve(evo2, n=100)
 ```
+
+For more details you can read the [docs](godatadriven.github.io/evol/) but we advice everyone to get start by first checking out the examples in the `/examples` directory. These stand alone examples should show the spirit of usage better than the docs.
 
 ## How does it compare to ...
 
