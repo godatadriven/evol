@@ -16,10 +16,10 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
     random.seed(seed)
 
     def init_func():
-        return (random.random() - 0.5) * 10
+        return (random.random() - 0.5) * 20 + 10
 
     def eval_func(x, opt_value=opt_value):
-        return -(x - opt_value) * 4 + math.cos(x - opt_value)
+        return -((x - opt_value) ** 2) + math.cos(x - opt_value)
 
     def random_parent_picker(pop, n_parents):
         return [random.choice(pop) for i in range(n_parents)]
@@ -28,7 +28,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
         return sum(parents) / len(parents)
 
     def add_noise(chromosome, sigma):
-        return chromosome + random.random() * sigma
+        return chromosome + (random.random()-0.5) * sigma
 
     pop = Population(chromosomes=[init_func() for _ in range(population_size)],
                      eval_function=eval_func, maximize=True).evaluate()
@@ -39,23 +39,25 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
            .mutate(func=add_noise, sigma=noise)
            .evaluate())
 
-    print("will start the evolutionary program")
-    pop = evo.evolve(pop, n=num_iter)
-    print(f"pop.max_individual={pop.max_individual}")
+    print("will start the evolutionary program, will log progress every 10 steps")
+    print(pop.maximize)
+    for i in range(num_iter):
+        pop = evo.evolve(pop)
+        print(f"iteration:{i} best: {pop.max_individual.fitness} worst: {pop.min_individual.fitness}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run an example evol algorithm against a simple continuous function.')
     parser.add_argument('--opt_value', type=int, default=0,
                         help='the true optimal value of the problem')
-    parser.add_argument('--population_size', type=int, default=100,
+    parser.add_argument('--population_size', type=int, default=20,
                         help='the number of candidates to start the algorithm with')
     parser.add_argument('--n_parents', type=int, default=2,
                         help='the number of parents the algorithm with use to generate new indivuals')
-    parser.add_argument('--num_iter', type=int, default=100,
+    parser.add_argument('--num_iter', type=int, default=20,
                         help='the number of evolutionary cycles to run')
-    parser.add_argument('--survival', type=float, default=0.5,
+    parser.add_argument('--survival', type=float, default=0.7,
                         help='the fraction of individuals who will survive a generation')
-    parser.add_argument('--noise', type=float, default=0.1,
+    parser.add_argument('--noise', type=float, default=0.5,
                         help='the amount of noise the mutate step will add to each individual')
     parser.add_argument('--seed', type=int, default=42,
                         help='the random seed for all this')
