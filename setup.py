@@ -7,5 +7,4 @@ setup(name='evol',
       author_email='vincentwarmerdam@gmail.com',
       url='https://github.com/koaning/evol',
       packages=['evol', 'evol.helpers'],
-      keywords=['genetic', 'algorithms', 'heuristics'],
-      install_requires=['pytest'],)
+      keywords=['genetic', 'algorithms', 'heuristics'])
