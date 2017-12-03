@@ -1,3 +1,11 @@
+"""
+Evolution objects in `evol` are objects that describe how the
+evolutionary algorithm will change members of a population. 
+Evolution objects contain the same methods as population objects
+but because an evolution is seperate from a population you can 
+play around with them more easily.
+"""
+
 from copy import copy, deepcopy
 
 from .population import Population

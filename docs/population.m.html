@@ -4,7 +4,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>evol.population API documentation</title>
-    <meta name="description" content="" />
+    <meta name="description" content="Population objects in `evol` are a collection of chromosomes
+at some point in an evolutionary algori..." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -1025,11 +1026,21 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">evol.population</span> module</h1>
-  
+  <p>Population objects in <code>evol</code> are a collection of chromosomes
+at some point in an evolutionary algorithm. You can apply 
+evolutionary steps by directly calling methods on the population
+or by appyling an <code>evol.Evolution</code> object.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.population', this);">Show source &equiv;</a></p>
   <div id="source-evol.population" class="source">
-    <pre><code>from random import choices, randint
+    <pre><code>"""
+Population objects in `evol` are a collection of chromosomes
+at some point in an evolutionary algorithm. You can apply 
+evolutionary steps by directly calling methods on the population
+or by appyling an `evol.Evolution` object. 
+"""
+
+from random import choices, randint
 from copy import deepcopy
 from itertools import cycle, islice
 
