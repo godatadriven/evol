@@ -81,7 +81,12 @@ A speudo-example of what is decribed about looks a bit like this:
     for i in range(1001):
         population.evolve(evo1, n=50).evolve(evo2, n=10)
 
+Getting Started 
+---------------------------------------
 
+The best place to get started is the `/examples` folder on github. 
+This folder contains self contained examples that work out of the 
+box. 
 
 Contributing Guide
 ---------------------------------------
