@@ -8,11 +8,15 @@ python setup.py develop
 
 ### Generating New Documentation
 
-This is handled by the build process. But if you want to test locally;
+Updating documentation is currently a manual step. From the `docs` folder:
 
 ```
-pdoc --http evol
+pdoc --html --overwrite evol
+cp -rf evol/* .
+rm -rf evol
 ```
+
+If you want to confirm that it works you can open the `index.html` file.
 
 ### Pushing New Version to PyPi
 

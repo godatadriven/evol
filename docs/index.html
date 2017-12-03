@@ -977,7 +977,6 @@ table {
     <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
       <ul>
         <li class="mono"><a href="evolution.m.html">evol.evolution</a></li>
-        <li class="mono"><a href="group.m.html">evol.group</a></li>
         <li class="mono"><a href="helpers/index.html">evol.helpers</a></li>
         <li class="mono"><a href="individual.m.html">evol.individual</a></li>
         <li class="mono"><a href="population.m.html">evol.population</a></li>
@@ -1065,6 +1064,10 @@ evo2 = (Evolution(name="second_algorithm")
 for i in range(1001):
     population.evolve(evo1, n=50).evolve(evo2, n=10)
 </code></pre>
+<h2>Getting Started</h2>
+<p>The best place to get started is the <code>/examples</code> folder on github. 
+This folder contains self contained examples that work out of the 
+box. </p>
 <h2>Contributing Guide</h2>
 <h3>Local development</h3>
 <p>Python can help you. Don't reinstall all the time, rather use a 
@@ -1168,7 +1171,12 @@ A speudo-example of what is decribed about looks a bit like this:
     for i in range(1001):
         population.evolve(evo1, n=50).evolve(evo2, n=10)
 
+Getting Started 
+---------------------------------------
 
+The best place to get started is the `/examples` folder on github. 
+This folder contains self contained examples that work out of the 
+box. 
 
 Contributing Guide
 ---------------------------------------
@@ -1213,20 +1221,18 @@ from .population import Population, ContestPopulation
       <p class="name"><a href="evolution.m.html">evol.evolution</a></p>
       
   
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="group.m.html">evol.group</a></p>
-      
-  
+    <div class="desc"><p>Evolution objects in <code>evol</code> are objects that describe how the
+evolutionary algorithm will change members of a population. 
+Evolution objects contain the same methods as population objects
+but because an evolution is seperate from a population you can 
+play around with them more easily.</p></div>
 
       </div>
       <div class="item">
       <p class="name"><a href="helpers/index.html">evol.helpers</a></p>
       
   
-    <div class="desc"><h2>Evol Helpers</h2>
-<p>Helpers in <code>evol</code> are functions that help you when you are 
+    <div class="desc"><p>Helpers in <code>evol</code> are functions that help you when you are 
 designing algorithms. We archive these helping functions per usecase.</p></div>
 
       </div>
@@ -1234,12 +1240,20 @@ designing algorithms. We archive these helping functions per usecase.</p></div>
       <p class="name"><a href="individual.m.html">evol.individual</a></p>
       
   
+    <div class="desc"><p>Individual objects in <code>evol</code> are a wrapper around a chromosome.
+Internally we work with individuals because that allows us to 
+seperate the fitness calculation from the datastructure. This 
+saves a lot of CPU power.</p></div>
 
       </div>
       <div class="item">
       <p class="name"><a href="population.m.html">evol.population</a></p>
       
   
+    <div class="desc"><p>Population objects in <code>evol</code> are a collection of chromosomes
+at some point in an evolutionary algorithm. You can apply 
+evolutionary steps by directly calling methods on the population
+or by appyling an <code>evol.Evolution</code> object.</p></div>
 
       </div>
       <div class="item">

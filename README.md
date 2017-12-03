@@ -13,38 +13,83 @@ We currently support python3.6 and you can install it via pip.
 pip install evol
 ```
 
+## Documentation
+
+For more details you can read the [docs hosted on github](https://godatadriven.github.io/evol/) but we advice everyone to get start by first checking out the examples in the `/examples` directory. These stand alone examples should show the spirit of usage better than the docs.
+
 ## The Gist
 
-The main idea is that you should be able to define an evolutionary algorithm with a tool such that you can write complex algorithms in a composable way.
+The main idea is that you should be able to define a complex algorithm
+in a composable way. To explain what we mean by this:  let's consider
+two evolutionary algorithms for travelling salesman problems.
+
+The first approach takes a collections of solutions and applies:
+
+1. a survival where only the top 50% solutions survive
+2. the population reproduces using a crossover of genes
+3. certain members mutate
+4. repeat this, maybe 1000 times or more!
 
 <img src="https://i.imgur.com/is9g07u.png" alt="Drawing" style="width: 100%;"/>
 
+We can also think of another approach:
+
+1. pick the best solution of the population
+2. make random changes to this parent and generate new solutions
+3. repeat this, maybe 1000 times or more!
+
 <img src="https://i.imgur.com/JRSWbTd.png" alt="Drawing" style="width: 100%;"/>
 
-<img src="https://i.imgur.com/X52bGxF.png" alt="Drawing" style="width: 100%;"/>
+One could even combine the two algorithms into a new one:
 
-Here's a brief example of what the code might look like.
+1. run algorithm 1 50 times
+2. run algorithm 2 10 times
+3. repeat this, maybe 1000 times or more!
 
-```
-from evol import Population, Evolution
+<img src="https://i.imgur.com/SZTBWX2.png" alt="Drawing" style="width: 100%;"/>
 
-population = Population(init_func=init_func, eval_func=eval_func, size=100)
+You might notice that many parts of these algorithms are similar and it is
+the goal of this library is to automate these parts. In fact, you can
+expect the code for these algorithms to look something like this.
 
-evo1 = (Evolution(name="evo1")
-       .survive(0.6)
-       .breed(parentpicker=parent_picker, create_chromosome=combiner, n_max=100)
-       .mutate(lambda x: change(x, 0.1)))
+A speudo-example of what is decribed about looks a bit like this:
 
-evo2 = (Evolution(name="evo2")
-       .survive(0.3)
-       .breed(parentpicker=parent_picker, create_chromosome=combiner, n_max=100)
-       .mutate(lambda x: change(x, 0.01)))
+    import random
+    from evol import Population, Evolution
 
-for i in range(10):
-    population.evolve(evo1, n=10).evolve(evo2, n=100)
-```
+    population = Population(init_func=init_func, eval_func=eval_func, size=100)
 
-For more details you can read the [docs](https://godatadriven.github.io/evol/) but we advice everyone to get start by first checking out the examples in the `/examples` directory. These stand alone examples should show the spirit of usage better than the docs.
+    def pick_n_parents(population, num_parents):
+        return [random.choice(population) for i in range(num_parents)]
+
+    def crossover(*parents):
+        ...
+
+    def random_copy(parent):
+        ...
+
+    evo1 = (Evolution(name="first_algorithm")
+           .survive(fraction=0.5)
+           .breed(parentpicker=pick_n_parents,
+                  combiner=combiner,
+                  num_parents=2, n_max=100)
+           .mutate(lambda x: add_noise(x, 0.1)))
+
+    evo2 = (Evolution(name="second_algorithm")
+           .survive(n=1)
+           .breed(parentpicker=pick_n_parents,
+                  combiner=random_copy,
+                  num_parents=1, n_max=100))
+
+    for i in range(1001):
+        population.evolve(evo1, n=50).evolve(evo2, n=10)
+
+Getting Started
+---------------------------------------
+
+The best place to get started is the `/examples` folder on github.
+This folder contains self contained examples that work out of the
+box.
 
 ## How does it compare to ...
 
