@@ -4,7 +4,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>evol.individual API documentation</title>
-    <meta name="description" content="" />
+    <meta name="description" content="Individual objects in `evol` are a wrapper around a chromosome.
+Internally we work with individuals ..." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -1006,11 +1007,21 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">evol.individual</span> module</h1>
-  
+  <p>Individual objects in <code>evol</code> are a wrapper around a chromosome.
+Internally we work with individuals because that allows us to 
+seperate the fitness calculation from the datastructure. This 
+saves a lot of CPU power.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.individual', this);">Show source &equiv;</a></p>
   <div id="source-evol.individual" class="source">
-    <pre><code>from random import random
+    <pre><code>"""
+Individual objects in `evol` are a wrapper around a chromosome.
+Internally we work with individuals because that allows us to 
+seperate the fitness calculation from the datastructure. This 
+saves a lot of CPU power.
+"""
+
+from random import random
 from uuid import uuid4
 
 

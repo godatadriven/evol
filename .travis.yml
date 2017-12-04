@@ -2,6 +2,7 @@ language: python
 python:
   - "3.6"
 script:
+  - pip install pytest
   - python setup.py install
   - pytest
   - python examples/number_of_parents.py --n_parents=3

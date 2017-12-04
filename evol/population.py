@@ -1,3 +1,10 @@
+"""
+Population objects in `evol` are a collection of chromosomes
+at some point in an evolutionary algorithm. You can apply 
+evolutionary steps by directly calling methods on the population
+or by appyling an `evol.Evolution` object. 
+"""
+
 from random import choices, randint
 from copy import deepcopy
 from itertools import cycle, islice

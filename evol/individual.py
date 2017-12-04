@@ -1,3 +1,10 @@
+"""
+Individual objects in `evol` are a wrapper around a chromosome.
+Internally we work with individuals because that allows us to 
+seperate the fitness calculation from the datastructure. This 
+saves a lot of CPU power.
+"""
+
 from random import random
 from uuid import uuid4
 
