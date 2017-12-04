@@ -3,7 +3,7 @@ from copy import deepcopy
 from itertools import cycle, islice
 
 from evol import Individual
-from evol.helpers.utils import select_arguments
+from evol.helpers.utils import select_arguments, offspring_generator
 
 
 class Population:
@@ -182,18 +182,12 @@ class Population:
         combiner = select_arguments(combiner)
         if population_size:
             self.intended_size = population_size
-        # we ensure that we only select the same group before breeding starts
-        size_before_breed = len(self.individuals)
-        for _ in range(len(self.individuals), self.intended_size):
-            parents = parent_picker(self.individuals[:size_before_breed], **kwargs)
-            if not hasattr(parents, '__len__'):
-                parents = [parents]
-            chromosomes = [individual.chromosome for individual in parents]
-            if getattr(combiner, 'multiple_offspring', False):
-                self.individuals += [Individual(chromosome=child) for child in combiner(*chromosomes, **kwargs)]
-            else:
-                self.individuals.append(Individual(chromosome=combiner(*chromosomes, **kwargs)))
-            # TODO: increase generation and individual's ages
+        offspring = offspring_generator(parents=self.individuals,
+                                        parent_picker=select_arguments(parent_picker),
+                                        combiner=select_arguments(combiner),
+                                        **kwargs)
+        self.individuals += list(islice(offspring, self.intended_size - len(self.individuals)))
+        # TODO: increase generation and individual's ages
         return self
 
     def mutate(self, func, probability=1.0, **kwargs) -> 'Population':
