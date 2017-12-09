@@ -7,6 +7,6 @@ setup(
     author=['Vincent D. Warmerdam', 'Rogier van der Geer'],
     author_email='vincentwarmerdam@gmail.com',
     url='https://github.com/godatadriven/evol',
-    packages=['evol', 'evol.helpers'],
+    packages=['evol', 'evol.helpers', 'evol.population'],
     keywords=['genetic', 'algorithms', 'heuristics']
 )
