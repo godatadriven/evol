@@ -1,67 +1,52 @@
 from copy import deepcopy
-from itertools import chain, islice
-from random import shuffle
 from typing import List
 
+from evol import Individual
 from .base import PopulationBase
 
 
 class IslandPopulation(PopulationBase):
     """Population which is split up into multiple isolated groups."""
-    def __init__(self, populations: 'List[PopulationBase]', generation=0):
+    def __init__(self, populations: 'List[PopulationBase]', generation=0, maximize=True):
         if len(populations) == 0:
             raise ValueError('An IslandPopulation must have at least one island.')
         self.generation = generation
         self.populations = populations
+        self.maximize = maximize
 
     def __iter__(self):
         for population in self.populations:
             for individual in population:
                 yield individual
 
-    @property
-    def maximize(self):
-        return self.populations[0].maximize
+    def add(self, *individuals: Individual):
+        for population in self.populations:
+            population.add(*individuals)
 
-    # @classmethod
-    # def from_population(cls, population: 'Population', n_islands):
-    #     """Create an IslandPopulation from a population.
-    #
-    #     :param population: Population to split up.
-    #     :type population: Population
-    #     :param n_islands: Number of islands to split population into.
-    #     :type n_islands: int
-    #     :return: IslandPopulation
-    #     """
-    #     if n_islands == 0:
-    #         raise ValueError('An IslandPopulation must have at least one island.')
-    #     chromosomes = list(population.chromosomes)
-    #     shuffle(chromosomes)
-    #     return cls(
-    #         populations=[
-    #             population.__class__(
-    #                 chromosomes=list(islice(chromosomes, i, None, n_islands)),
-    #                 eval_function=population.eval_function, maximize=population.maximize
-    #             )
-    #             for i in range(n_islands)
-    #         ],
-    #         generation=population.generation
-    #     )
+    def apply(self, func, **kwargs) -> 'IslandPopulation':
+        """Apply the provided function to the population.
 
-    # def evolve(self, evolution: 'Evolution', n: int = 1) -> 'IslandPopulation':
-    #     """Evolve the population according to an Evolution.
-    #
-    #     :param evolution: Evolution to follow
-    #     :type evolution: Evolution
-    #     :param n: Times to apply the evolution. Defaults to 1.
-    #     :type n: int
-    #     :return: Population
-    #     """
-    #     result = deepcopy(self)
-    #     for evo_batch in range(n):
-    #         for step in evolution:
-    #             step.apply(result)
-    #     return result
+        :param func: Function to apply to the population.
+        :type func: Callable[Population]
+        :param kwargs: Arguments to pass to the function.
+        :return: self
+        """
+        return func(self, **kwargs)
+
+    def evolve(self, evolution: 'Evolution', n: int = 1) -> 'IslandPopulation':
+        """Evolve the population according to an Evolution.
+
+        :param evolution: Evolution to follow
+        :type evolution: Evolution
+        :param n: Times to apply the evolution. Defaults to 1.
+        :type n: int
+        :return: Population
+        """
+        result = deepcopy(self)
+        for evo_batch in range(n):
+            for step in evolution:
+                step.apply(result)
+        return result
 
     def evaluate(self, lazy: bool=False) -> 'IslandPopulation':
         """Evaluate the individuals in all populations.
@@ -167,9 +152,15 @@ class IslandPopulation(PopulationBase):
             population.mutate(func, probability=probability, **kwargs)
         return self
 
+    def duplicate(self, n_islands) -> 'IslandPopulation':
+        return IslandPopulation(
+            populations=[deepcopy(self) for _ in range(n_islands)],
+            maximize=self.maximize
+        )
+
     def join(self) -> 'PopulationBase':
         result = self.populations[0]
         for pop in self.populations[1:]:
             for individual in pop:
-                result._add(individual)
+                result.add(individual)
         return result

@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
+from evol import Individual
+
 
 class PopulationBase:
     __metaclass__ = ABCMeta
@@ -9,7 +11,7 @@ class PopulationBase:
         pass
 
     @abstractmethod
-    def _add(self):
+    def add(self, *individuals: Individual):
         pass
 
     @abstractmethod
@@ -44,10 +46,5 @@ class PopulationBase:
     def duplicate(self, n_islands):
         pass
 
-    @abstractmethod
-    def split(self, n_islands):
-        pass
-
-    @abstractmethod
     def join(self):
-        pass
+        raise NotImplementedError('{} cannot be joined'.format(self.__class__.__name__))

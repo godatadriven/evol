@@ -5,14 +5,12 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 
-from random import choices, randint
 from copy import deepcopy
-from itertools import cycle, islice
+from itertools import islice
+from random import choices
 
 from evol import Individual
 from evol.helpers.utils import select_arguments, offspring_generator
-
-
 from .base import PopulationBase
 from .island import IslandPopulation
 
@@ -47,6 +45,9 @@ class Population(PopulationBase):
 
     def __repr__(self):
         return f"<Population object with size {len(self)}>"
+
+    def add(self, *individuals: Individual):
+        self.individuals += individuals
 
     @property
     def min_individual(self):
@@ -219,9 +220,7 @@ class Population(PopulationBase):
         return self
 
     def duplicate(self, n_islands) -> IslandPopulation:
-        return IslandPopulation(populations=[deepcopy(self) for _ in range(n_islands)])
-
-    # def split(self, n_islands) -> IslandPopulation:
-    #     return IslandPopulation(populations=[
-    #         self.__class__(chromosomes=)
-    #     ])
+        return IslandPopulation(
+            populations=[deepcopy(self) for _ in range(n_islands)],
+            maximize=self.maximize
+        )
