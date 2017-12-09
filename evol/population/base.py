@@ -7,6 +7,10 @@ class PopulationBase:
     __metaclass__ = ABCMeta
 
     @abstractmethod
+    def __copy__(self):
+        pass
+
+    @abstractmethod
     def __iter__(self):
         pass
 
