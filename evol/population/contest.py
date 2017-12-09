@@ -1,7 +1,7 @@
 from itertools import cycle, islice
 from random import randint
 
-from .base import Population
+from .population import Population
 
 
 class ContestPopulation(Population):

@@ -3,60 +3,65 @@ from itertools import chain, islice
 from random import shuffle
 from typing import List
 
-from .base import Population
+from .base import PopulationBase
 
 
-class IslandPopulation:
+class IslandPopulation(PopulationBase):
     """Population which is split up into multiple isolated groups."""
-    def __init__(self, populations: 'List[Population]', generation=0):
+    def __init__(self, populations: 'List[PopulationBase]', generation=0):
         if len(populations) == 0:
             raise ValueError('An IslandPopulation must have at least one island.')
         self.generation = generation
         self.populations = populations
 
+    def __iter__(self):
+        for population in self.populations:
+            for individual in population:
+                yield individual
+
     @property
     def maximize(self):
         return self.populations[0].maximize
 
-    @classmethod
-    def from_population(cls, population: 'Population', n_islands):
-        """Create an IslandPopulation from a population.
+    # @classmethod
+    # def from_population(cls, population: 'Population', n_islands):
+    #     """Create an IslandPopulation from a population.
+    #
+    #     :param population: Population to split up.
+    #     :type population: Population
+    #     :param n_islands: Number of islands to split population into.
+    #     :type n_islands: int
+    #     :return: IslandPopulation
+    #     """
+    #     if n_islands == 0:
+    #         raise ValueError('An IslandPopulation must have at least one island.')
+    #     chromosomes = list(population.chromosomes)
+    #     shuffle(chromosomes)
+    #     return cls(
+    #         populations=[
+    #             population.__class__(
+    #                 chromosomes=list(islice(chromosomes, i, None, n_islands)),
+    #                 eval_function=population.eval_function, maximize=population.maximize
+    #             )
+    #             for i in range(n_islands)
+    #         ],
+    #         generation=population.generation
+    #     )
 
-        :param population: Population to split up.
-        :type population: Population
-        :param n_islands: Number of islands to split population into.
-        :type n_islands: int
-        :return: IslandPopulation
-        """
-        if n_islands == 0:
-            raise ValueError('An IslandPopulation must have at least one island.')
-        chromosomes = list(population.chromosomes)
-        shuffle(chromosomes)
-        return cls(
-            populations=[
-                population.__class__(
-                    chromosomes=list(islice(chromosomes, i, None, n_islands)),
-                    eval_function=population.eval_function, maximize=population.maximize
-                )
-                for i in range(n_islands)
-            ],
-            generation=population.generation
-        )
-
-    def evolve(self, evolution: 'Evolution', n: int = 1) -> 'IslandPopulation':
-        """Evolve the population according to an Evolution.
-
-        :param evolution: Evolution to follow
-        :type evolution: Evolution
-        :param n: Times to apply the evolution. Defaults to 1.
-        :type n: int
-        :return: Population
-        """
-        result = deepcopy(self)
-        for evo_batch in range(n):
-            for step in evolution:
-                step.apply(result)
-        return result
+    # def evolve(self, evolution: 'Evolution', n: int = 1) -> 'IslandPopulation':
+    #     """Evolve the population according to an Evolution.
+    #
+    #     :param evolution: Evolution to follow
+    #     :type evolution: Evolution
+    #     :param n: Times to apply the evolution. Defaults to 1.
+    #     :type n: int
+    #     :return: Population
+    #     """
+    #     result = deepcopy(self)
+    #     for evo_batch in range(n):
+    #         for step in evolution:
+    #             step.apply(result)
+    #     return result
 
     def evaluate(self, lazy: bool=False) -> 'IslandPopulation':
         """Evaluate the individuals in all populations.
@@ -162,11 +167,9 @@ class IslandPopulation:
             population.mutate(func, probability=probability, **kwargs)
         return self
 
-    def join(self, eval_function=None) -> 'Population':
-        result = self.populations[0].__class__(
-            chromosomes=list(chain(*[population.chromosomes for population in self.populations])),
-            eval_function=self.populations[0].eval_function if eval_function is None else eval_function,
-            maximize=self.maximize
-        )
-        result.generation = self.generation
+    def join(self) -> 'PopulationBase':
+        result = self.populations[0]
+        for pop in self.populations[1:]:
+            for individual in pop:
+                result._add(individual)
         return result
