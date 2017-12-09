@@ -8,8 +8,8 @@ play around with them more easily.
 
 from copy import copy, deepcopy
 
-from .population import Population
-from .step import EvaluationStep, ApplyStep, MapStep, FilterStep, UpdateStep
+from .population.base import PopulationBase
+from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
 
@@ -160,7 +160,7 @@ class Evolution:
         """
         return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
 
-    def evolve(self, population: Population, n: int=1, inplace=True) -> 'Population':
+    def evolve(self, population: PopulationBase, n: int=1, inplace=True) -> 'PopulationBase':
         if inplace:
             result = population
         else:
