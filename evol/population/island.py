@@ -19,6 +19,9 @@ class IslandPopulation(PopulationBase):
             for individual in population:
                 yield individual
 
+    def __len__(self):
+        return sum(len(population) for population in self.populations)
+
     def add(self, *individuals: Individual):
         for population in self.populations:
             population.add(*individuals)

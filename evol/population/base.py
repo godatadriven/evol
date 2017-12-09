@@ -15,6 +15,10 @@ class PopulationBase:
         pass
 
     @abstractmethod
+    def __len__(self):
+        pass
+
+    @abstractmethod
     def add(self, *individuals: Individual):
         pass
 
