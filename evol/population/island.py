@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy
 from typing import List
 
 from evol import Individual
@@ -13,6 +13,11 @@ class IslandPopulation(PopulationBase):
         self.generation = generation
         self.populations = populations
         self.maximize = maximize
+
+    def __copy__(self):
+        return IslandPopulation(populations=list(self.populations),
+                                generation=self.generation,
+                                maximize=self.maximize)
 
     def __iter__(self):
         for population in self.populations:
@@ -45,7 +50,7 @@ class IslandPopulation(PopulationBase):
         :type n: int
         :return: Population
         """
-        result = deepcopy(self)
+        result = copy(self)
         for evo_batch in range(n):
             for step in evolution:
                 step.apply(result)
@@ -157,7 +162,7 @@ class IslandPopulation(PopulationBase):
 
     def duplicate(self, n_islands) -> 'IslandPopulation':
         return IslandPopulation(
-            populations=[deepcopy(self) for _ in range(n_islands)],
+            populations=[copy(self) for _ in range(n_islands)],
             maximize=self.maximize
         )
 

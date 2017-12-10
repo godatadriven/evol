@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 
-from copy import deepcopy
+from copy import copy
 from itertools import islice
 from random import choices
 
@@ -26,13 +26,21 @@ class Population(PopulationBase):
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True):
+    def __init__(self, chromosomes, eval_function, generation=0, maximize=True, intended_size=None):
         self.eval_function = eval_function
-        self.generation = 0
+        self.generation = generation
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
-        self.intended_size = len(chromosomes)
+        self.intended_size = len(chromosomes) if intended_size is None else intended_size
         self.maximize = maximize
         # TODO: add best ever score and the best ever individual
+
+    def __copy__(self):
+        result = self.__class__(chromosomes=self.chromosomes,
+                                eval_function=self.eval_function,
+                                generation=self.generation,
+                                maximize=self.maximize,
+                                intended_size=self.intended_size)
+        return result
 
     def __iter__(self):
         return self.individuals.__iter__()
@@ -78,7 +86,7 @@ class Population(PopulationBase):
         :type n: int
         :return: Population
         """
-        result = deepcopy(self)
+        result = copy(self)
         for evo_batch in range(n):
             for step in evolution:
                 step.apply(result)
@@ -221,6 +229,6 @@ class Population(PopulationBase):
 
     def duplicate(self, n_islands) -> IslandPopulation:
         return IslandPopulation(
-            populations=[deepcopy(self) for _ in range(n_islands)],
+            populations=[copy(self) for _ in range(n_islands)],
             maximize=self.maximize
         )

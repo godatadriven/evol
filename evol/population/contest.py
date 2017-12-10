@@ -37,10 +37,24 @@ class ContestPopulation(Population):
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, contests_per_round=10, individuals_per_contest=2, maximize=True):
-        Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize)
+    def __init__(self,
+                 chromosomes,
+                 eval_function,
+                 contests_per_round=10,
+                 individuals_per_contest=2,
+                 generation=0,
+                 maximize=True,
+                 intended_size=None):
+        Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize,
+                            generation=generation, intended_size=intended_size)
         self.contests_per_round = contests_per_round
         self.individuals_per_contest = individuals_per_contest
+
+    def __copy__(self):
+        result = Population.__copy__(self)
+        result.contests_per_round = self.contests_per_round
+        result.individuals_per_contest = self.individuals_per_contest
+        return result
 
     def evaluate(self, lazy: bool=False) -> 'ContestPopulation':
         """Evaluate the individuals in the population.

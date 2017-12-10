@@ -6,7 +6,7 @@ but because an evolution is seperate from a population you can
 play around with them more easily.
 """
 
-from copy import copy, deepcopy
+from copy import copy
 
 from .population.base import PopulationBase
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
@@ -164,7 +164,7 @@ class Evolution:
         if inplace:
             result = population
         else:
-            result = deepcopy(population)  # TODO: write a proper Population.__copy__
+            result = copy(population)
         for i in range(n):
             for step in self.chain:
                 result = step.apply(result)
