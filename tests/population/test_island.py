@@ -33,8 +33,15 @@ class TestIslandPopulation:
             self.population(10).duplicate(0)
 
 
-class TestIslandContentPopulation(TestIslandPopulation):
+class TestIslandContestPopulation(TestIslandPopulation):
 
     def population(self, size):
         return ContestPopulation(chromosomes=list(range(size)),
                                  eval_function=lambda x, y: [x, y])
+
+
+# class TestIslandSubPopulation(TestIslandPopulation):
+#
+#     def population(self, size):
+#         return IslandPopulation(populations=[Population(list(range(int(size / 2))), eval_function=lambda x: x),
+#                                              Population(list(range(int(size / 2))), eval_function=lambda x: x)])
