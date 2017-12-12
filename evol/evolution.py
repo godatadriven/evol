@@ -8,7 +8,7 @@ play around with them more easily.
 
 from copy import copy
 
-from .population.base import PopulationBase
+
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
@@ -159,16 +159,6 @@ class Evolution:
         :return: self
         """
         return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
-
-    def evolve(self, population: PopulationBase, n: int=1, inplace=True) -> 'PopulationBase':
-        if inplace:
-            result = population
-        else:
-            result = copy(population)
-        for i in range(n):
-            for step in self.chain:
-                result = step.apply(result)
-        return result
 
     def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))

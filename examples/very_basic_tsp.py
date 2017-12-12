@@ -96,7 +96,7 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
         for indiviual in pop:
             scores.append(indiviual.fitness)
             iterations.append(i)
-        pop = evo.evolve(pop)
+        pop = pop.evolve(evo)
 
     try:
         import matplotlib.pylab as plt

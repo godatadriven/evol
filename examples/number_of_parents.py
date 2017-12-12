@@ -42,7 +42,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
     print("will start the evolutionary program, will log progress every 10 steps")
     print(pop.maximize)
     for i in range(num_iter):
-        pop = evo.evolve(pop)
+        pop = pop.evolve(evo)
         print(f"iteration:{i} best: {pop.max_individual.fitness} worst: {pop.min_individual.fitness}")
 
 if __name__ == "__main__":
