@@ -6,10 +6,9 @@ but because an evolution is seperate from a population you can
 play around with them more easily.
 """
 
-from copy import copy, deepcopy
+from copy import copy
 
-from .population import Population
-from .step import EvaluationStep, ApplyStep, MapStep, FilterStep, UpdateStep
+from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
 
@@ -159,16 +158,6 @@ class Evolution:
         :return: self
         """
         return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
-
-    def evolve(self, population: Population, n: int=1, inplace=True) -> 'Population':
-        if inplace:
-            result = population
-        else:
-            result = deepcopy(population)  # TODO: write a proper Population.__copy__
-        for i in range(n):
-            for step in self.chain:
-                result = step.apply(result)
-        return result
 
     def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
