@@ -13,7 +13,7 @@ class BaseLogger():
         """
         The logger method of the Logger object determines what will be logged. 
         :param population: 
-        :return: 
+        :return: generator of strings to be handled
         """
         return (f'{dt.datetime.now()},{population.id},{i.id},{i.fitness},{i.chromosome}' for i in population)
 

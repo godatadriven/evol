@@ -10,6 +10,7 @@ from copy import copy
 
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
+from .step import LogStep
 
 
 class Evolution:
