@@ -219,7 +219,7 @@ class Population:
             individual.mutate(func, probability=probability, **kwargs)
         return self
 
-    def log(self) -> 'Population':
+    def log(self, **kwargs) -> 'Population':
         """
         Logs a population. If a Population object was initialized with a logger
         object then you may specify how logging is handled. The base logging 
@@ -227,9 +227,9 @@ class Population:
         
         :return: self
         """
-        logs = self.logger.log(population=self)
+        logs = self.logger.log(population=self, **kwargs)
         for log in logs:
-            self.logger.handle(log)
+            self.logger.handle(log, **kwargs)
         return self
 
 

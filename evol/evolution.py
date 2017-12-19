@@ -159,6 +159,16 @@ class Evolution:
         """
         return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
 
+    def log(self) -> 'Evolution':
+        """
+        Logs a population. If a Population object was initialized with a logger
+        object then you may specify how logging is handled. The base logging 
+        operation just logs to standard out. 
+
+        :return: self
+        """
+        return self._add_step(LogStep())
+
 
     def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
