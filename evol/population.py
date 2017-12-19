@@ -8,8 +8,11 @@ or by appyling an `evol.Evolution` object.
 from random import choices, randint
 from copy import deepcopy
 from itertools import cycle, islice
+from uuid import uuid4
+import datetime as dt
 
 from evol import Individual
+from evol.logger import BaseLogger
 from evol.helpers.utils import select_arguments, offspring_generator
 
 
@@ -24,12 +27,14 @@ class Population:
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True):
+    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger()):
+        self.id = str(uuid4())[:6]
         self.eval_function = eval_function
         self.generation = 0
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
         self.intended_size = len(chromosomes)
         self.maximize = maximize
+        self.logger = logger
         # TODO: add best ever score and the best ever individual
 
     def __iter__(self):
@@ -214,6 +219,19 @@ class Population:
             individual.mutate(func, probability=probability, **kwargs)
         return self
 
+    def log(self) -> 'Population':
+        """
+        Logs a population. If a Population object was initialized with a logger
+        object then you may specify how logging is handled. The base logging 
+        operation just logs to standard out. 
+        
+        :return: self
+        """
+        logs = self.logger.log(population=self)
+        for log in logs:
+            self.logger.handle(log)
+        return self
+
 
 class ContestPopulation(Population):
     """Population which is evaluated through contests.
@@ -330,6 +348,7 @@ class ContestPopulation(Population):
         Population.survive(self, fraction=fraction, n=n, luck=luck)
         self.reset_fitness()
         return self  # If we return the result of Population.survive PyCharm complains that it is of type 'Population'
+
 
     def reset_fitness(self):
         """Reset the fitness of all individuals."""

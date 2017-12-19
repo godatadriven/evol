@@ -159,6 +159,7 @@ class Evolution:
         """
         return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
 
+
     def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
 
