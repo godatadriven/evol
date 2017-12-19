@@ -3,11 +3,10 @@ import os
 
 class BaseLogger():
     def __init__(self, file=None):
-        if not file:
-            self.file = file
-        else:
-            if not os.path.exists(file):
-                raise RuntimeError("path to file does not exist! ensure this!")
+        self.file = file
+        if self.file is not None:
+            if not os.path.exists(os.path.split(file)[0]):
+                raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
 
     def log(self, population, **kwargs):
         """
@@ -26,4 +25,4 @@ class BaseLogger():
             print(item)
         else:
             with open(self.file, 'a') as f:
-                f.write(item)
+                f.write(item + '\n')
