@@ -50,6 +50,11 @@ class Population:
         return max(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
 
     @property
+    def current_worst(self):
+        evaluated_individuals = filter(lambda x: x.fitness is not None, self.individuals)
+        return min(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
+
+    @property
     def chromosomes(self):
         for individual in self.individuals:
             yield individual.chromosome

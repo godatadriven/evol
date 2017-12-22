@@ -43,7 +43,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
     print(pop.maximize)
     for i in range(num_iter):
         pop = pop.evolve(evo)
-        print(f"iteration:{i} best: {pop.max_individual.fitness} worst: {pop.min_individual.fitness}")
+        print(f"iteration:{i} best: {pop.current_best.fitness} worst: {pop.current_worst.fitness}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run an example evol algorithm against a simple continuous function.')
