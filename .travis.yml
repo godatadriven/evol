@@ -7,3 +7,4 @@ script:
   - pytest
   - python examples/number_of_parents.py --n_parents=3
   - python examples/very_basic_tsp.py
+  - python examples/simple_logging.py

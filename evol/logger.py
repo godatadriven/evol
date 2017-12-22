@@ -17,8 +17,9 @@ class BaseLogger():
         :return: generator of strings to be handled
         """
         values = ','.join(kwargs.values())
-        generator = (f'{dt.datetime.now()},{population.id},{i.id},{i.fitness}' + values for i in population)
-        self.handle(generator)
+        for i in population:
+            string = f'{dt.datetime.now()},{population.id},{i.id},{i.fitness}' + values
+            self.handle(string)
 
     def handle(self, item):
         """
