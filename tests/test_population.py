@@ -169,9 +169,11 @@ class TestPopulationMutate(TestPopulation):
 
     def test_mutate_probability(self):
         seed(0)
-        pop = self.population.mutate(lambda x: x+1, probability=0.5)
-        assert pop.min_individual.chromosome == 1
-        assert pop.max_individual.chromosome == 2
+        pop = self.population.mutate(lambda x: x+1, probability=0.5).evaluate()
+        assert min(individual.chromosome for individual in pop.individuals) == 1
+        assert max(individual.chromosome for individual in pop.individuals) == 2
+        assert pop.current_best.fitness == 2
+        assert pop.documented_best.fitness == 2
         assert len(pop) == 100
 
     def test_mutate_zero_probability(self):
