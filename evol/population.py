@@ -227,8 +227,8 @@ class Population:
         
         :return: self
         """
-        logs = self.logger.log(population=self, **kwargs)
         self.evaluate(lazy=True)
+        logs = self.logger.log(population=self, **kwargs)
         for log in logs:
             self.logger.handle(log, **kwargs)
         return self
