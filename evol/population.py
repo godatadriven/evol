@@ -6,7 +6,7 @@ or by appyling an `evol.Evolution` object.
 """
 
 from random import choices, randint
-from copy import deepcopy
+from copy import deepcopy, copy
 from itertools import cycle, islice
 
 from evol import Individual
@@ -46,13 +46,15 @@ class Population:
 
     @property
     def current_best(self):
-        evaluated_individuals = filter(lambda x: x.fitness is not None, self.individuals)
-        return max(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
+        evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
+        if len(evaluated_individuals) > 0:
+            return max(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
 
     @property
     def current_worst(self):
-        evaluated_individuals = filter(lambda x: x.fitness is not None, self.individuals)
-        return min(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
+        evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
+        if len(evaluated_individuals) > 0:
+            return min(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
 
     @property
     def chromosomes(self):
@@ -98,7 +100,7 @@ class Population:
         if (self.documented_best is None or
                 (self.maximize and current_best.fitness > self.documented_best.fitness) or
                 (not self.maximize and current_best.fitness < self.documented_best.fitness)):
-            self.documented_best = current_best
+            self.documented_best = copy(current_best)
         return self
 
     def apply(self, func, **kwargs) -> 'Population':
