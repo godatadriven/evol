@@ -96,11 +96,7 @@ class Population:
         """
         for individual in self.individuals:
             individual.evaluate(eval_function=self.eval_function, lazy=lazy)
-        current_best = self.current_best
-        if (self.documented_best is None or
-                (self.maximize and current_best.fitness > self.documented_best.fitness) or
-                (not self.maximize and current_best.fitness < self.documented_best.fitness)):
-            self.documented_best = copy(current_best)
+        self._update_documented_best()
         return self
 
     def apply(self, func, **kwargs) -> 'Population':
@@ -220,6 +216,14 @@ class Population:
         for individual in self.individuals:
             individual.mutate(func, probability=probability, **kwargs)
         return self
+
+    def _update_documented_best(self):
+        """Update the documented best"""
+        current_best = self.current_best
+        if (self.documented_best is None or
+                (self.maximize and current_best.fitness > self.documented_best.fitness) or
+                (not self.maximize and current_best.fitness < self.documented_best.fitness)):
+            self.documented_best = copy(current_best)
 
 
 class ContestPopulation(Population):
