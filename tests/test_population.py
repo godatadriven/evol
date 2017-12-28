@@ -189,6 +189,39 @@ class TestPopulationMutate(TestPopulation):
             assert chromosome == 17
 
 
+class TestPopulationBest(TestPopulation):
+
+    def test_current_best(self):
+        for maximize, best in ((True, 199), (False, 0)):
+            pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
+            assert pop.current_best is None
+            pop.evaluate()
+            assert pop.current_best.chromosome == best
+
+    def test_current_worst(self):
+        for maximize, worst in ((False, 199), (True, 0)):
+            pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
+            assert pop.current_worst is None
+            pop.evaluate()
+            assert pop.current_worst.chromosome == worst
+
+    def test_mutate_resets(self):
+        pop = self.population
+        assert pop.current_best is None and pop.current_worst is None
+        pop.evaluate()
+        assert pop.current_best.fitness == 1 and pop.current_worst.fitness == 1
+        pop.mutate(lambda x: x)
+        assert pop.current_best is None and pop.current_worst is None
+
+    def test_documented_best(self):
+        pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        assert pop.documented_best is None
+        pop.evaluate()
+        assert pop.documented_best.fitness == pop.current_best.fitness
+        pop.mutate(func=lambda x: x-10, probability=1).evaluate()
+        assert pop.documented_best.fitness - 20 == pop.current_best.fitness
+
+
 class TestContestPopulation(TestPopulation):
 
     def test_init(self):
