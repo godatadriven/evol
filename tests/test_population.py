@@ -233,3 +233,11 @@ class TestContestPopulation(TestPopulation):
     def check_no_fitness(population):
         for individual in population:
             assert individual.fitness is None
+
+
+class TestContestPopulationBest(TestPopulation):
+
+    def test_no_documented(self):
+        pop = ContestPopulation([0, 1, 2], lambda x, y: [0, 0], contests_per_round=100, individuals_per_contest=2)
+        pop.evaluate()
+        assert pop.documented_best is None
