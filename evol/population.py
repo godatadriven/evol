@@ -6,7 +6,7 @@ or by appyling an `evol.Evolution` object.
 """
 
 from random import choices, randint
-from copy import deepcopy
+from copy import deepcopy, copy
 from itertools import cycle, islice
 
 from evol import Individual
@@ -25,12 +25,12 @@ class Population:
     :type maximize: bool
     """
     def __init__(self, chromosomes, eval_function, maximize=True):
+        self.documented_best = None
         self.eval_function = eval_function
         self.generation = 0
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
         self.intended_size = len(chromosomes)
         self.maximize = maximize
-        # TODO: add best ever score and the best ever individual
 
     def __iter__(self):
         return self.individuals.__iter__()
@@ -45,14 +45,16 @@ class Population:
         return f"<Population object with size {len(self)}>"
 
     @property
-    def min_individual(self):
-        self.evaluate(lazy=True)
-        return min(self, key=lambda x: x.fitness)
+    def current_best(self):
+        evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
+        if len(evaluated_individuals) > 0:
+            return max(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
 
     @property
-    def max_individual(self):
-        self.evaluate(lazy=True)
-        return max(self, key=lambda x: x.fitness)
+    def current_worst(self):
+        evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
+        if len(evaluated_individuals) > 0:
+            return min(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
 
     @property
     def chromosomes(self):
@@ -94,6 +96,7 @@ class Population:
         """
         for individual in self.individuals:
             individual.evaluate(eval_function=self.eval_function, lazy=lazy)
+        self._update_documented_best()
         return self
 
     def apply(self, func, **kwargs) -> 'Population':
@@ -213,6 +216,14 @@ class Population:
         for individual in self.individuals:
             individual.mutate(func, probability=probability, **kwargs)
         return self
+
+    def _update_documented_best(self):
+        """Update the documented best"""
+        current_best = self.current_best
+        if (self.documented_best is None or
+                (self.maximize and current_best.fitness > self.documented_best.fitness) or
+                (not self.maximize and current_best.fitness < self.documented_best.fitness)):
+            self.documented_best = copy(current_best)
 
 
 class ContestPopulation(Population):
