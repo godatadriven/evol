@@ -10,6 +10,7 @@ from copy import copy
 
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
+from .step import CheckpointStep
 
 
 class Evolution:
@@ -58,6 +59,15 @@ class Evolution:
         :rtype: Evolution
         """
         return self._add_step(ApplyStep(name=name, func=func, **kwargs))
+
+    def checkpoint(self, directory: str, name=None, method: str='pickle'):
+        """Add a checkpoint step to the Evolution.
+
+        :param name: Name of the map step.
+        :param directory: Location to store the checkpoint. A new file is created for every checkpoint.
+        :param method: One of "pickle" or "json". For json, the chromosomes need to be json-serializable.
+        """
+        return self._add_step(CheckpointStep(name=name, directory=directory, method=method))
 
     def map(self, func, name=None, **kwargs) -> 'Evolution':
         """Add a map step to the Evolution.

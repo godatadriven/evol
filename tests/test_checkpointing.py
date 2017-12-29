@@ -1,7 +1,7 @@
 from os import listdir
 from pytest import raises
 
-from evol import Population
+from evol import Population, Evolution
 
 
 class TestCheckpoint:
@@ -40,3 +40,10 @@ class TestCheckpoint:
             lpop = Population.load(directory, lambda x: x['x'])
             assert len(pop) == len(lpop)
             assert all(x.__dict__ == y.__dict__ for x, y in zip(pop, lpop))
+
+    def test_evolution(self, tmpdir):
+        directory = tmpdir.mkdir("ckpt")
+        evo = Evolution().mutate(lambda x: x+1).checkpoint(directory=directory)
+        pop = Population(range(100), lambda x: x)
+        pop.evolve(evolution=evo, n=100)
+        assert len(listdir(directory)) == 100

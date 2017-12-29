@@ -23,6 +23,12 @@ class ApplyStep(EvolutionStep):
         return population.apply(**self.kwargs)
 
 
+class CheckpointStep(EvolutionStep):
+
+    def apply(self, population) -> Population:
+        return population.checkpoint(**self.kwargs)
+
+
 class MapStep(EvolutionStep):
 
     def apply(self, population) -> Population:
