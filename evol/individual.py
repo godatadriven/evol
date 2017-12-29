@@ -22,7 +22,12 @@ class Individual:
         return f"<individual id:{self.id} fitness:{self.fitness}>"
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> 'Individual':
+        """Load an Individual from a dictionary.
+
+        :param data: Dictionary containing the keys 'age', 'chromosome', 'fitness' and 'id'.
+        :return: Individual
+        """
         result = cls(chromosome=data['chromosome'], fitness=data['fitness'])
         result.age = data['age']
         result.id = data['id']
