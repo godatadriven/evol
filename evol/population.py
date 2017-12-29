@@ -4,13 +4,13 @@ at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
-
 from random import choices, randint
 from copy import deepcopy, copy
 from itertools import cycle, islice
 
 from evol import Individual
 from evol.helpers.utils import select_arguments, offspring_generator
+from evol.helpers.checkpointing import checkpoint, load
 
 
 class Population:
@@ -65,6 +65,30 @@ class Population:
     def generate(cls, init_func, eval_func, size=100) -> 'Population':
         chromosomes = [init_func() for _ in range(size)]
         return cls(chromosomes=chromosomes, eval_function=eval_func)
+
+    @classmethod
+    def load(cls, path, eval_function, maximize=True) -> 'Population':
+        """Load a population from a checkpoint.
+
+        :param path: Path to checkpoint directory or file.
+        :param eval_function: Function that reduces a chromosome to a fitness.
+        :param maximize: If True, fitness will be maximized, otherwise minimized.
+            Defaults to True.
+        :return: Population
+        """
+        result = cls(chromosomes=[], eval_function=eval_function, maximize=maximize)
+        result.individuals = load(path=path)
+        return result
+
+    def checkpoint(self, directory: str, method: str='pickle') -> 'Population':
+        """Checkpoint the population.
+
+        :param directory: Location to store the checkpoint. A new file is created for every checkpoint.
+        :param method: One of "pickle" or "json". For json, the chromosomes need to be json-serializable.
+        :return: Population
+        """
+        checkpoint(individuals=self.individuals, directory=directory, method=method)
+        return self
 
     def evolve(self, evolution: 'Evolution', n: int = 1) -> 'Population':
         """Evolve the population according to an Evolution.
