@@ -21,6 +21,13 @@ class Individual:
     def __repr__(self):
         return f"<individual id:{self.id} fitness:{self.fitness}>"
 
+    @classmethod
+    def from_dict(cls, data):
+        result = cls(chromosome=data['chromosome'], fitness=data['fitness'])
+        result.age = data['age']
+        result.id = data['id']
+        return result
+
     def evaluate(self, eval_function, lazy=False):
         """Evaluate the fitness of the individual.
 
