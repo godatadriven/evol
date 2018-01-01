@@ -4,25 +4,27 @@ import json
 import logging
 import sys
 
-
 class BaseLogger():
     """
     The `evol.BaseLogger` is the most basic logger in evol. You can add it to a population
     so that the population knows how to handle the `.log()` verb. 
     """
-    def __init__(self, file='/tmp/evol-logs.log', stdout=False):
+    def __init__(self, file='/tmp/evol-logs.log', stdout=False, format='%(asctime)s,%(message)s'):
         self.file = file
-        if not os.path.exists(os.path.split(file)[0]):
-            raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
-        handlers = [logging.FileHandler(filename=file)]
+        if file is not None:
+            if not os.path.exists(os.path.split(file)[0]):
+                raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
+        self.logger = logging.getLogger(name='evol-logger')
+        formatter = logging.Formatter(fmt=format)
+        if file:
+            file_handler = logging.FileHandler(filename=file)
+            file_handler.setFormatter(fmt=formatter)
+            self.logger.addHandler(file_handler)
         if stdout:
-            handlers.append(logging.StreamHandler(sys.stdout))
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s,%(message)s',
-            handlers=handlers
-        )
-        self.logger = logging.getLogger(name='evol-base-logger')
+            stream_handler = logging.StreamHandler(stream=sys.stdout)
+            stream_handler.setFormatter(fmt=formatter)
+            self.logger.addHandler(stream_handler)
+        self.logger.setLevel(level=logging.INFO)
 
     def log(self, population, **kwargs):
         """
@@ -32,15 +34,15 @@ class BaseLogger():
         """
         values = ','.join(kwargs.values())
         if values != '':
-            values = ',{values}'
+            values = f',{values}'
         for i in population:
             string = f'{population.id},{i.id},{i.fitness}' + values
-            self.logger.debug(string)
+            self.logger.info(string)
 
 
-class PopulationSummaryLogger(BaseLogger):
+class SummaryLogger(BaseLogger):
     """
-    The `evol.PopulationSummaryLogger` merely logs statistics per population and nothing else. 
+    The `evol.SummaryLogger` merely logs statistics per population and nothing else. 
     You are still able to log to stdout as well. 
     """
     def log(self, population, **kwargs):
@@ -52,7 +54,7 @@ class PopulationSummaryLogger(BaseLogger):
             'max_ind': max(fitnesses)
         }
         dict_to_log = {**kwargs, **data}
-        self.logger.debug(json.dumps(dict_to_log))
+        self.logger.info(json.dumps(dict_to_log))
 
 
 class MultiLogger():
