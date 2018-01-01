@@ -48,41 +48,83 @@ One could even combine the two algorithms into a new one:
 
 <img src="https://i.imgur.com/SZTBWX2.png" alt="Drawing" style="width: 100%;"/>
 
-You might notice that many parts of these algorithms are similar and it is
-the goal of this library is to automate these parts. In fact, you can
-expect the code for these algorithms to look something like this.
+You might notice that many parts of these algorithms are similar and it
+is the goal of this library is to automate these parts. We hope to
+provide an API that is fun to use and easy to tweak your heuristics in.
 
-A speudo-example of what is decribed about looks a bit like this:
+A working example of what is decribed above about looks like this:
 
     import random
     from evol import Population, Evolution
 
-    population = Population(init_func=init_func, eval_func=eval_func, size=100)
+    random.seed(42)
 
-    def pick_n_parents(population, num_parents):
-        return [random.choice(population) for i in range(num_parents)]
+    def random_start():
+        """
+        This function generates a random (x,y) coordinate
+        """
+        return (random.random() - 0.5) * 20, (random.random() - 0.5) * 20
 
-    def crossover(*parents):
-        ...
+    def func_to_optimise(xy):
+        """
+        This is the function we want to optimise (maximize)
+        """
+        x, y = xy
+        return -(1-x)**2 - 2*(2-x**2)**2
 
-    def random_copy(parent):
-        ...
+    def pick_random_parents(pop):
+        """
+        This is how we are going to select parents from the population
+        """
+        mom = random.choice(pop)
+        dad = random.choice(pop)
+        return mom, dad
 
-    evo1 = (Evolution(name="first_algorithm")
-           .survive(fraction=0.5)
-           .breed(parentpicker=pick_n_parents,
-                  combiner=combiner,
-                  num_parents=2, n_max=100)
-           .mutate(lambda x: add_noise(x, 0.1)))
+    def make_child(mom, dad):
+        """
+        This function describes how two candidates combine into a new candidate
+        Note that the output is a tuple, just like the output of `random_start`
+        We leave it to the developer to ensure that chromosomes are of the same type
+        """
+        child_x = (mom[0] + dad[0])/2
+        child_y = (mom[1] + dad[1])/2
+        return child_x, child_y
 
-    evo2 = (Evolution(name="second_algorithm")
-           .survive(n=1)
-           .breed(parentpicker=pick_n_parents,
-                  combiner=random_copy,
-                  num_parents=1, n_max=100))
+    def add_noise(chromosome, sigma):
+        """
+        This is a function that will add some noise to the chromosome.
+        """
+        new_x = chromosome[0] + (random.random()-0.5) * sigma
+        new_y = chromosome[1] + (random.random()-0.5) * sigma
+        return new_x, new_y
 
-    for i in range(1001):
-        population.evolve(evo1, n=50).evolve(evo2, n=10)
+    pop = Population(chromosomes=[random_start() for _ in range(200)],
+                     eval_function=func_to_optimise, maximize=True)
+
+    evo1 = (Evolution()
+           .survive(fraction=0.2)
+           .breed(parent_picker=pick_random_parents, combiner=make_child)
+           .mutate(func=add_noise, sigma=1))
+
+    evo2 = (Evolution()
+           .survive(n=10)
+           .mutate(func=add_noise, sigma=0.2)
+           .breed(parent_picker=pick_random_parents, combiner=make_child))
+
+    evo3 = (Evolution()
+           .repeat(evo1, n=100)
+           .repeat(evo2, n=10)
+           .evaluate())
+
+    pop = pop.evolve(evo3, n=5)
+    print(f"the best score found: {max([i.fitness for i in pop])}")
+
+Features
+--------
+
+Besides a lovely api we're currently working on logging and serializing
+these algorithms.
+
 
 Getting Started
 ---------------------------------------
