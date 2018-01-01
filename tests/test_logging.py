@@ -17,7 +17,7 @@ class TestPopulation:
 
     @property
     def chromosomes(self):
-        return [_ for _ in range(-10, 10)]
+        return [_ for _ in range(-5, 5)]
 
 
 class TestPopulationSimple(TestPopulation):
@@ -79,19 +79,19 @@ class TestPopulationSimple(TestPopulation):
         os.remove(filepath)
 
     def test_summary_logger_can_write_file(self):
-        filepath = f"/tmp/evol-{str(uuid4())[:6]}.log"
-        logger = SummaryLogger(file=filepath, stdout=False)
-        pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, logger=logger)
-        evo = (Evolution()
-               .survive(fraction=0.5)
-               .breed(parent_picker=self.pick_n_random_parents,
-                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
-                      n_parents=2)
-               .log(bar='foo'))
-        pop = pop.evolve(evolution=evo, n=100)
+        filepath = f"/tmp/evol-summary-{str(uuid4())[:6]}.log"
+        pop = Population(chromosomes=range(10), eval_function=lambda x: x,
+                         logger=SummaryLogger(file=filepath, stdout=True))
+        for i in range(10):
+            pop.mutate(lambda x: x + random.random()).log(value1='lamarl', value2='kumar')
         with open(filepath, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
+            print(filepath, read_file)
             # size of the log should be appropriate
-            assert len(read_file) == 100
-            # bar needs to be in every single line
-            assert all(['foo' in row for row in read_file])
+            assert len(read_file) == 10
+            # kwargs needs to be in every single line
+            assert all(['lamarl' in row for row in read_file])
+            assert all(['kumar' in row for row in read_file])
+            # there need to be 5 entries per row
+            assert all([len(row.split(",")) for row in read_file])
+        os.remove(filepath)

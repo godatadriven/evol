@@ -14,7 +14,7 @@ class BaseLogger():
         if file is not None:
             if not os.path.exists(os.path.split(file)[0]):
                 raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
-        self.logger = logging.getLogger(name='evol-logger')
+        self.logger = logging.getLogger(name=self.__class__.__name__)
         formatter = logging.Formatter(fmt=format, datefmt='%Y-%m-%d %H:%M:%S')
         if file:
             file_handler = logging.FileHandler(filename=file)
@@ -49,7 +49,7 @@ class SummaryLogger(BaseLogger):
         if values != '':
             values = f',{values}'
         fitnesses = [i.fitness for i in population]
-        self.logger.info(f'{min(fitnesses), sum(fitnesses)/len(fitnesses), max(fitnesses)}' + values)
+        self.logger.info(f'{min(fitnesses)},{sum(fitnesses)/len(fitnesses)},{max(fitnesses)}' + values)
 
 
 class MultiLogger():

@@ -27,15 +27,22 @@ class Population:
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger()):
+    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(), generation=0, intended_size=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
-        self.generation = 0
+        self.generation = generation
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
-        self.intended_size = len(chromosomes)
+        self.intended_size = len(chromosomes) if intended_size is None else intended_size
         self.maximize = maximize
         self.logger = logger
+
+    def __copy__(self):
+        result = self.__class__(chromosomes=self.chromosomes,
+                               eval_function=self.eval_function,
+                               maximize=self.maximize,
+                               intended_size=self.intended_size)
+        return result
 
     def __iter__(self):
         return self.individuals.__iter__()
@@ -364,3 +371,4 @@ class ContestPopulation(Population):
         """Reset the fitness of all individuals."""
         for individual in self:
             individual.fitness = None
+
