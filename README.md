@@ -102,17 +102,17 @@ A working example of what is decribed above about looks like this:
                      eval_function=func_to_optimise, maximize=True)
 
     evo1 = (Evolution()
-           .survive(fraction=0.2)
+           .survive(fraction=0.5)
            .breed(parent_picker=pick_random_parents, combiner=make_child)
            .mutate(func=add_noise, sigma=1))
 
     evo2 = (Evolution()
-           .survive(n=10)
+           .survive(n=1)
            .mutate(func=add_noise, sigma=0.2)
            .breed(parent_picker=pick_random_parents, combiner=make_child))
 
     evo3 = (Evolution()
-           .repeat(evo1, n=100)
+           .repeat(evo1, n=50)
            .repeat(evo2, n=10)
            .evaluate())
 
