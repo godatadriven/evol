@@ -42,23 +42,30 @@ def add_noise(chromosome, sigma):
     new_y = chromosome[1] + (random.random()-0.5) * sigma
     return new_x, new_y
 
+# We start by defining a population with candidates.
 pop = Population(chromosomes=[random_start() for _ in range(200)],
                  eval_function=func_to_optimise, maximize=True)
 
+# We define a sequence of steps to change these candidates
 evo1 = (Evolution()
        .survive(fraction=0.5)
        .breed(parent_picker=pick_random_parents, combiner=make_child)
        .mutate(func=add_noise, sigma=1))
 
+# We define another sequence of steps to change these candidates
 evo2 = (Evolution()
        .survive(n=1)
        .breed(parent_picker=pick_random_parents, combiner=make_child)
        .mutate(func=add_noise, sigma=0.2))
 
+# We are combining two evolutions into a third one. You don't have to
+# but this approach demonstrates the flexibility of the library.
 evo3 = (Evolution()
        .repeat(evo1, n=50)
        .repeat(evo2, n=10)
        .evaluate())
 
+# In this step we are telling evol to apply the evolutions
+# to the population of candidates.
 pop = pop.evolve(evo3, n=5)
 print(f"the best score found: {max([i.fitness for i in pop])}")

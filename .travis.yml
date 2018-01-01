@@ -5,6 +5,6 @@ script:
   - pip install pytest
   - python setup.py install
   - pytest
-  - python examples/readme_example.py
+  - python examples/simple_nonlinear.py
   - python examples/number_of_parents.py --n_parents=3
   - python examples/very_basic_tsp.py
