@@ -15,7 +15,7 @@ class BaseLogger():
             if not os.path.exists(os.path.split(file)[0]):
                 raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
         self.logger = logging.getLogger(name='evol-logger')
-        formatter = logging.Formatter(fmt=format)
+        formatter = logging.Formatter(fmt=format, datefmt='%Y-%m-%d %H:%M:%S')
         if file:
             file_handler = logging.FileHandler(filename=file)
             file_handler.setFormatter(fmt=formatter)
@@ -32,7 +32,7 @@ class BaseLogger():
         :param population: `evol.Population` object
         :return: nothing, it merely logs to a file and perhaps stdout 
         """
-        values = ','.join(kwargs.values())
+        values = ','.join([str(item) for item in kwargs.values()])
         if values != '':
             values = f',{values}'
         for i in population:
