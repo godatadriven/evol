@@ -8,8 +8,11 @@ or by appyling an `evol.Evolution` object.
 from random import choices, randint
 from copy import deepcopy, copy
 from itertools import cycle, islice
+from uuid import uuid4
+import datetime as dt
 
 from evol import Individual
+from evol.logger import BaseLogger
 from evol.helpers.utils import select_arguments, offspring_generator
 
 
@@ -24,13 +27,22 @@ class Population:
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True):
+    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(), generation=0, intended_size=None):
+        self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
-        self.generation = 0
+        self.generation = generation
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
-        self.intended_size = len(chromosomes)
+        self.intended_size = len(chromosomes) if intended_size is None else intended_size
         self.maximize = maximize
+        self.logger = logger
+
+    def __copy__(self):
+        result = self.__class__(chromosomes=self.chromosomes,
+                                eval_function=self.eval_function,
+                                maximize=self.maximize,
+                                intended_size=self.intended_size)
+        return result
 
     def __iter__(self):
         return self.individuals.__iter__()
@@ -75,7 +87,7 @@ class Population:
         :type n: int
         :return: Population
         """
-        result = deepcopy(self)
+        result = copy(self)
         for evo_batch in range(n):
             for step in evolution:
                 step.apply(result)
@@ -217,6 +229,18 @@ class Population:
             individual.mutate(func, probability=probability, **kwargs)
         return self
 
+    def log(self, **kwargs) -> 'Population':
+        """
+        Logs a population. If a Population object was initialized with a logger
+        object then you may specify how logging is handled. The base logging 
+        operation just logs to standard out. 
+        
+        :return: self
+        """
+        self.evaluate(lazy=True)
+        self.logger.log(population=self, **kwargs)
+        return self
+      
     def _update_documented_best(self):
         """Update the documented best"""
         current_best = self.current_best
@@ -342,7 +366,9 @@ class ContestPopulation(Population):
         self.reset_fitness()
         return self  # If we return the result of Population.survive PyCharm complains that it is of type 'Population'
 
+
     def reset_fitness(self):
         """Reset the fitness of all individuals."""
         for individual in self:
             individual.fitness = None
+
