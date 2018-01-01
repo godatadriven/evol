@@ -1,7 +1,8 @@
 import random
 import os
 from uuid import uuid4
-from evol import Population, BaseLogger, Evolution
+from evol import Population, Evolution
+from evol.logger import BaseLogger, SummaryLogger
 
 
 class TestPopulation:
@@ -67,8 +68,30 @@ class TestPopulationSimple(TestPopulation):
             .breed(parent_picker=self.pick_n_random_parents,
                    combiner=lambda mom, dad: (mom + dad)/2 + (random.random() - 0.5),
                    n_parents=2)
-            .log(foo='bar', baz=i))
-        pass
+            .log(foo='bar'))
+        pop = pop.evolve(evolution=evo, n=10)
+        with open(filepath, "r") as f:
+            read_file = [item.replace("\n", "") for item in f.readlines()]
+            # size of the log should be appropriate
+            assert len(read_file) == 10*len(self.chromosomes)
+            # bar needs to be in every single line
+            assert all(['bar' in row for row in read_file])
+        os.remove(filepath)
 
     def test_summary_logger_can_write_file(self):
-        pass
+        filepath = f"/tmp/evol-{str(uuid4())[:6]}.log"
+        logger = SummaryLogger(file=filepath, stdout=False)
+        pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, logger=logger)
+        evo = (Evolution()
+               .survive(fraction=0.5)
+               .breed(parent_picker=self.pick_n_random_parents,
+                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
+                      n_parents=2)
+               .log(bar='foo'))
+        pop = pop.evolve(evolution=evo, n=100)
+        with open(filepath, "r") as f:
+            read_file = [item.replace("\n", "") for item in f.readlines()]
+            # size of the log should be appropriate
+            assert len(read_file) == 100
+            # bar needs to be in every single line
+            assert all(['foo' in row for row in read_file])

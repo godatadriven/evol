@@ -80,7 +80,7 @@ class Population:
         :type n: int
         :return: Population
         """
-        result = deepcopy(self)
+        result = copy(self)
         for evo_batch in range(n):
             for step in evolution:
                 step.apply(result)

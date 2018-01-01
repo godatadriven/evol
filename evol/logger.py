@@ -36,8 +36,7 @@ class BaseLogger():
         if values != '':
             values = f',{values}'
         for i in population:
-            string = f'{population.id},{i.id},{i.fitness}' + values
-            self.logger.info(string)
+            self.logger.info(f'{population.id},{i.id},{i.fitness}' + values)
 
 
 class SummaryLogger(BaseLogger):
@@ -46,15 +45,11 @@ class SummaryLogger(BaseLogger):
     You are still able to log to stdout as well. 
     """
     def log(self, population, **kwargs):
+        values = ','.join([str(item) for item in kwargs.values()])
+        if values != '':
+            values = f',{values}'
         fitnesses = [i.fitness for i in population]
-        data = {
-            'ts': str(dt.datetime.now()),
-            'mean_ind': sum(fitnesses)/len(fitnesses),
-            'min_ind': min(fitnesses),
-            'max_ind': max(fitnesses)
-        }
-        dict_to_log = {**kwargs, **data}
-        self.logger.info(json.dumps(dict_to_log))
+        self.logger.info(f'{min(fitnesses), sum(fitnesses)/len(fitnesses), max(fitnesses)}' + values)
 
 
 class MultiLogger():
