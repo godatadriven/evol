@@ -5,6 +5,7 @@ script:
   - pip install pytest
   - python setup.py install
   - pytest
+  - python examples/simple_nonlinear.py
   - python examples/number_of_parents.py --n_parents=2
   - python examples/number_of_parents.py --n_parents=3
   - python examples/number_of_parents.py --n_parents=4
