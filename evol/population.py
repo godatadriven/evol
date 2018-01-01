@@ -39,9 +39,9 @@ class Population:
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
-                               eval_function=self.eval_function,
-                               maximize=self.maximize,
-                               intended_size=self.intended_size)
+                                eval_function=self.eval_function,
+                                maximize=self.maximize,
+                                intended_size=self.intended_size)
         return result
 
     def __iter__(self):
