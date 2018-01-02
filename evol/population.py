@@ -4,16 +4,16 @@ at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
-from random import choices, randint
-from copy import deepcopy, copy
 from itertools import cycle, islice
 from uuid import uuid4
-import datetime as dt
 
+from copy import copy
+from random import choices, randint
+
+from serialization import checkpoint, load
 from evol import Individual
-from evol.logger import BaseLogger
 from evol.helpers.utils import select_arguments, offspring_generator
-from evol.helpers.checkpointing import checkpoint, load
+from evol.logger import BaseLogger
 
 
 class Population:
