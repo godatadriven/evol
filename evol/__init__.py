@@ -117,3 +117,4 @@ If you want to confirm that it works you can open the `index.html` file.
 from .individual import Individual
 from .evolution import Evolution
 from .population import Population, ContestPopulation
+from .logger import BaseLogger

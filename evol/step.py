@@ -65,6 +65,11 @@ class MutateStep(EvolutionStep):
         return population.mutate(**self.kwargs)
 
 
+class LogStep(EvolutionStep):
+
+    def apply(self, population) -> Population:
+        return population.log(**self.kwargs)
+
 class RepeatStep(EvolutionStep):
 
     def apply(self, population) -> Population:
