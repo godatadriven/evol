@@ -10,10 +10,10 @@ from uuid import uuid4
 from copy import copy
 from random import choices, randint
 
-from serialization import checkpoint, load
 from evol import Individual
 from evol.helpers.utils import select_arguments, offspring_generator
 from evol.logger import BaseLogger
+from evol.serialization import checkpoint, load
 
 
 class Population:
