@@ -8,5 +8,8 @@ setup(
     author_email='vincentwarmerdam@gmail.com',
     url='https://github.com/godatadriven/evol',
     packages=['evol', 'evol.helpers', 'evol.population'],
-    keywords=['genetic', 'algorithms', 'heuristics']
+    keywords=['genetic', 'algorithms', 'heuristics'],
+    tests_require=[
+        "pytest==3.3.1"
+    ]
 )
