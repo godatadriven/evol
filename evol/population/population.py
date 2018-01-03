@@ -5,6 +5,9 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 
+from copy import copy
+from itertools import islice
+from random import choices
 from random import choices, randint
 from copy import deepcopy, copy
 from itertools import cycle, islice
@@ -14,9 +17,11 @@ import datetime as dt
 from evol import Individual
 from evol.logger import BaseLogger
 from evol.helpers.utils import select_arguments, offspring_generator
+from .base import PopulationBase
+from .island import IslandPopulation
 
 
-class Population:
+class Population(PopulationBase):
     """Population of Individuals
 
     :param chromosomes: Collection of initial chromosomes of the Population.
@@ -40,6 +45,7 @@ class Population:
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
                                 eval_function=self.eval_function,
+                                generation=self.generation,
                                 maximize=self.maximize,
                                 intended_size=self.intended_size)
         return result
@@ -55,6 +61,9 @@ class Population:
 
     def __repr__(self):
         return f"<Population object with size {len(self)}>"
+
+    def add(self, *individuals: Individual):
+        self.individuals += individuals
 
     @property
     def current_best(self):
@@ -229,18 +238,23 @@ class Population:
             individual.mutate(func, probability=probability, **kwargs)
         return self
 
+    def duplicate(self, n_islands) -> IslandPopulation:
+        return IslandPopulation(
+            populations=[copy(self) for _ in range(n_islands)],
+            maximize=self.maximize
+        )
     def log(self, **kwargs) -> 'Population':
         """
         Logs a population. If a Population object was initialized with a logger
-        object then you may specify how logging is handled. The base logging 
-        operation just logs to standard out. 
-        
+        object then you may specify how logging is handled. The base logging
+        operation just logs to standard out.
+
         :return: self
         """
         self.evaluate(lazy=True)
         self.logger.log(population=self, **kwargs)
         return self
-      
+
     def _update_documented_best(self):
         """Update the documented best"""
         current_best = self.current_best
@@ -371,4 +385,3 @@ class ContestPopulation(Population):
         """Reset the fitness of all individuals."""
         for individual in self:
             individual.fitness = None
-
