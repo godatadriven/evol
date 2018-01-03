@@ -5,7 +5,7 @@ from evol import Population
 
 @fixture(scope='module')
 def simple_chromosomes():
-    return list(range(-5, 5))
+    return list(range(-50, 50))
 
 
 @fixture(scope='module')
