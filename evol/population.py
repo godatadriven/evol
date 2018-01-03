@@ -78,6 +78,20 @@ class Population:
         chromosomes = [init_func() for _ in range(size)]
         return cls(chromosomes=chromosomes, eval_function=eval_func)
 
+    @property
+    def individual_weights(self):
+        try:
+            min_fn = min(individual.fitness for individual in self)
+            max_fn = max(individual.fitness for individual in self)
+        except TypeError:
+            raise RuntimeError('Individual weights can not be computed if the individuals are not evaluated.')
+        if min_fn == max_fn:
+            return [1] * len(self)
+        elif self.maximize:
+            return [(individual.fitness - min_fn)/(max_fn-min_fn) for individual in self]
+        else:
+            return [1-(individual.fitness - min_fn) / (max_fn - min_fn) for individual in self]
+
     def evolve(self, evolution: 'Evolution', n: int = 1) -> 'Population':
         """Evolve the population according to an Evolution.
 
@@ -176,8 +190,7 @@ class Population:
         if resulting_size > len(self.individuals):
             raise ValueError('everyone survives! must provide "fraction" and/or "n" < population size')
         if luck:
-            self.individuals = choices(self.individuals, k=resulting_size,
-                                       weights=[individual.fitness for individual in self.individuals])
+            self.individuals = choices(self.individuals, k=resulting_size, weights=self.individual_weights)
         else:
             sorted_individuals = sorted(self.individuals, key=lambda x: x.fitness, reverse=self.maximize)
             self.individuals = sorted_individuals[:resulting_size]
