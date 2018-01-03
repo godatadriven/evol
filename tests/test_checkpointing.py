@@ -37,10 +37,19 @@ class TestPickleCheckpoint:
 
     def test_evolution(self, tmpdir):
         directory = tmpdir.mkdir("ckpt")
-        evo = Evolution().mutate(lambda x: x+1).checkpoint(directory=directory, method=self.method)
+        evo = Evolution().mutate(lambda x: x+1).checkpoint(directory=directory, method=self.method, every=1)
         pop = Population(range(100), lambda x: x)
         pop.evolve(evolution=evo, n=100)
         assert len(listdir(directory)) == 100
+
+    def test_every(self, tmpdir):
+        directory = tmpdir.mkdir('ckpt')
+        evo = Evolution().mutate(lambda x: x+1).checkpoint(directory=directory, method=self.method, every=10)
+        pop = Population(range(100), lambda x: x)
+        pop.evolve(evolution=evo, n=9)
+        assert len(listdir(directory)) == 0
+        pop.evolve(evolution=evo, n=11)
+        assert len(listdir(directory)) == 2
 
 
 class TestJsonCheckpoint(TestPickleCheckpoint):

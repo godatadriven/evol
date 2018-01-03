@@ -25,8 +25,17 @@ class ApplyStep(EvolutionStep):
 
 class CheckpointStep(EvolutionStep):
 
+    def __init__(self, name, every=1, **kwargs):
+        EvolutionStep.__init__(self, name, **kwargs)
+        self.count = 0
+        self.every = every
+
     def apply(self, population) -> Population:
-        return population.checkpoint(**self.kwargs)
+        self.count += 1
+        if self.count >= self.every:
+            self.count = 0
+            return population.checkpoint(**self.kwargs)
+        return population
 
 
 class MapStep(EvolutionStep):
