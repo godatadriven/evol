@@ -195,14 +195,14 @@ class TestPopulationWeights(TestPopulation):
         for maximize in (False, True):
             pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
             with raises(RuntimeError):
-                _ = pop.individual_weights
+                _ = pop._individual_weights
             pop.evaluate()
-            assert max(pop.individual_weights) == 1
-            assert min(pop.individual_weights) == 0
+            assert max(pop._individual_weights) == 1
+            assert min(pop._individual_weights) == 0
             if maximize:
-                assert pop.individual_weights[0] == 0
+                assert pop._individual_weights[0] == 0
             else:
-                assert pop.individual_weights[0] == 1
+                assert pop._individual_weights[0] == 1
 
 
 class TestPopulationBest(TestPopulation):
