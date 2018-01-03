@@ -24,49 +24,48 @@ class TestPopulation:
         return Population(chromosomes=[1 for _ in range(100)], eval_function=float)
 
 
-class TestPopulationSimple(TestPopulation):
+class TestPopulationSimple:
 
-    def test_filter_works(self):
-        pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+    def test_filter_works(self, simple_chromosomes, simple_evaluation_function):
+        pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
         assert len(pop.filter(func=lambda i: random() > 0.5)) < 200
 
-    def test_population_init(self):
-        pop = Population(self.chromosomes, eval_function=lambda x: x)
-        assert len(pop) == len(self.chromosomes)
+    def test_population_init(self, simple_chromosomes):
+        pop = Population(simple_chromosomes, eval_function=lambda x: x)
+        assert len(pop) == len(simple_chromosomes)
         assert pop.intended_size == len(pop)
 
-    def test_population_generate(self):
+    def test_population_generate(self, simple_evaluation_function):
         def init_func():
             return 1
 
-        pop = Population.generate(init_func=init_func, eval_func=lambda x: x, size=200)
+        pop = Population.generate(init_func=init_func, eval_func=simple_evaluation_function, size=200)
         assert len(pop) == 200
         assert pop.intended_size == 200
         assert pop.individuals[0].chromosome == 1
 
 
-class TestPopulationEvaluate(TestPopulation):
+class TestPopulationEvaluate:
 
-    def test_individuals_are_not_initially_evaluated(self):
-        pop = Population(self.chromosomes, eval_function=lambda x: x)
-        assert all([i.fitness is None for i in pop])
+    def test_individuals_are_not_initially_evaluated(self, simple_population):
+        assert all([i.fitness is None for i in simple_population])
 
-    def test_evaluate_lambda(self):
-        pop = Population(self.chromosomes, eval_function=lambda x: x)
+    def test_evaluate_lambda(self, simple_chromosomes):
+        pop = Population(simple_chromosomes, eval_function=lambda x: x)
         pop.evaluate()
         for individual in pop:
             assert individual.chromosome == individual.fitness
 
-    def test_evaluate_func(self):
+    def test_evaluate_func(self, simple_chromosomes):
         def evaluation_function(x):
             return x*x
-        pop = Population(self.chromosomes, eval_function=evaluation_function)
+        pop = Population(simple_chromosomes, eval_function=evaluation_function)
         pop.evaluate()
         for individual in pop:
             assert evaluation_function(individual.chromosome) == individual.fitness
 
-    def test_evaluate_lazy(self):
-        pop = Population(self.chromosomes, eval_function=lambda x: x)
+    def test_evaluate_lazy(self, simple_population):
+        pop = simple_population
         pop.evaluate(lazy=True)  # should evaluate
 
         def raise_function(_):
@@ -78,43 +77,41 @@ class TestPopulationEvaluate(TestPopulation):
             pop.evaluate(lazy=False)
 
 
-class TestPopulationSurvive(TestPopulation):
+class TestPopulationSurvive:
 
-    def test_survive_n_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        assert len(pop1) == 200
+    def test_survive_n_works(self, simple_chromosomes, simple_evaluation_function):
+        pop1 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        pop2 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        pop3 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        assert len(pop1) == len(simple_chromosomes)
         assert len(pop2.survive(n=50)) == 50
-        assert len(pop3.survive(n=150, luck=True)) == 150
+        assert len(pop3.survive(n=75, luck=True)) == 75
 
-    def test_survive_p_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        assert len(pop1) == 200
-        assert len(pop2.survive(fraction=0.5)) == 100
-        assert len(pop3.survive(fraction=0.1, luck=True)) == 20
+    def test_survive_p_works(self, simple_chromosomes, simple_evaluation_function):
+        pop1 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        pop2 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        pop3 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        assert len(pop1) == len(simple_chromosomes)
+        assert len(pop2.survive(fraction=0.5)) == len(simple_chromosomes) * 0.5
+        assert len(pop3.survive(fraction=0.1, luck=True)) == len(simple_chromosomes) * 0.1
 
-    def test_survive_n_and_p_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+    def test_survive_n_and_p_works(self, simple_evaluation_function):
+        chromosomes = list(range(200))
+        pop1 = Population(chromosomes=chromosomes, eval_function=simple_evaluation_function)
+        pop2 = Population(chromosomes=chromosomes, eval_function=simple_evaluation_function)
+        pop3 = Population(chromosomes=chromosomes, eval_function=simple_evaluation_function)
         assert len(pop1.survive(fraction=0.5, n=200)) == 100
         assert len(pop2.survive(fraction=0.9, n=10)) == 10
         assert len(pop3.survive(fraction=0.5, n=190, luck=True)) == 100
 
-    def test_survive_throws_correct_errors(self):
+    def test_survive_throws_correct_errors(self, simple_population):
         """If the resulting population is zero or larger than initial we need to see errors."""
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
         with raises(RuntimeError):
-            pop1.survive(n=0)
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+            simple_population.survive(n=0)
         with raises(ValueError):
-            pop2.survive(n=250)
-        pop3 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+            simple_population.survive(n=250)
         with raises(ValueError):
-            pop3.survive()
+            simple_population.survive()
 
 
 class TestPopulationBreed(TestPopulation):
