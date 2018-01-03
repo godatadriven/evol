@@ -8,7 +8,7 @@ from evol.helpers.pickers import pick_random
 from evol.logger import BaseLogger, SummaryLogger
 
 
-class TestPopulationSimple:
+class TestLoggerSimple:
 
     def test_baselogger_can_write_file(self, simple_chromosomes, simple_evaluation_function):
         filepath = f"/tmp/evol-{str(uuid4())[:6]}.log"
