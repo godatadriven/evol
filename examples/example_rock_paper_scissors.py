@@ -69,7 +69,7 @@ def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=4
         preferences = Counter()
         for individual in pop:
             preferences.update([individual.chromosome.preference])
-        pop = evo.evolve(pop)
+        pop = pop.evolve(evo)
         preferences_over_time.append(preferences)
 
     ax = pd.DataFrame(preferences_over_time).fillna(0).plot(figsize=(10, 4))
