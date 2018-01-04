@@ -1,27 +1,27 @@
-from unittest import TestCase
+from pytest import mark
 
 from evol.helpers.utils import select_arguments
 
 
-class TestSelectArguments(TestCase):
+class TestSelectArguments:
 
-    def test_no_kwargs(self):
+    @mark.parametrize('args,kwargs,result', [((1, ), {}, 1), ((1, 2), {'x': 1}, 3), ((4, 5), {'z': 8}, 9)])
+    def test_no_kwargs(self, args, kwargs, result):
         @select_arguments
         def fct(*args):
             return sum(args)
-        self.assertEqual(fct(4, 5), 9)
-        self.assertEqual(fct(4, 5, z=1), 9)
+        assert fct(*args, **kwargs) == result
 
-    def test_with_kwargs(self):
+    @mark.parametrize('args,kwargs,result', [((1, ), {}, 1), ((1, 2), {'x': 1}, 3), ((4, 5), {'z': 8}, 17)])
+    def test_with_kwargs(self, args, kwargs, result):
         @select_arguments
         def fct(*args, z=0):
             return sum(args)+z
-        self.assertEqual(fct(4, 5), 9)  # no kwargs
-        self.assertEqual(fct(4, 5, z=1), 10)  # accepted kwargs
-        self.assertEqual(fct(4, 5, z=1, y=2), 10)  # include non-accepted kwarg
+        assert fct(*args, **kwargs) == result
 
-    def test_all_kwargs(self):
+    @mark.parametrize('args,kwargs,result', [((1,), {'b': 3}, 4), ((1, 2), {'x': 1}, 4), ((4, 5), {'z': 8}, 17)])
+    def test_all_kwargs(self, args, kwargs, result):
         @select_arguments
-        def fct(a, **kwargs):
-            return a, sorted(list(kwargs.keys()))
-        self.assertEqual(fct(a=1, b=2, c=3), (1, ['b', 'c']))
+        def fct(a, b=0, **kwargs):
+            return a + b + sum(kwargs.values())
+        assert fct(*args, **kwargs) == result
