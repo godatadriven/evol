@@ -21,6 +21,12 @@ class Individual:
     def __repr__(self):
         return f"<individual id:{self.id} fitness:{self.fitness}>"
 
+    def __eq__(self, other):
+        return self.fitness == other.fitness
+
+    def __gt__(self, other):
+        return self.fitness > other.fitness
+
     def evaluate(self, eval_function, lazy=False):
         """Evaluate the fitness of the individual.
 

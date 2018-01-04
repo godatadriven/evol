@@ -60,13 +60,13 @@ class Population:
     def current_best(self):
         evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
         if len(evaluated_individuals) > 0:
-            return max(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
+            return max(evaluated_individuals) if self.maximize else min(evaluated_individuals)
 
     @property
     def current_worst(self):
         evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
         if len(evaluated_individuals) > 0:
-            return min(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
+            return min(evaluated_individuals) if self.maximize else max(evaluated_individuals)
 
     @property
     def chromosomes(self):
