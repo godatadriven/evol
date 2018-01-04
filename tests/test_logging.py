@@ -60,7 +60,7 @@ class TestLoggerSimple:
             # bar needs to be in every single line
             assert all(['bar' in row for row in read_file])
 
-    def test_summary_logger_can_write_file(self, tmpdir):
+    def test_summary_logger_can_write_file(self, capsys, tmpdir):
         log_file = tmpdir.join('log.txt')
         pop = Population(chromosomes=range(10), eval_function=lambda x: x,
                          logger=SummaryLogger(file=log_file, stdout=True))
@@ -68,11 +68,12 @@ class TestLoggerSimple:
             pop.mutate(lambda x: x + random.random()).log(value1='lamarl', value2='kumar')
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
-            print(log_file, read_file)
+        read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
+        for log in (read_stdout, read_file):
             # size of the log should be appropriate
-            assert len(read_file) == 10
+            assert len(log) == 10
             # kwargs needs to be in every single line
-            assert all(['lamarl' in row for row in read_file])
-            assert all(['kumar' in row for row in read_file])
+            assert all(['lamarl' in row for row in log])
+            assert all(['kumar' in row for row in log])
             # there need to be 5 entries per row
-            assert all([len(row.split(",")) for row in read_file])
+            assert all([len(row.split(",")) for row in log])
