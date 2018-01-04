@@ -3,25 +3,7 @@ from random import random, choices, seed
 from pytest import raises
 
 from evol import Population, ContestPopulation
-
-
-class TestPopulation:
-
-    @property
-    def chromosomes(self):
-        return list(range(-100, 100))
-
-    @staticmethod
-    def eval_func(x):
-        return 2*x
-
-    @staticmethod
-    def pick_n_random_parents(population, n_parents=2):
-        return choices(population, k=n_parents)
-
-    @property
-    def population(self):
-        return Population(chromosomes=[1 for _ in range(100)], eval_function=float)
+from evol.helpers.pickers import pick_random
 
 
 class TestPopulationSimple:
@@ -114,59 +96,59 @@ class TestPopulationSurvive:
             simple_population.survive()
 
 
-class TestPopulationBreed(TestPopulation):
+class TestPopulationBreed:
 
-    def test_breed_amount_works(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+    def test_breed_amount_works(self, simple_chromosomes, simple_evaluation_function):
+        pop1 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
         pop1.survive(n=50).breed(parent_picker=lambda population: choices(population, k=2),
                                  combiner=lambda mom, dad: (mom + dad) / 2)
-        assert len(pop1) == 200
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        assert len(pop1) == len(simple_chromosomes)
+        pop2 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
         pop2.survive(n=50).breed(parent_picker=lambda population: choices(population, k=2),
                                  combiner=lambda mom, dad: (mom + dad) / 2, population_size=400)
         assert len(pop2) == 400
         assert pop2.intended_size == 400
 
-    def test_breed_works_with_kwargs(self):
-        pop1 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop1.survive(n=50).breed(parent_picker=self.pick_n_random_parents,
+    def test_breed_works_with_kwargs(self, simple_chromosomes, simple_evaluation_function):
+        pop1 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        pop1.survive(n=50).breed(parent_picker=pick_random,
                                  combiner=lambda mom, dad: (mom + dad) / 2,
                                  n_parents=2)
-        assert len(pop1) == 200
-        pop2 = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
-        pop2.survive(n=50).breed(parent_picker=self.pick_n_random_parents,
+        assert len(pop1) == len(simple_chromosomes)
+        pop2 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
+        pop2.survive(n=50).breed(parent_picker=pick_random,
                                  combiner=lambda *parents: sum(parents)/len(parents),
                                  population_size=400, n_parents=3)
         assert len(pop2) == 400
         assert pop2.intended_size == 400
 
 
-class TestPopulationMutate(TestPopulation):
+class TestPopulationMutate:
 
     def test_mutate_lambda(self):
-        pop = self.population.mutate(lambda x: x+1)
+        pop = Population([1]*100, eval_function=lambda x: x).mutate(lambda x: x+1)
         for chromosome in pop.chromosomes:
             assert chromosome == 2
         assert len(pop) == 100
 
     def test_mutate_inplace(self):
-        population = self.population
-        population.mutate(lambda x: x+1)
-        for chromosome in population.chromosomes:
+        pop = Population([1]*100, eval_function=lambda x: x)
+        pop.mutate(lambda x: x+1)
+        for chromosome in pop.chromosomes:
             assert chromosome == 2
 
     def test_mutate_func(self):
         def mutate_func(x):
             return -x
-        population = self.population
+        population = Population([1]*100, eval_function=lambda x: x)
         population.mutate(mutate_func)
         for chromosome in population.chromosomes:
             assert chromosome == -1
-        assert len(self.population) == 100
+        assert len(population) == 100
 
     def test_mutate_probability(self):
         seed(0)
-        pop = self.population.mutate(lambda x: x+1, probability=0.5).evaluate()
+        pop = Population([1]*100, eval_function=lambda x: x).mutate(lambda x: x+1, probability=0.5).evaluate()
         assert min(individual.chromosome for individual in pop.individuals) == 1
         assert max(individual.chromosome for individual in pop.individuals) == 2
         assert pop.current_best.fitness == 2
@@ -174,23 +156,24 @@ class TestPopulationMutate(TestPopulation):
         assert len(pop) == 100
 
     def test_mutate_zero_probability(self):
-        pop = self.population.mutate(lambda x: x+1, probability=0)
+        pop = Population([1]*100, eval_function=lambda x: x).mutate(lambda x: x+1, probability=0)
         for chromosome in pop.chromosomes:
             assert chromosome == 1
 
     def test_mutate_func_kwargs(self):
         def mutate_func(x, y=0):
             return x+y
-        pop = self.population.mutate(mutate_func, y=16)
+        pop = Population([1]*100, eval_function=lambda x: x).mutate(mutate_func, y=16)
         for chromosome in pop.chromosomes:
             assert chromosome == 17
 
 
-class TestPopulationWeights(TestPopulation):
+class TestPopulationWeights:
 
-    def test_weights(self):
+    def test_weights(self, simple_chromosomes, simple_evaluation_function):
         for maximize in (False, True):
-            pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
+            pop = Population(chromosomes=simple_chromosomes,
+                             eval_function=simple_evaluation_function, maximize=maximize)
             with raises(RuntimeError):
                 _ = pop._individual_weights
             pop.evaluate()
@@ -202,24 +185,24 @@ class TestPopulationWeights(TestPopulation):
                 assert pop._individual_weights[0] == 1
 
 
-class TestPopulationBest(TestPopulation):
+class TestPopulationBest:
 
-    def test_current_best(self):
-        for maximize, best in ((True, max(self.chromosomes)), (False, min(self.chromosomes))):
-            pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
+    def test_current_best(self, simple_chromosomes):
+        for maximize, best in ((True, max(simple_chromosomes)), (False, min(simple_chromosomes))):
+            pop = Population(chromosomes=simple_chromosomes, eval_function=float, maximize=maximize)
             assert pop.current_best is None
             pop.evaluate()
             assert pop.current_best.chromosome == best
 
-    def test_current_worst(self):
-        for maximize, worst in ((False, max(self.chromosomes)), (True, min(self.chromosomes))):
-            pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
+    def test_current_worst(self, simple_chromosomes):
+        for maximize, worst in ((False, max(simple_chromosomes)), (True, min(simple_chromosomes))):
+            pop = Population(chromosomes=simple_chromosomes, eval_function=float, maximize=maximize)
             assert pop.current_worst is None
             pop.evaluate()
             assert pop.current_worst.chromosome == worst
 
     def test_mutate_resets(self):
-        pop = self.population
+        pop = Population(chromosomes=[1, 1, 1], eval_function=float, maximize=True)
         assert pop.current_best is None and pop.current_worst is None
         pop.evaluate()
         assert pop.current_best.fitness == 1 and pop.current_worst.fitness == 1
@@ -227,7 +210,7 @@ class TestPopulationBest(TestPopulation):
         assert pop.current_best is None and pop.current_worst is None
 
     def test_documented_best(self):
-        pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func)
+        pop = Population(chromosomes=[100, 100, 100], eval_function=lambda x: x*2, maximize=True)
         assert pop.documented_best is None
         pop.evaluate()
         assert pop.documented_best.fitness == pop.current_best.fitness
@@ -235,20 +218,15 @@ class TestPopulationBest(TestPopulation):
         assert pop.documented_best.fitness - 20 == pop.current_best.fitness
 
 
-class TestContestPopulation(TestPopulation):
+class TestContestPopulation:
 
     def test_init(self):
         cp = ContestPopulation([0, 1, 2], lambda x: x, contests_per_round=15, individuals_per_contest=15)
         assert cp.contests_per_round == 15
         assert cp.individuals_per_contest == 15
 
-    @staticmethod
-    def check_no_fitness(population):
-        for individual in population:
-            assert individual.fitness is None
 
-
-class TestContestPopulationBest(TestPopulation):
+class TestContestPopulationBest:
 
     def test_no_documented(self):
         pop = ContestPopulation([0, 1, 2], lambda x, y: [0, 0], contests_per_round=100, individuals_per_contest=2)
