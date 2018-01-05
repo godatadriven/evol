@@ -6,10 +6,11 @@ import sys
 
 class BaseLogger():
     """
-    The `evol.BaseLogger` is the most basic logger in evol. You can add it to a population
-    so that the population knows how to handle the `.log()` verb. 
+    The `evol.BaseLogger` is the most basic logger in evol. 
+    You can supply it to a population so that the population 
+    knows how to handle the `.log()` verb. 
     """
-    def __init__(self, file='/tmp/evol-logs.log', stdout=False, format='%(asctime)s,%(message)s'):
+    def __init__(self, file=None, stdout=False, format='%(asctime)s,%(message)s'):
         self.file = file
         if file is not None:
             if not os.path.exists(os.path.split(file)[0]):

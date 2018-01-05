@@ -41,7 +41,10 @@ class Population:
         result = self.__class__(chromosomes=self.chromosomes,
                                 eval_function=self.eval_function,
                                 maximize=self.maximize,
-                                intended_size=self.intended_size)
+                                intended_size=self.intended_size,
+                                logger=self.logger,
+                                generation=self.generation)
+        result.documented_best = self.documented_best
         return result
 
     def __iter__(self):
