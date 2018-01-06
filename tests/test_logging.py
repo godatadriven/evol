@@ -149,20 +149,20 @@ class TestLoggerSimple:
         evo = (Evolution()
                .survive(fraction=0.5)
                .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
+                      combiner=lambda mom, dad: (mom + dad) + 1,
                       n_parents=2)
                .log(foo="dino"))
         _ = pop1.evolve(evolution=evo, n=5)
         _ = pop2.evolve(evolution=evo, n=5)
+        # two evolutions have now been applied, lets check the output!
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
-            print(read_file)
+            # print(read_file)
             # size of the log should be appropriate
             assert len(read_file) == 10
             # bar needs to be in every single line
-            # assert all(['dino' in row for row in read_file])
+            assert all(['dino' in row for row in read_file])
         # check characteristics of stoud
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
-        print(read_stdout)
         assert len(read_stdout) == 10
-        assert all(['bar' in row for row in read_stdout])
+        assert all(['dino' in row for row in read_stdout])
