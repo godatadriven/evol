@@ -6,10 +6,9 @@ or by appyling an `evol.Evolution` object.
 """
 
 from random import choices, randint
-from copy import deepcopy, copy
+from copy import copy
 from itertools import cycle, islice
 from uuid import uuid4
-import datetime as dt
 
 from evol import Individual
 from evol.logger import BaseLogger

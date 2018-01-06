@@ -160,9 +160,27 @@ class TestLoggerSimple:
             # print(read_file)
             # size of the log should be appropriate
             assert len(read_file) == 10
-            # bar needs to be in every single line
+            # dino needs to be in every single line
             assert all(['dino' in row for row in read_file])
         # check characteristics of stoud
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
         assert len(read_stdout) == 10
         assert all(['dino' in row for row in read_stdout])
+
+    def test_every_mechanic_in_evolution_log(self, tmpdir, capsys):
+        log_file = tmpdir.join('log.txt')
+        logger = SummaryLogger(file=log_file, stdout=True)
+        pop = Population(chromosomes=list(range(10)), eval_function=lambda x: x, logger=logger)
+        evo = (Evolution()
+               .survive(fraction=0.5)
+               .breed(parent_picker=pick_random,
+                      combiner=lambda mom, dad: (mom + dad) + 1,
+                      n_parents=2)
+               .log(every=2))
+        _ = pop.evolve(evolution=evo, n=100)
+        with open(log_file, "r") as f:
+            read_file = [item.replace("\n", "") for item in f.readlines()]
+            assert len(read_file) == 50
+        # check characteristics of stoud
+        read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
+        assert len(read_stdout) == 50
