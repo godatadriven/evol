@@ -15,16 +15,19 @@ class BaseLogger():
         if file is not None:
             if not os.path.exists(os.path.split(file)[0]):
                 raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
-        self.logger = logging.getLogger(name=self.__class__.__name__)
         formatter = logging.Formatter(fmt=format, datefmt='%Y-%m-%d %H:%M:%S')
-        if file:
-            file_handler = logging.FileHandler(filename=file)
-            file_handler.setFormatter(fmt=formatter)
-            self.logger.addHandler(file_handler)
-        if stdout:
-            stream_handler = logging.StreamHandler(stream=sys.stdout)
-            stream_handler.setFormatter(fmt=formatter)
-            self.logger.addHandler(stream_handler)
+        self.logger = logging.getLogger(name=self.__class__.__name__)
+        if not self.logger.handlers:
+            # we do this extra step because loggers can behave instrage ways otherwise
+            # https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/
+            if file:
+                file_handler = logging.FileHandler(filename=file)
+                file_handler.setFormatter(fmt=formatter)
+                self.logger.addHandler(file_handler)
+            if stdout:
+                stream_handler = logging.StreamHandler(stream=sys.stdout)
+                stream_handler.setFormatter(fmt=formatter)
+                self.logger.addHandler(stream_handler)
         self.logger.setLevel(level=logging.INFO)
 
     def log(self, population, **kwargs):
