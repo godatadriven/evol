@@ -3,6 +3,7 @@ import os
 import json
 import logging
 import sys
+import uuid
 
 class BaseLogger():
     """
@@ -16,7 +17,7 @@ class BaseLogger():
             if not os.path.exists(os.path.split(file)[0]):
                 raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
         formatter = logging.Formatter(fmt=format, datefmt='%Y-%m-%d %H:%M:%S')
-        self.logger = logging.getLogger(name=self.__class__.__name__)
+        self.logger = logging.getLogger(name=f"{uuid.uuid4()}")
         if not self.logger.handlers:
             # we do this extra step because loggers can behave instrage ways otherwise
             # https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/
