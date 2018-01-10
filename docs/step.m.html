@@ -1149,7 +1149,7 @@ class BreedStep(EvolutionStep):
 class MutateStep(EvolutionStep):
 
     def apply(self, population) -> Population:
-        return population.mutate(**self.kwargs)
+        return population.mutate_with(**self.kwargs)
 
 
 class RepeatStep(EvolutionStep):
@@ -1615,7 +1615,7 @@ class RepeatStep(EvolutionStep):
     <pre><code>class MutateStep(EvolutionStep):
 
     def apply(self, population) -> Population:
-        return population.mutate(**self.kwargs)
+        return population.mutate_with(**self.kwargs)
 </code></pre>
   </div>
 </div>
@@ -1668,7 +1668,7 @@ class RepeatStep(EvolutionStep):
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.step.MutateStep.apply', this);">Show source &equiv;</a></p>
   <div id="source-evol.step.MutateStep.apply" class="source">
     <pre><code>def apply(self, population) -> Population:
-    return population.mutate(**self.kwargs)
+    return population.mutate_with(**self.kwargs)
 </code></pre>
   </div>
 </div>

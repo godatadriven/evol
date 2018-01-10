@@ -10,13 +10,14 @@ from copy import deepcopy, copy
 from itertools import cycle, islice
 
 from evol import Individual
-from evol.helpers.utils import select_arguments, offspring_generator
+from evol.helpers.utils import select_arguments, offspring_generator, ensure_list
 
 
 class Population:
     """Population of Individuals
 
     :param chromosomes: Collection of initial chromosomes of the Population.
+    #TODO What is this Collection? Should it be a typing.List, or perhaps a typing.Sequence?
     :type chromosomes: Collection[chromosome]
     :param eval_function: Function that reduces a chromosome to a fitness.
     :type eval_function: Callable[chromosome] -> float
@@ -66,7 +67,7 @@ class Population:
         chromosomes = [init_func() for _ in range(size)]
         return cls(chromosomes=chromosomes, eval_function=eval_func)
 
-    def evolve(self, evolution: 'Evolution', n: int = 1) -> 'Population':
+    def evolve(self, evolution: 'Evolution', n: int=1) -> 'Population':
         """Evolve the population according to an Evolution.
 
         :param evolution: Evolution to follow
@@ -151,16 +152,19 @@ class Population:
         :return: self
         """
         if fraction is None:
-            if n is None:
-                raise ValueError('everyone survives! must provide either "fraction" and/or "n".')
+            if (n is None) or (n > len(self.individuals)):
+                raise ValueError('everyone survives! must provide either "fraction" and/or "n" < population size.')
             resulting_size = n
         elif n is None:
-            resulting_size = round(fraction*len(self.individuals))
+            # TODO shouldn't we use ceiling to avoid resulting_size = 0? Maybe logging if the fraction was too small
+            resulting_size = round(fraction * len(self.individuals))
         else:
-            resulting_size = min(round(fraction*len(self.individuals)), n)
+            resulting_size = min(round(fraction * len(self.individuals)), n)
         self.evaluate(lazy=True)
         if resulting_size == 0:
             raise RuntimeError('no one survived!')
+        # TODO the following is confusing: what about when resulting_size is equal to individuals' length?
+        # From the text in the ValueError I gather that is not allowed, yet the `if` doesn't check for it
         if resulting_size > len(self.individuals):
             raise ValueError('everyone survives! must provide "fraction" and/or "n" < population size')
         if luck:
@@ -188,24 +192,26 @@ class Population:
             Arguments are only passed to the functions if they accept them.
         :return: self
         """
-        parent_picker = select_arguments(parent_picker)
+        # TODO I'm not exactly sure, on an API level, where the `ensure_list` and `select_arguments`
+        # should go, if here on inside offspring_generator
+        parent_picker = ensure_list(select_arguments(parent_picker))
         combiner = select_arguments(combiner)
         if population_size:
             self.intended_size = population_size
         offspring = offspring_generator(parents=self.individuals,
-                                        parent_picker=select_arguments(parent_picker),
-                                        combiner=select_arguments(combiner),
+                                        parent_picker=parent_picker,
+                                        combiner=combiner,
                                         **kwargs)
         self.individuals += list(islice(offspring, self.intended_size - len(self.individuals)))
         # TODO: increase generation and individual's ages
         return self
 
-    def mutate(self, func, probability=1.0, **kwargs) -> 'Population':
+    def mutate_with(self, mutate_func, probability=1.0, **kwargs) -> 'Population':
         """Mutate the chromosome of each individual.
 
-        :param func: Function that accepts a chromosome and returns
+        :param mutate_func: Function that accepts a chromosome and returns
             a mutated chromosome.
-        :type func: Callable[chromosome, **kwargs] -> chromosome
+        :type mutate_func: Callable[chromosome, **kwargs] -> chromosome
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
@@ -214,7 +220,7 @@ class Population:
         :return: self
         """
         for individual in self.individuals:
-            individual.mutate(func, probability=probability, **kwargs)
+            individual.mutate_with(mutate_func, probability=probability, **kwargs)
         return self
 
     def _update_documented_best(self):
@@ -241,7 +247,7 @@ class ContestPopulation(Population):
     Since the fitness of an individual is dependent on the other individuals
     in the population, the fitness of all individuals is recalculated when
     new individuals are present, and the fitness of all individuals is reset
-    when the population is modified (e.g. by calling survive, mutate etc).
+    when the population is modified (e.g. by calling survive, mutate_with etc).
 
     :param chromosomes: Collection of initial chromosomes of the Population.
     :type chromosomes: Collection[chromosome]
@@ -282,6 +288,7 @@ class ContestPopulation(Population):
             return self
         for individual in self.individuals:
             individual.fitness = 0
+        # TODO jetlagged here, but maybe this code can be simplified/split with some helper functions?
         for _ in range(self.contests_per_round):
             offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(self.individuals_per_contest - 1)]
             generators = [islice(cycle(self.individuals), offset, None) for offset in offsets]

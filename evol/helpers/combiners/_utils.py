@@ -13,8 +13,8 @@ def construct_neighbors(*chromosome: Tuple[Any]) -> defaultdict:
     return result
 
 
-def _neighbors_in(x: Tuple[Any], cyclic=True) -> Iterable[Tuple[Any, Any]]:
-    a, b = tee(islice(cycle(x), 0, len(x) + (1 if cyclic else 0)))
+def _neighbors_in(x: Tuple[Any], cyclic: bool=True) -> Iterable[Tuple[Any, Any]]:
+    a, b = tee(islice(cycle(x), len(x) + cyclic))
     next(b, None)
     return zip(a, b)
 
@@ -53,7 +53,9 @@ def identify_cycles(chromosome_1: Tuple[Any], chromosome_2: Tuple[Any]) -> List[
     indices = set(range(len(chromosome_1)))
     cycles = []
     while len(indices) > 0:
-        next_cycle = _identify_cycle(chromosome_1=chromosome_1, chromosome_2=chromosome_2, start_index=min(indices))
+        next_cycle = _identify_cycle(chromosome_1=chromosome_1,
+                                     chromosome_2=chromosome_2,
+                                     start_index=min(indices))
         indices.difference_update(next_cycle)
         cycles.append(next_cycle)
     return cycles
@@ -85,7 +87,7 @@ def cycle_parity(cycles: List[Set[int]]) -> Dict[int, bool]:
 
     Indices in all odd cycles have parity False, while
     indices in even cycles have parity True."""
-    return {index: bool(i % 2) for i, c in enumerate(cycles) for index in c}
+    return {index: bool(i % 2) for i, cycle in enumerate(cycles) for index in cycle}
 
 
 def multiple_offspring(f):

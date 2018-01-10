@@ -32,6 +32,6 @@ class TestIndividual:
         def mutate_func(chromosome, value):
             return chromosome[0], value, chromosome[2]
 
-        ind.mutate(mutate_func, value=5)
+        ind.mutate_with(mutate_func, value=5)
         assert (1, 5, 3) == ind.chromosome
         assert ind.fitness is None

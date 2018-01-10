@@ -3,7 +3,7 @@
 
 ![Imgur](https://i.imgur.com/7MHcIq1.png)
 
-`Evol` is clear dsl for composable evolutionary algorithms that optimised for joy.
+`Evol` is clear dsl for composable evolutionary algorithms optimised for joy.
 
 ## Installation
 
@@ -27,7 +27,7 @@ The first approach takes a collections of solutions and applies:
 
 1. a survival where only the top 50% solutions survive
 2. the population reproduces using a crossover of genes
-3. certain members mutate
+3. certain members mutate_with
 4. repeat this, maybe 1000 times or more!
 
 <img src="https://i.imgur.com/is9g07u.png" alt="Drawing" style="width: 100%;"/>
@@ -52,7 +52,7 @@ You might notice that many parts of these algorithms are similar and it is
 the goal of this library is to automate these parts. In fact, you can
 expect the code for these algorithms to look something like this.
 
-A speudo-example of what is decribed about looks a bit like this:
+A pseudo-example of what is decribed about looks a bit like this:
 
     import random
     from evol import Population, Evolution
@@ -73,7 +73,7 @@ A speudo-example of what is decribed about looks a bit like this:
            .breed(parentpicker=pick_n_parents,
                   combiner=combiner,
                   num_parents=2, n_max=100)
-           .mutate(lambda x: add_noise(x, 0.1)))
+           .mutate_with(lambda x: add_noise(x, 0.1)))
 
     evo2 = (Evolution(name="second_algorithm")
            .survive(n=1)

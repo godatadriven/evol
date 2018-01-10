@@ -986,7 +986,7 @@ table {
     <li class="mono"><a href="#evol.population.ContestPopulation.evolve">evolve</a></li>
     <li class="mono"><a href="#evol.population.ContestPopulation.filter">filter</a></li>
     <li class="mono"><a href="#evol.population.ContestPopulation.map">map</a></li>
-    <li class="mono"><a href="#evol.population.ContestPopulation.mutate">mutate</a></li>
+    <li class="mono"><a href="#evol.population.ContestPopulation.mutate">mutate_with</a></li>
     <li class="mono"><a href="#evol.population.ContestPopulation.reset_fitness">reset_fitness</a></li>
     <li class="mono"><a href="#evol.population.ContestPopulation.survive">survive</a></li>
     <li class="mono"><a href="#evol.population.ContestPopulation.generate">generate</a></li>
@@ -1005,7 +1005,7 @@ table {
     <li class="mono"><a href="#evol.population.Population.evolve">evolve</a></li>
     <li class="mono"><a href="#evol.population.Population.filter">filter</a></li>
     <li class="mono"><a href="#evol.population.Population.map">map</a></li>
-    <li class="mono"><a href="#evol.population.Population.mutate">mutate</a></li>
+    <li class="mono"><a href="#evol.population.Population.mutate">mutate_with</a></li>
     <li class="mono"><a href="#evol.population.Population.survive">survive</a></li>
     <li class="mono"><a href="#evol.population.Population.generate">generate</a></li>
   </ul>
@@ -1235,7 +1235,7 @@ class Population:
             # TODO: increase generation and individual's ages
         return self
 
-    def mutate(self, func, probability=1.0, **kwargs) -> 'Population':
+    def mutate_with(self, func, probability=1.0, **kwargs) -> 'Population':
         """Mutate the chromosome of each individual.
 
         :param func: Function that accepts a chromosome and returns
@@ -1249,7 +1249,7 @@ class Population:
         :return: self
         """
         for individual in self.individuals:
-            individual.mutate(func, probability=probability, **kwargs)
+            individual.mutate_with(func, probability=probability, **kwargs)
         return self
 
 
@@ -1268,7 +1268,7 @@ class ContestPopulation(Population):
     Since the fitness of an individual is dependent on the other individuals
     in the population, the fitness of all individuals is recalculated when
     new individuals are present, and the fitness of all individuals is reset
-    when the population is modified (e.g. by calling survive, mutate etc).
+    when the population is modified (e.g. by calling survive, mutate_with etc).
 
     :param chromosomes: Collection of initial chromosomes of the Population.
     :type chromosomes: Collection[chromosome]
@@ -1398,7 +1398,7 @@ The resulting scores of these contests are summed to form the fitness.</p>
 <p>Since the fitness of an individual is dependent on the other individuals
 in the population, the fitness of all individuals is recalculated when
 new individuals are present, and the fitness of all individuals is reset
-when the population is modified (e.g. by calling survive, mutate etc).</p>
+when the population is modified (e.g. by calling survive, mutate_with etc).</p>
 <p>:param chromosomes: Collection of initial chromosomes of the Population.
 :type chromosomes: Collection[chromosome]
 :param eval_function: Function that reduces multiple chromosomes to a
@@ -1432,7 +1432,7 @@ when the population is modified (e.g. by calling survive, mutate etc).</p>
     Since the fitness of an individual is dependent on the other individuals
     in the population, the fitness of all individuals is recalculated when
     new individuals are present, and the fitness of all individuals is reset
-    when the population is modified (e.g. by calling survive, mutate etc).
+    when the population is modified (e.g. by calling survive, mutate_with etc).
 
     :param chromosomes: Collection of initial chromosomes of the Population.
     :type chromosomes: Collection[chromosome]
@@ -1830,7 +1830,7 @@ Resets the fitness of all individuals.</p>
             
   <div class="item">
     <div class="name def" id="evol.population.ContestPopulation.mutate">
-    <p>def <span class="ident">mutate</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
+    <p>def <span class="ident">mutate_with</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
     </div>
     
 
@@ -1849,7 +1849,7 @@ Resets the fitness of all individuals.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.population.ContestPopulation.mutate', this);">Show source &equiv;</a></p>
   <div id="source-evol.population.ContestPopulation.mutate" class="source">
-    <pre><code>def mutate(self, func, probability=1.0, **kwargs) -> 'Population':
+    <pre><code>def mutate_with(self, func, probability=1.0, **kwargs) -> 'Population':
     """Mutate the chromosome of each individual.
     :param func: Function that accepts a chromosome and returns
         a mutated chromosome.
@@ -1862,7 +1862,7 @@ Resets the fitness of all individuals.</p>
     :return: self
     """
     for individual in self.individuals:
-        individual.mutate(func, probability=probability, **kwargs)
+        individual.mutate_with(func, probability=probability, **kwargs)
     return self
 </code></pre>
   </div>
@@ -2223,7 +2223,7 @@ def generate(cls, init_func, eval_func, size=100) -> 'Population':
             # TODO: increase generation and individual's ages
         return self
 
-    def mutate(self, func, probability=1.0, **kwargs) -> 'Population':
+    def mutate_with(self, func, probability=1.0, **kwargs) -> 'Population':
         """Mutate the chromosome of each individual.
 
         :param func: Function that accepts a chromosome and returns
@@ -2237,7 +2237,7 @@ def generate(cls, init_func, eval_func, size=100) -> 'Population':
         :return: self
         """
         for individual in self.individuals:
-            individual.mutate(func, probability=probability, **kwargs)
+            individual.mutate_with(func, probability=probability, **kwargs)
         return self
 </code></pre>
   </div>
@@ -2516,7 +2516,7 @@ lazy evaluation is implicitly included in the operations that need it
             
   <div class="item">
     <div class="name def" id="evol.population.Population.mutate">
-    <p>def <span class="ident">mutate</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
+    <p>def <span class="ident">mutate_with</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
     </div>
     
 
@@ -2535,7 +2535,7 @@ lazy evaluation is implicitly included in the operations that need it
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.population.Population.mutate', this);">Show source &equiv;</a></p>
   <div id="source-evol.population.Population.mutate" class="source">
-    <pre><code>def mutate(self, func, probability=1.0, **kwargs) -> 'Population':
+    <pre><code>def mutate_with(self, func, probability=1.0, **kwargs) -> 'Population':
     """Mutate the chromosome of each individual.
     :param func: Function that accepts a chromosome and returns
         a mutated chromosome.
@@ -2548,7 +2548,7 @@ lazy evaluation is implicitly included in the operations that need it
     :return: self
     """
     for individual in self.individuals:
-        individual.mutate(func, probability=probability, **kwargs)
+        individual.mutate_with(func, probability=probability, **kwargs)
     return self
 </code></pre>
   </div>

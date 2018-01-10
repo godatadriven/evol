@@ -66,10 +66,10 @@ breed(parent_picker=f(Population) -> seq[chromosome],
        population_size=None, **kwargs)
 ```
 
-### mutate
+### mutate_with
 
 ```
-mutate(f(chromosome) -> chromosome, **kwargs)
+mutate_with(f(chromosome) -> chromosome, **kwargs)
 ```
 
 ## Group

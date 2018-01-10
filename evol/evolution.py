@@ -90,7 +90,7 @@ class Evolution:
         """
         return self._add_step(FilterStep(name=name, func=func, **kwargs))
 
-    def survive(self, fraction=None, n=None, luck=False, name=None, evaluate=True) -> 'Evolution':
+    def survive(self, fraction=None, n=None, luck=False, name=None, evaluate: bool=True) -> 'Evolution':
         """Add a survive step to the Evolution.
 
         This filters the individuals in the population according to fitness.
@@ -106,6 +106,7 @@ class Evolution:
         :type luck: bool
         :param name: Name of the filter step.
         :type name: str
+        :param evaluate: Whether to evaluate or not. Defaults to True.
         :return: This Evolution with an additional step.
         :rtype: Evolution
         """
@@ -140,7 +141,7 @@ class Evolution:
                                         population_size=population_size, **kwargs))
 
     def mutate(self, func, probability=1.0, name=None, **kwargs) -> 'Evolution':
-        """Add a mutate step to the Evolution.
+        """Add a mutate_with step to the Evolution.
 
         This mutates the chromosome of each individual.
 
@@ -151,7 +152,7 @@ class Evolution:
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
         :type probability: float
-        :param name: Name of the mutate step.
+        :param name: Name of the mutate_with step.
         :type name: str
         :param kwargs: Kwargs to pass to the parent_picker and combiner.
             Arguments are only passed to the functions if they accept them.
@@ -163,6 +164,7 @@ class Evolution:
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
 
     def _add_step(self, step):
+        # TODO find out why the algorithm is creating copies like this
         result = copy(self)
         result.chain.append(step)
         return result

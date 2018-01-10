@@ -147,14 +147,14 @@ class TestPopulationBreed(TestPopulation):
 class TestPopulationMutate(TestPopulation):
 
     def test_mutate_lambda(self):
-        pop = self.population.mutate(lambda x: x+1)
+        pop = self.population.mutate_with(lambda x: x + 1)
         for chromosome in pop.chromosomes:
             assert chromosome == 2
         assert len(pop) == 100
 
     def test_mutate_inplace(self):
         population = self.population
-        population.mutate(lambda x: x+1)
+        population.mutate_with(lambda x: x + 1)
         for chromosome in population.chromosomes:
             assert chromosome == 2
 
@@ -162,14 +162,14 @@ class TestPopulationMutate(TestPopulation):
         def mutate_func(x):
             return -x
         population = self.population
-        population.mutate(mutate_func)
+        population.mutate_with(mutate_func)
         for chromosome in population.chromosomes:
             assert chromosome == -1
         assert len(self.population) == 100
 
     def test_mutate_probability(self):
         seed(0)
-        pop = self.population.mutate(lambda x: x+1, probability=0.5).evaluate()
+        pop = self.population.mutate_with(lambda x: x + 1, probability=0.5).evaluate()
         assert min(individual.chromosome for individual in pop.individuals) == 1
         assert max(individual.chromosome for individual in pop.individuals) == 2
         assert pop.current_best.fitness == 2
@@ -177,14 +177,14 @@ class TestPopulationMutate(TestPopulation):
         assert len(pop) == 100
 
     def test_mutate_zero_probability(self):
-        pop = self.population.mutate(lambda x: x+1, probability=0)
+        pop = self.population.mutate_with(lambda x: x + 1, probability=0)
         for chromosome in pop.chromosomes:
             assert chromosome == 1
 
     def test_mutate_func_kwargs(self):
         def mutate_func(x, y=0):
             return x+y
-        pop = self.population.mutate(mutate_func, y=16)
+        pop = self.population.mutate_with(mutate_func, y=16)
         for chromosome in pop.chromosomes:
             assert chromosome == 17
 
@@ -210,7 +210,7 @@ class TestPopulationBest(TestPopulation):
         assert pop.current_best is None and pop.current_worst is None
         pop.evaluate()
         assert pop.current_best.fitness == 1 and pop.current_worst.fitness == 1
-        pop.mutate(lambda x: x)
+        pop.mutate_with(lambda x: x)
         assert pop.current_best is None and pop.current_worst is None
 
     def test_documented_best(self):
@@ -218,7 +218,7 @@ class TestPopulationBest(TestPopulation):
         assert pop.documented_best is None
         pop.evaluate()
         assert pop.documented_best.fitness == pop.current_best.fitness
-        pop.mutate(func=lambda x: x-10, probability=1).evaluate()
+        pop.mutate_with(mutate_func=lambda x: x - 10, probability=1).evaluate()
         assert pop.documented_best.fitness - 20 == pop.current_best.fitness
 
 

@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser.add_argument('--survival', type=float, default=0.7,
                         help='the fraction of individuals who will survive a generation')
     parser.add_argument('--noise', type=float, default=0.5,
-                        help='the amount of noise the mutate step will add to each individual')
+                        help='the amount of noise the mutate_with step will add to each individual')
     parser.add_argument('--seed', type=int, default=42,
                         help='the random seed for all this')
 

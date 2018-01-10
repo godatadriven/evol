@@ -1056,7 +1056,7 @@ table {
     <li class="mono"><a href="#evol.population.base.Population.evolve">evolve</a></li>
     <li class="mono"><a href="#evol.population.base.Population.filter">filter</a></li>
     <li class="mono"><a href="#evol.population.base.Population.map">map</a></li>
-    <li class="mono"><a href="#evol.population.base.Population.mutate">mutate</a></li>
+    <li class="mono"><a href="#evol.population.base.Population.mutate">mutate_with</a></li>
     <li class="mono"><a href="#evol.population.base.Population.survive">survive</a></li>
     <li class="mono"><a href="#evol.population.base.Population.generate">generate</a></li>
   </ul>
@@ -1275,7 +1275,7 @@ table {
             <span class="c1"># TODO: increase generation and individual&#39;s ages</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Population&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mutate_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Population&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Mutate the chromosome of each individual.</span>
 
 <span class="sd">        :param func: Function that accepts a chromosome and returns</span>
@@ -1289,7 +1289,7 @@ table {
 <span class="sd">        :return: self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">individuals</span><span class="p">:</span>
-            <span class="n">individual</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">mutate_with</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 </pre></div>
 
@@ -1504,7 +1504,7 @@ table {
             <span class="c1"># TODO: increase generation and individual&#39;s ages</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Population&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mutate_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Population&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Mutate the chromosome of each individual.</span>
 
 <span class="sd">        :param func: Function that accepts a chromosome and returns</span>
@@ -1518,7 +1518,7 @@ table {
 <span class="sd">        :return: self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">individuals</span><span class="p">:</span>
-            <span class="n">individual</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">mutate_with</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 </pre></div>
 
@@ -1805,7 +1805,7 @@ lazy evaluation is implicitly included in the operations that need it
             
   <div class="item">
     <div class="name def" id="evol.population.base.Population.mutate">
-    <p>def <span class="ident">mutate</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
+    <p>def <span class="ident">mutate_with</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
     </div>
     
 
@@ -1824,7 +1824,7 @@ lazy evaluation is implicitly included in the operations that need it
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.population.base.Population.mutate', this);">Show source &equiv;</a></p>
   <div id="source-evol.population.base.Population.mutate" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Population&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mutate_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Population&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Mutate the chromosome of each individual.</span>
 <span class="sd">    :param func: Function that accepts a chromosome and returns</span>
 <span class="sd">        a mutated chromosome.</span>
@@ -1837,7 +1837,7 @@ lazy evaluation is implicitly included in the operations that need it
 <span class="sd">    :return: self</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">individuals</span><span class="p">:</span>
-        <span class="n">individual</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">individual</span><span class="o">.</span><span class="n">mutate_with</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
 </pre></div>
 

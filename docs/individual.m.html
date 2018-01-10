@@ -988,7 +988,7 @@ table {
   <ul>
     <li class="mono"><a href="#evol.individual.Individual.__init__">__init__</a></li>
     <li class="mono"><a href="#evol.individual.Individual.evaluate">evaluate</a></li>
-    <li class="mono"><a href="#evol.individual.Individual.mutate">mutate</a></li>
+    <li class="mono"><a href="#evol.individual.Individual.mutate">mutate_with</a></li>
   </ul>
 
         </li>
@@ -1048,7 +1048,7 @@ class Individual:
         if self.fitness is None or not lazy:
             self.fitness = eval_function(self.chromosome)
 
-    def mutate(self, func, probability=1.0, **kwargs):
+    def mutate_with(self, func, probability=1.0, **kwargs):
         """Mutate the chromosome of the individual.
 
         :param func: Function that accepts a chromosome and returns a mutated chromosome.
@@ -1119,7 +1119,7 @@ class Individual:
         if self.fitness is None or not lazy:
             self.fitness = eval_function(self.chromosome)
 
-    def mutate(self, func, probability=1.0, **kwargs):
+    def mutate_with(self, func, probability=1.0, **kwargs):
         """Mutate the chromosome of the individual.
 
         :param func: Function that accepts a chromosome and returns a mutated chromosome.
@@ -1204,7 +1204,7 @@ class Individual:
             
   <div class="item">
     <div class="name def" id="evol.individual.Individual.mutate">
-    <p>def <span class="ident">mutate</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
+    <p>def <span class="ident">mutate_with</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
     </div>
     
 
@@ -1221,7 +1221,7 @@ class Individual:
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.individual.Individual.mutate', this);">Show source &equiv;</a></p>
   <div id="source-evol.individual.Individual.mutate" class="source">
-    <pre><code>def mutate(self, func, probability=1.0, **kwargs):
+    <pre><code>def mutate_with(self, func, probability=1.0, **kwargs):
     """Mutate the chromosome of the individual.
     :param func: Function that accepts a chromosome and returns a mutated chromosome.
     :type func: Callable[chromosome, **kwargs] -> chromosome

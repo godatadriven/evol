@@ -56,7 +56,7 @@ class BreedStep(EvolutionStep):
 class MutateStep(EvolutionStep):
 
     def apply(self, population) -> Population:
-        return population.mutate(**self.kwargs)
+        return population.mutate_with(**self.kwargs)
 
 
 class RepeatStep(EvolutionStep):

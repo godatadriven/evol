@@ -24,10 +24,7 @@ def offspring_generator(parents: List[Individual],
     while True:
         # Obtain parent chromosomes
         parents = parent_picker(parents, **kwargs)
-        if isinstance(parents, Individual):
-            chromosomes = (parents.chromosome,)
-        else:
-            chromosomes = tuple(individual.chromosome for individual in parents)
+        chromosomes = tuple(individual.chromosome for individual in parents)
         # Create children
         if getattr(combiner, 'multiple_offspring', False):
             for child in combiner(*chromosomes, **kwargs):
@@ -52,4 +49,22 @@ def select_arguments(func: Callable) -> Callable:
             return func(*args, **kwargs)
         except TypeError:
             return func(*args, **{k: v for k, v in kwargs.items() if k in signature(func).parameters})
+    return result
+
+
+def ensure_list(func: Callable) -> Callable:
+    """
+    Decorate a function such that it always return a list
+
+    This is useful when the caller needs an iterable but the function might return a
+    single element under certain conditions.
+
+    :param func: A function that returns a single element or a list
+    :return: A function that always returns a list
+    """
+    def result(*args, **kwargs):
+        try:
+            return list(func(*args, **kwargs))
+        except TypeError:
+            return [func(*args, **kwargs)]
     return result

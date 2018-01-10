@@ -986,7 +986,7 @@ table {
     <li class="mono"><a href="#evol.evolution.Evolution.evolve">evolve</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.filter">filter</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.map">map</a></li>
-    <li class="mono"><a href="#evol.evolution.Evolution.mutate">mutate</a></li>
+    <li class="mono"><a href="#evol.evolution.Evolution.mutate">mutate_with</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.repeat">repeat</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.survive">survive</a></li>
   </ul>
@@ -1157,8 +1157,8 @@ class Evolution:
         return self._add_step(BreedStep(name=name, parent_picker=parent_picker, combiner=combiner,
                                         population_size=population_size, **kwargs))
 
-    def mutate(self, func, probability=1.0, name=None, **kwargs) -> 'Evolution':
-        """Add a mutate step to the Evolution.
+    def mutate_with(self, func, probability=1.0, name=None, **kwargs) -> 'Evolution':
+        """Add a mutate_with step to the Evolution.
 
         This mutates the chromosome of each individual.
 
@@ -1169,7 +1169,7 @@ class Evolution:
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
         :type probability: float
-        :param name: Name of the mutate step.
+        :param name: Name of the mutate_with step.
         :type name: str
         :param kwargs: Kwargs to pass to the parent_picker and combiner.
             Arguments are only passed to the functions if they accept them.
@@ -1343,8 +1343,8 @@ class Evolution:
         return self._add_step(BreedStep(name=name, parent_picker=parent_picker, combiner=combiner,
                                         population_size=population_size, **kwargs))
 
-    def mutate(self, func, probability=1.0, name=None, **kwargs) -> 'Evolution':
-        """Add a mutate step to the Evolution.
+    def mutate_with(self, func, probability=1.0, name=None, **kwargs) -> 'Evolution':
+        """Add a mutate_with step to the Evolution.
 
         This mutates the chromosome of each individual.
 
@@ -1355,7 +1355,7 @@ class Evolution:
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
         :type probability: float
-        :param name: Name of the mutate step.
+        :param name: Name of the mutate_with step.
         :type name: str
         :param kwargs: Kwargs to pass to the parent_picker and combiner.
             Arguments are only passed to the functions if they accept them.
@@ -1667,13 +1667,13 @@ population, in place.</p>
             
   <div class="item">
     <div class="name def" id="evol.evolution.Evolution.mutate">
-    <p>def <span class="ident">mutate</span>(</p><p>self, func, probability=1.0, name=None, **kwargs)</p>
+    <p>def <span class="ident">mutate_with</span>(</p><p>self, func, probability=1.0, name=None, **kwargs)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Add a mutate step to the Evolution.</p>
+    <div class="desc"><p>Add a mutate_with step to the Evolution.</p>
 <p>This mutates the chromosome of each individual.</p>
 <p>:param func: Function that accepts a chromosome and returns
     a mutated chromosome.
@@ -1682,7 +1682,7 @@ population, in place.</p>
     The function is only applied in the given fraction of cases.
     Defaults to 1.0.
 :type probability: float
-:param name: Name of the mutate step.
+:param name: Name of the mutate_with step.
 :type name: str
 :param kwargs: Kwargs to pass to the parent_picker and combiner.
     Arguments are only passed to the functions if they accept them.
@@ -1690,8 +1690,8 @@ population, in place.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.mutate', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.mutate" class="source">
-    <pre><code>def mutate(self, func, probability=1.0, name=None, **kwargs) -> 'Evolution':
-    """Add a mutate step to the Evolution.
+    <pre><code>def mutate_with(self, func, probability=1.0, name=None, **kwargs) -> 'Evolution':
+    """Add a mutate_with step to the Evolution.
     This mutates the chromosome of each individual.
     :param func: Function that accepts a chromosome and returns
         a mutated chromosome.
@@ -1700,7 +1700,7 @@ population, in place.</p>
         The function is only applied in the given fraction of cases.
         Defaults to 1.0.
     :type probability: float
-    :param name: Name of the mutate step.
+    :param name: Name of the mutate_with step.
     :type name: str
     :param kwargs: Kwargs to pass to the parent_picker and combiner.
         Arguments are only passed to the functions if they accept them.

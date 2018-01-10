@@ -70,7 +70,7 @@ A speudo-example of what is decribed about looks a bit like this:
            .breed(parentpicker=pick_n_parents, 
                   combiner=combiner, 
                   num_parents=2, n_max=100)
-           .mutate(lambda x: add_noise(x, 0.1)))
+           .mutate_with(lambda x: add_noise(x, 0.1)))
 
     evo2 = (Evolution(name="second_algorithm")
            .survive(n=1)
