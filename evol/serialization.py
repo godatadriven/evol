@@ -10,20 +10,22 @@ from evol import Individual
 
 
 class SimpleSerializer:
+    """The SimpleSerializer handles serialization to and from pickle and json.
 
-    def __init__(self, target):
-        """
-        :param target: Location to store the checkpoints. A new file is created for every checkpoint.
-
-        """
+    :param target: Default location (directory) to store checkpoint.
+        This may be overridden in the `checkpoint` method. Defaults to None.
+    """
+    def __init__(self, target: Union[str, None]=None):
         self.target = target
 
     def checkpoint(self, individuals: List[Individual], target: Union[str, None]=None, method: str='pickle') -> None:
         """Checkpoint a list of individuals.
 
         :param individuals: List of individuals to checkpoint.
-        :param target: Directory to write checkpoint to. If None, take Serializer default target, if any.
-        :param method: One of "pickle" or "json". For json, the chromosomes need to be json-serializable.
+        :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
+            which can be provided upon initialisation. Defaults to None.
+        :param method: One of 'pickle' or 'json'. When 'json', the chromosomes need to be json-serializable.
+            Defaults to 'pickle'.
         """
         filename = self._new_checkpoint_file(target=self.target if target is None else target, method=method)
         if method == 'pickle':
@@ -39,7 +41,7 @@ class SimpleSerializer:
         """Load a checkpoint.
 
         If path is a file, load that file. If it is a directory, load the most recent checkpoint.
-        The checkpoint file must end with a ".json" or "pkl" extension.
+        The checkpoint file must end with a '.json' or '.pkl' extension.
 
         :param target: Path to checkpoint directory or file.
         :return: List of individuals from checkpoint.

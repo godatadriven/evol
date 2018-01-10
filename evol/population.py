@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
-from typing import Union
+from typing import Any, Callable, Union
 from uuid import uuid4
 
 from copy import copy
@@ -78,29 +78,44 @@ class Population:
             yield individual.chromosome
 
     @classmethod
-    def generate(cls, init_func, eval_func, size=100) -> 'Population':
+    def generate(cls,
+                 init_func: Callable[[], Any],
+                 eval_function: Callable[..., Union[int, float]],
+                 size: int=100,
+                 **kwargs) -> 'Population':
+        """Generate a population from an initialisation function.
+
+        :param init_func: Function that returns a chromosome.
+        :param eval_function: Function that reduces a chromosome to a fitness.
+        :param size: Number of individuals to generate. Defaults to 100.
+        :return: Population
+        """
         chromosomes = [init_func() for _ in range(size)]
-        return cls(chromosomes=chromosomes, eval_function=eval_func)
+        return cls(chromosomes=chromosomes, eval_function=eval_function, **kwargs)
 
     @classmethod
-    def load(cls, target: str, eval_function, maximize=True, serializer=None) -> 'Population':
+    def load(cls,
+             target: str,
+             eval_function: Callable[..., Union[int, float]],
+             **kwargs) -> 'Population':
         """Load a population from a checkpoint.
 
         :param target: Path to checkpoint directory or file.
         :param eval_function: Function that reduces a chromosome to a fitness.
-        :param maximize: If True, fitness will be maximized, otherwise minimized.
-            Defaults to True.
+        :param kwargs: Any argument the init method accepts.
         :return: Population
         """
-        result = cls(chromosomes=[], eval_function=eval_function, maximize=maximize, serializer=serializer)
+        result = cls(chromosomes=[], eval_function=eval_function, **kwargs)
         result.individuals = result.serializer.load(target=target)
         return result
 
     def checkpoint(self, target: Union[str, None]=None, method: str= 'pickle') -> 'Population':
         """Checkpoint the population.
 
-        :param target: Location to store the checkpoint. A new file is created for every checkpoint.
-        :param method: One of "pickle" or "json". For json, the chromosomes need to be json-serializable.
+        :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
+            which can be provided upon initialisation. Defaults to None.
+        :param method: One of 'pickle' or 'json'. When 'json', the chromosomes need to be json-serializable.
+            Defaults to 'pickle'.
         :return: Population
         """
         self.serializer.checkpoint(individuals=self.individuals, target=target, method=method)
