@@ -145,9 +145,9 @@ class Evolution:
 
         This mutates the chromosome of each individual.
 
-        :param func: Function that accepts a chromosome and returns
+        :param mutate_func: Function that accepts a chromosome and returns
             a mutated chromosome.
-        :type func: Callable[chromosome, **kwargs] -> chromosome
+        :type mutate_func: Callable[chromosome, **kwargs] -> chromosome
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
@@ -158,7 +158,7 @@ class Evolution:
             Arguments are only passed to the functions if they accept them.
         :return: self
         """
-        return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
+        return self._add_step(MutateStep(name=name, probability=probability, mutate_func=func, **kwargs))
 
     def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
