@@ -13,7 +13,7 @@ from random import choices, randint
 from evol import Individual
 from evol.helpers.utils import select_arguments, offspring_generator
 from evol.logger import BaseLogger
-from evol.serialization import checkpoint, load
+from evol.serialization import SimpleSerializer
 
 
 class Population:
@@ -27,7 +27,8 @@ class Population:
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(), generation=0, intended_size=None):
+    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(),
+                 generation=0, intended_size=None, serializer=None, checkpoint_target=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
@@ -36,11 +37,13 @@ class Population:
         self.intended_size = len(chromosomes) if intended_size is None else intended_size
         self.maximize = maximize
         self.logger = logger
+        self.serializer = SimpleSerializer(target=checkpoint_target) if serializer is None else serializer
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
                                 eval_function=self.eval_function,
                                 maximize=self.maximize,
+                                serializer=self.serializer,
                                 intended_size=self.intended_size)
         return result
 
@@ -79,27 +82,27 @@ class Population:
         return cls(chromosomes=chromosomes, eval_function=eval_func)
 
     @classmethod
-    def load(cls, path, eval_function, maximize=True) -> 'Population':
+    def load(cls, target, eval_function, maximize=True, serializer=None) -> 'Population':
         """Load a population from a checkpoint.
 
-        :param path: Path to checkpoint directory or file.
+        :param target: Path to checkpoint directory or file.
         :param eval_function: Function that reduces a chromosome to a fitness.
         :param maximize: If True, fitness will be maximized, otherwise minimized.
             Defaults to True.
         :return: Population
         """
-        result = cls(chromosomes=[], eval_function=eval_function, maximize=maximize)
-        result.individuals = load(path=path)
+        result = cls(chromosomes=[], eval_function=eval_function, maximize=maximize, serializer=serializer)
+        result.individuals = result.serializer.load(target=target)
         return result
 
-    def checkpoint(self, directory: str, method: str='pickle') -> 'Population':
+    def checkpoint(self, target: str, method: str= 'pickle') -> 'Population':
         """Checkpoint the population.
 
-        :param directory: Location to store the checkpoint. A new file is created for every checkpoint.
+        :param target: Location to store the checkpoint. A new file is created for every checkpoint.
         :param method: One of "pickle" or "json". For json, the chromosomes need to be json-serializable.
         :return: Population
         """
-        checkpoint(individuals=self.individuals, directory=directory, method=method)
+        self.serializer.checkpoint(individuals=self.individuals, target=target, method=method)
         return self
 
     def evolve(self, evolution: 'Evolution', n: int = 1) -> 'Population':
