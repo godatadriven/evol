@@ -9,7 +9,7 @@ class TestPopulation:
 
     @property
     def chromosomes(self):
-        return list(range(200))
+        return list(range(-100, 100))
 
     @staticmethod
     def eval_func(x):
@@ -189,17 +189,33 @@ class TestPopulationMutate(TestPopulation):
             assert chromosome == 17
 
 
+class TestPopulationWeights(TestPopulation):
+
+    def test_weights(self):
+        for maximize in (False, True):
+            pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
+            with raises(RuntimeError):
+                _ = pop._individual_weights
+            pop.evaluate()
+            assert max(pop._individual_weights) == 1
+            assert min(pop._individual_weights) == 0
+            if maximize:
+                assert pop._individual_weights[0] == 0
+            else:
+                assert pop._individual_weights[0] == 1
+
+
 class TestPopulationBest(TestPopulation):
 
     def test_current_best(self):
-        for maximize, best in ((True, 199), (False, 0)):
+        for maximize, best in ((True, max(self.chromosomes)), (False, min(self.chromosomes))):
             pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
             assert pop.current_best is None
             pop.evaluate()
             assert pop.current_best.chromosome == best
 
     def test_current_worst(self):
-        for maximize, worst in ((False, 199), (True, 0)):
+        for maximize, worst in ((False, max(self.chromosomes)), (True, min(self.chromosomes))):
             pop = Population(chromosomes=self.chromosomes, eval_function=self.eval_func, maximize=maximize)
             assert pop.current_worst is None
             pop.evaluate()
