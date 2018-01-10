@@ -5,6 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
+from typing import Union
 from uuid import uuid4
 
 from copy import copy
@@ -82,7 +83,7 @@ class Population:
         return cls(chromosomes=chromosomes, eval_function=eval_func)
 
     @classmethod
-    def load(cls, target, eval_function, maximize=True, serializer=None) -> 'Population':
+    def load(cls, target: str, eval_function, maximize=True, serializer=None) -> 'Population':
         """Load a population from a checkpoint.
 
         :param target: Path to checkpoint directory or file.
@@ -95,7 +96,7 @@ class Population:
         result.individuals = result.serializer.load(target=target)
         return result
 
-    def checkpoint(self, target: str, method: str= 'pickle') -> 'Population':
+    def checkpoint(self, target: Union[str, None]=None, method: str= 'pickle') -> 'Population':
         """Checkpoint the population.
 
         :param target: Location to store the checkpoint. A new file is created for every checkpoint.

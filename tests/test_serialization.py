@@ -2,6 +2,7 @@ from os import listdir
 from pytest import raises
 
 from evol import Population, Evolution
+from evol.serialization import SimpleSerializer
 
 
 class TestPickleCheckpoint:
@@ -34,6 +35,45 @@ class TestPickleCheckpoint:
         lpop = Population.load(directory, lambda x: x['x'])
         assert len(pop) == len(lpop)
         assert all(x.__dict__ == y.__dict__ for x, y in zip(pop, lpop))
+
+    def test_load_invalid_target(self, tmpdir):
+        directory = tmpdir.mkdir('ckpt')
+        with raises(FileNotFoundError):
+            Population.load(directory.join('no_file'), lambda x: x)
+        with raises(FileNotFoundError):
+            Population.load(directory, lambda x: x)
+        txt_file = directory.join('file.txt')
+        txt_file.write('Something')
+        with raises(ValueError):
+            Population.load(txt_file.strpath, lambda x: x)
+
+    def test_checkpoint_invalid_target(self, tmpdir):
+        directory = tmpdir.mkdir("ckpt")
+        pop = Population([{'x': 1, 'y': 2} for _ in range(100)], lambda x: x['x'])
+        with raises(ValueError):
+            pop.checkpoint(target=None)
+        txt_file = directory.join('file.txt')
+        txt_file.write('Something')
+        with raises(FileNotFoundError):
+            pop.checkpoint(target=txt_file)
+        # FileExistsError is difficult to test due to timing
+
+    def test_override_default_path(self, tmpdir):
+        # With checkpoint_target init
+        directory1 = tmpdir.mkdir("ckpt1")
+        pop1 = Population([list(range(100))], lambda x: x, checkpoint_target=directory1)
+        pop1.checkpoint()
+        assert len(listdir(directory1)) == 1
+        # With serializer init
+        directory2 = tmpdir.mkdir("ckpt2")
+        pop2 = Population([list(range(100))], lambda x: x, serializer=SimpleSerializer(target=directory2))
+        pop2.checkpoint()
+        assert len(listdir(directory2)) == 1
+        # With override
+        directory3 = tmpdir.mkdir("ckpt3")
+        pop1.checkpoint(target=directory3)
+        pop2.checkpoint(target=directory3)
+        assert len(listdir(directory3)) == 2
 
     def test_evolution(self, tmpdir):
         directory = tmpdir.mkdir("ckpt")
