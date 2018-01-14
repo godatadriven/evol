@@ -9,7 +9,7 @@ class TestLoggerSimple:
 
     def test_baselogger_can_write_file_without_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
-        logger = BaseLogger(file=log_file, stdout=False)
+        logger = BaseLogger(target=log_file, stdout=False)
         pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function, logger=logger)
         # we should see that a file was created with an appropriate number of rows
         pop.log()
@@ -26,14 +26,14 @@ class TestLoggerSimple:
     def test_baselogger_can_write_to_stdout(self, capsys, simple_chromosomes, simple_evaluation_function):
         pop = Population(chromosomes=range(10),
                          eval_function=lambda x:x,
-                         logger=BaseLogger(file=None, stdout=True))
+                         logger=BaseLogger(target=None, stdout=True))
         pop.log()
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
         assert len(read_stdout) == len(pop)
 
     def test_baselogger_can_accept_kwargs(self, tmpdir, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
-        logger = BaseLogger(file=log_file, stdout=False)
+        logger = BaseLogger(target=log_file, stdout=False)
         pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function, logger=logger)
         # we should see that a file was created with an appropriate number of rows
         pop.log(foo="bar")
@@ -48,7 +48,7 @@ class TestLoggerSimple:
 
     def test_baselogger_works_via_evolution(self, tmpdir, capsys):
         log_file = tmpdir.join('log.txt')
-        logger = BaseLogger(file=log_file, stdout=True)
+        logger = BaseLogger(target=log_file, stdout=True)
         pop = Population(chromosomes=range(10), eval_function=lambda x: x, logger=logger)
         evo = (Evolution()
                .survive(fraction=0.5)
@@ -71,7 +71,7 @@ class TestLoggerSimple:
 
     def test_summarylogger_can_write_file_without_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
-        logger = SummaryLogger(file=log_file, stdout=False)
+        logger = SummaryLogger(target=log_file, stdout=False)
         pop = Population(chromosomes=range(10), eval_function=lambda x:x, logger=logger)
         # we should see that a file was created with an appropriate number of rows
         pop.log()
@@ -88,7 +88,7 @@ class TestLoggerSimple:
     def test_summarylogger_can_write_to_stdout(self, capsys, simple_chromosomes, simple_evaluation_function):
         pop = Population(chromosomes=range(10),
                          eval_function=lambda x:x,
-                         logger=SummaryLogger(file=None, stdout=True))
+                         logger=SummaryLogger(target=None, stdout=True))
         pop.log().log()
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
         assert len(read_stdout) == 2
@@ -96,7 +96,7 @@ class TestLoggerSimple:
 
     def test_summarylogger_can_accept_kwargs(self, tmpdir, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
-        logger = SummaryLogger(file=log_file, stdout=False)
+        logger = SummaryLogger(target=log_file, stdout=False)
         pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function, logger=logger)
         # lets make a first simple log
         pop.log(foo="bar", buzz="meh")
@@ -120,7 +120,7 @@ class TestLoggerSimple:
 
     def test_summarylogger_works_via_evolution(self, tmpdir, capsys):
         log_file = tmpdir.join('log.txt')
-        logger = SummaryLogger(file=log_file, stdout=True)
+        logger = SummaryLogger(target=log_file, stdout=True)
         pop = Population(chromosomes=list(range(10)), eval_function=lambda x: x, logger=logger)
         evo = (Evolution()
                .survive(fraction=0.5)
@@ -143,7 +143,7 @@ class TestLoggerSimple:
 
     def test_two_populations_can_use_same_logger(self, tmpdir, capsys):
         log_file = tmpdir.join('log.txt')
-        logger = SummaryLogger(file=log_file, stdout=True)
+        logger = SummaryLogger(target=log_file, stdout=True)
         pop1 = Population(chromosomes=list(range(10)), eval_function=lambda x: x, logger=logger)
         pop2 = Population(chromosomes=list(range(10)), eval_function=lambda x: x, logger=logger)
         evo = (Evolution()
@@ -169,7 +169,7 @@ class TestLoggerSimple:
 
     def test_every_mechanic_in_evolution_log(self, tmpdir, capsys):
         log_file = tmpdir.join('log.txt')
-        logger = SummaryLogger(file=log_file, stdout=True)
+        logger = SummaryLogger(target=log_file, stdout=True)
         pop = Population(chromosomes=list(range(10)), eval_function=lambda x: x, logger=logger)
         evo = (Evolution()
                .survive(fraction=0.5)

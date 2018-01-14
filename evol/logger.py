@@ -11,18 +11,18 @@ class BaseLogger():
     You can supply it to a population so that the population 
     knows how to handle the `.log()` verb. 
     """
-    def __init__(self, file=None, stdout=False, format='%(asctime)s,%(message)s'):
-        self.file = file
-        if file is not None:
-            if not os.path.exists(os.path.split(file)[0]):
-                raise RuntimeError(f"path to file {os.path.split(file)[0]} does not exist!")
+    def __init__(self, target=None, stdout=False, format='%(asctime)s,%(message)s'):
+        self.file = target
+        if target is not None:
+            if not os.path.exists(os.path.split(target)[0]):
+                raise RuntimeError(f"path to target {os.path.split(target)[0]} does not exist!")
         formatter = logging.Formatter(fmt=format, datefmt='%Y-%m-%d %H:%M:%S')
         self.logger = logging.getLogger(name=f"{uuid.uuid4()}")
         if not self.logger.handlers:
             # we do this extra step because loggers can behave instrage ways otherwise
             # https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/
-            if file:
-                file_handler = logging.FileHandler(filename=file)
+            if target:
+                file_handler = logging.FileHandler(filename=target)
                 file_handler.setFormatter(fmt=formatter)
                 self.logger.addHandler(file_handler)
             if stdout:
