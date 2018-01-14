@@ -301,26 +301,49 @@ class ContestPopulation(Population):
         self.contests_per_round = contests_per_round
         self.individuals_per_contest = individuals_per_contest
 
-    def evaluate(self, lazy: bool=False) -> 'ContestPopulation':
+    def evaluate(self, lazy: bool=False,
+                 contests_per_round: int = None,
+                 individuals_per_contest: int=None) -> 'ContestPopulation':
         """Evaluate the individuals in the population.
 
-        This evaluates the fitness of all individuals. If lazy is True, the
-        fitness is only evaluated when a fitness value is not yet known for
-        all individuals.
+        This evaluates the fitness of all individuals. For each round of 
+        evaluation, each individual participates in a given number of 
+        contests, in which a given number of individuals take part.
+        The resulting scores of these contests are summed to form the fitness.
+        This means that the score of the individual is influenced by other
+        chromosomes in the population.
+        
+        Note that in the `ContestPopulation` two settings are passed at 
+        initialisation which affect how we are evaluating individuals: 
+        contests_per_round and individuals_per_contest. You may overwrite them
+        here if you wish. 
+        
+        If lazy is True, the fitness is only evaluated when a fitness value 
+        is not yet known for all individuals.
         In most situations adding an explicit evaluation step is not needed, as
         lazy evaluation is implicitly included in the operations that need it
         (most notably in the survive operation).
 
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
         :type lazy: bool
+        :param contests_per_round: If set, overwrites the population setting for the
+        number of contests there will be every round.
+        :type contests_per_round: int
+        :param individuals_per_contest: If set, overwrites the population setting for
+        number of individuals to have in a contest during the evaluation.
+        :type individuals_per_contest: int
         :return: self
         """
+        if contests_per_round is None:
+            contests_per_round = self.contests_per_round
+        if individuals_per_contest is None:
+            individuals_per_contest = self.individuals_per_contest
         if lazy and all(individual.fitness is not None for individual in self):
             return self
         for individual in self.individuals:
             individual.fitness = 0
-        for _ in range(self.contests_per_round):
-            offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(self.individuals_per_contest - 1)]
+        for _ in range(contests_per_round):
+            offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(individuals_per_contest - 1)]
             generators = [islice(cycle(self.individuals), offset, None) for offset in offsets]
             for competitors in islice(zip(*generators), len(self.individuals)):
                 scores = self.eval_function(*competitors)
