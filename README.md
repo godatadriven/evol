@@ -52,7 +52,7 @@ You might notice that many parts of these algorithms are similar and it
 is the goal of this library is to automate these parts. We hope to
 provide an API that is fun to use and easy to tweak your heuristics in.
 
-A working example of what is decribed above about looks like this:
+A working example of something silimar to what is depicted above is shown below. You can also find this code as an example in the `/examples/simple_nonlinear.py`. 
 
 ```python
 import random
