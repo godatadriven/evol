@@ -49,7 +49,7 @@ def add_noise(chromosome, sigma):
 pop = Population(chromosomes=[random_start() for _ in range(200)],
                  eval_function=func_to_optimise,
                  maximize=True,
-                 logger=BaseLogger(file="/tmp/evol.log"))
+                 logger=BaseLogger(target="/tmp/evol.log"))
 
 evo1 = (Evolution()
        .survive(fraction=0.1)

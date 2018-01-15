@@ -160,15 +160,17 @@ class Evolution:
         """
         return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
 
-    def log(self, name=None, **kwargs) -> 'Evolution':
+    def log(self, name=None, every=1, **kwargs) -> 'Evolution':
         """
         Logs a population. If a Population object was initialized with a logger
         object then you may specify how logging is handled. The base logging 
         operation just logs to standard out. 
-
+        :param name: Name of the log step.
+        :param every: Setting to limit the logs being pushed. By setting this
+            parameter to 'n' we only once every 'n' log calls. 
         :return: self
         """
-        return self._add_step(LogStep(name, **kwargs))
+        return self._add_step(LogStep(name, every=every, **kwargs))
 
 
     def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':

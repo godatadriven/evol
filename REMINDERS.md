@@ -23,6 +23,7 @@ If you want to confirm that it works you can open the `index.html` file.
 From the root folder, run:
 
 ```
+rm -rf dist
 python setup.py sdist
 python setup.py bdist_wheel --universal
 twine upload dist/*
