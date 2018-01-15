@@ -39,7 +39,7 @@ class TestPopulationSimple(TestPopulation):
         def init_func():
             return 1
 
-        pop = Population.generate(init_func=init_func, eval_func=lambda x: x, size=200)
+        pop = Population.generate(init_func=init_func, eval_function=lambda x: x, size=200)
         assert len(pop) == 200
         assert pop.intended_size == 200
         assert pop.individuals[0].chromosome == 1

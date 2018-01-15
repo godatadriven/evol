@@ -4,15 +4,17 @@ at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
-
-from random import choices, randint
-from copy import copy
 from itertools import cycle, islice
+from typing import Any, Callable, Union
 from uuid import uuid4
 
+from copy import copy
+from random import choices, randint
+
 from evol import Individual
-from evol.logger import BaseLogger
 from evol.helpers.utils import select_arguments, offspring_generator
+from evol.logger import BaseLogger
+from evol.serialization import SimpleSerializer
 
 
 class Population:
@@ -26,7 +28,8 @@ class Population:
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(), generation=0, intended_size=None):
+    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(),
+                 generation=0, intended_size=None, serializer=None, checkpoint_target=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
@@ -35,11 +38,13 @@ class Population:
         self.intended_size = len(chromosomes) if intended_size is None else intended_size
         self.maximize = maximize
         self.logger = logger
+        self.serializer = SimpleSerializer(target=checkpoint_target) if serializer is None else serializer
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
                                 eval_function=self.eval_function,
                                 maximize=self.maximize,
+                                serializer=self.serializer,
                                 intended_size=self.intended_size,
                                 logger=self.logger,
                                 generation=self.generation)
@@ -76,9 +81,48 @@ class Population:
             yield individual.chromosome
 
     @classmethod
-    def generate(cls, init_func, eval_func, size=100) -> 'Population':
+    def generate(cls,
+                 init_func: Callable[[], Any],
+                 eval_function: Callable[..., Union[int, float]],
+                 size: int=100,
+                 **kwargs) -> 'Population':
+        """Generate a population from an initialisation function.
+
+        :param init_func: Function that returns a chromosome.
+        :param eval_function: Function that reduces a chromosome to a fitness.
+        :param size: Number of individuals to generate. Defaults to 100.
+        :return: Population
+        """
         chromosomes = [init_func() for _ in range(size)]
-        return cls(chromosomes=chromosomes, eval_function=eval_func)
+        return cls(chromosomes=chromosomes, eval_function=eval_function, **kwargs)
+
+    @classmethod
+    def load(cls,
+             target: str,
+             eval_function: Callable[..., Union[int, float]],
+             **kwargs) -> 'Population':
+        """Load a population from a checkpoint.
+
+        :param target: Path to checkpoint directory or file.
+        :param eval_function: Function that reduces a chromosome to a fitness.
+        :param kwargs: Any argument the init method accepts.
+        :return: Population
+        """
+        result = cls(chromosomes=[], eval_function=eval_function, **kwargs)
+        result.individuals = result.serializer.load(target=target)
+        return result
+
+    def checkpoint(self, target: Union[str, None]=None, method: str= 'pickle') -> 'Population':
+        """Checkpoint the population.
+
+        :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
+            which can be provided upon initialisation. Defaults to None.
+        :param method: One of 'pickle' or 'json'. When 'json', the chromosomes need to be json-serializable.
+            Defaults to 'pickle'.
+        :return: Population
+        """
+        self.serializer.checkpoint(individuals=self.individuals, target=target, method=method)
+        return self
 
     @property
     def _individual_weights(self):
