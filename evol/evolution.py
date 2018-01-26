@@ -6,11 +6,13 @@ but because an evolution is seperate from a population you can
 play around with them more easily.
 """
 
+from typing import Union
+
 from copy import copy
 
+from .step import CheckpointStep, LogStep
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
-from .step import LogStep
 
 
 class Evolution:
@@ -59,6 +61,18 @@ class Evolution:
         :rtype: Evolution
         """
         return self._add_step(ApplyStep(name=name, func=func, **kwargs))
+
+    def checkpoint(self, name=None, target: Union[str, None]=None, method: str='pickle', every: int=1) -> 'Evolution':
+        """Add a checkpoint step to the Evolution.
+
+        :param name: Name of the map step.
+        :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
+            which can be provided upon initialisation. Defaults to None.
+        :param method: One of 'pickle' or 'json'. When 'json', the chromosomes need to be json-serializable.
+            Defaults to 'pickle'.
+        :param every: Checkpoint once every 'every' iterations. Defaults to 1.
+        """
+        return self._add_step(CheckpointStep(name=name, target=target, method=method, every=every))
 
     def map(self, func, name=None, **kwargs) -> 'Evolution':
         """Add a map step to the Evolution.
@@ -160,15 +174,17 @@ class Evolution:
         """
         return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
 
-    def log(self, name=None, **kwargs) -> 'Evolution':
+    def log(self, name=None, every=1, **kwargs) -> 'Evolution':
         """
         Logs a population. If a Population object was initialized with a logger
         object then you may specify how logging is handled. The base logging 
         operation just logs to standard out. 
-
+        :param name: Name of the log step.
+        :param every: Setting to limit the logs being pushed. By setting this
+            parameter to 'n' we only once every 'n' log calls. 
         :return: self
         """
-        return self._add_step(LogStep(name, **kwargs))
+        return self._add_step(LogStep(name, every=every, **kwargs))
 
 
     def repeat(self, evolution: 'Evolution', n:int = 1, name=None) -> 'Evolution':

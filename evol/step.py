@@ -23,6 +23,21 @@ class ApplyStep(EvolutionStep):
         return population.apply(**self.kwargs)
 
 
+class CheckpointStep(EvolutionStep):
+
+    def __init__(self, name, every=1, **kwargs):
+        EvolutionStep.__init__(self, name, **kwargs)
+        self.count = 0
+        self.every = every
+
+    def apply(self, population) -> Population:
+        self.count += 1
+        if self.count >= self.every:
+            self.count = 0
+            return population.checkpoint(**self.kwargs)
+        return population
+
+
 class MapStep(EvolutionStep):
 
     def apply(self, population) -> Population:
@@ -60,9 +75,17 @@ class MutateStep(EvolutionStep):
 
 
 class LogStep(EvolutionStep):
+    def __init__(self, name, every=1, **kwargs):
+        EvolutionStep.__init__(self, name, **kwargs)
+        self.count = 0
+        self.every = every
 
     def apply(self, population) -> Population:
-        return population.log(**self.kwargs)
+        self.count += 1
+        if self.count >= self.every:
+            self.count = 0
+            return population.log(**self.kwargs)
+        return population
 
 class RepeatStep(EvolutionStep):
 

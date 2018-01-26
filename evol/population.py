@@ -4,16 +4,17 @@ at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
-
-from random import choices, randint
-from copy import deepcopy, copy
 from itertools import cycle, islice
+from typing import Any, Callable, Union
 from uuid import uuid4
-import datetime as dt
+
+from copy import copy
+from random import choices, randint
 
 from evol import Individual
-from evol.logger import BaseLogger
 from evol.helpers.utils import select_arguments, offspring_generator
+from evol.logger import BaseLogger
+from evol.serialization import SimpleSerializer
 
 
 class Population:
@@ -27,7 +28,8 @@ class Population:
         Defaults to True.
     :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(), generation=0, intended_size=None):
+    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(),
+                 generation=0, intended_size=None, serializer=None, checkpoint_target=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
@@ -36,12 +38,17 @@ class Population:
         self.intended_size = len(chromosomes) if intended_size is None else intended_size
         self.maximize = maximize
         self.logger = logger
+        self.serializer = SimpleSerializer(target=checkpoint_target) if serializer is None else serializer
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
                                 eval_function=self.eval_function,
                                 maximize=self.maximize,
-                                intended_size=self.intended_size)
+                                serializer=self.serializer,
+                                intended_size=self.intended_size,
+                                logger=self.logger,
+                                generation=self.generation)
+        result.documented_best = self.documented_best
         return result
 
     def __iter__(self):
@@ -74,9 +81,48 @@ class Population:
             yield individual.chromosome
 
     @classmethod
-    def generate(cls, init_func, eval_func, size=100) -> 'Population':
+    def generate(cls,
+                 init_func: Callable[[], Any],
+                 eval_function: Callable[..., Union[int, float]],
+                 size: int=100,
+                 **kwargs) -> 'Population':
+        """Generate a population from an initialisation function.
+
+        :param init_func: Function that returns a chromosome.
+        :param eval_function: Function that reduces a chromosome to a fitness.
+        :param size: Number of individuals to generate. Defaults to 100.
+        :return: Population
+        """
         chromosomes = [init_func() for _ in range(size)]
-        return cls(chromosomes=chromosomes, eval_function=eval_func)
+        return cls(chromosomes=chromosomes, eval_function=eval_function, **kwargs)
+
+    @classmethod
+    def load(cls,
+             target: str,
+             eval_function: Callable[..., Union[int, float]],
+             **kwargs) -> 'Population':
+        """Load a population from a checkpoint.
+
+        :param target: Path to checkpoint directory or file.
+        :param eval_function: Function that reduces a chromosome to a fitness.
+        :param kwargs: Any argument the init method accepts.
+        :return: Population
+        """
+        result = cls(chromosomes=[], eval_function=eval_function, **kwargs)
+        result.individuals = result.serializer.load(target=target)
+        return result
+
+    def checkpoint(self, target: Union[str, None]=None, method: str= 'pickle') -> 'Population':
+        """Checkpoint the population.
+
+        :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
+            which can be provided upon initialisation. Defaults to None.
+        :param method: One of 'pickle' or 'json'. When 'json', the chromosomes need to be json-serializable.
+            Defaults to 'pickle'.
+        :return: Population
+        """
+        self.serializer.checkpoint(individuals=self.individuals, target=target, method=method)
+        return self
 
     @property
     def _individual_weights(self):
@@ -301,26 +347,49 @@ class ContestPopulation(Population):
         self.contests_per_round = contests_per_round
         self.individuals_per_contest = individuals_per_contest
 
-    def evaluate(self, lazy: bool=False) -> 'ContestPopulation':
+    def evaluate(self, lazy: bool=False,
+                 contests_per_round: int = None,
+                 individuals_per_contest: int=None) -> 'ContestPopulation':
         """Evaluate the individuals in the population.
 
-        This evaluates the fitness of all individuals. If lazy is True, the
-        fitness is only evaluated when a fitness value is not yet known for
-        all individuals.
+        This evaluates the fitness of all individuals. For each round of 
+        evaluation, each individual participates in a given number of 
+        contests, in which a given number of individuals take part.
+        The resulting scores of these contests are summed to form the fitness.
+        This means that the score of the individual is influenced by other
+        chromosomes in the population.
+        
+        Note that in the `ContestPopulation` two settings are passed at 
+        initialisation which affect how we are evaluating individuals: 
+        contests_per_round and individuals_per_contest. You may overwrite them
+        here if you wish. 
+        
+        If lazy is True, the fitness is only evaluated when a fitness value 
+        is not yet known for all individuals.
         In most situations adding an explicit evaluation step is not needed, as
         lazy evaluation is implicitly included in the operations that need it
         (most notably in the survive operation).
 
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
         :type lazy: bool
+        :param contests_per_round: If set, overwrites the population setting for the
+        number of contests there will be every round.
+        :type contests_per_round: int
+        :param individuals_per_contest: If set, overwrites the population setting for
+        number of individuals to have in a contest during the evaluation.
+        :type individuals_per_contest: int
         :return: self
         """
+        if contests_per_round is None:
+            contests_per_round = self.contests_per_round
+        if individuals_per_contest is None:
+            individuals_per_contest = self.individuals_per_contest
         if lazy and all(individual.fitness is not None for individual in self):
             return self
         for individual in self.individuals:
             individual.fitness = 0
-        for _ in range(self.contests_per_round):
-            offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(self.individuals_per_contest - 1)]
+        for _ in range(contests_per_round):
+            offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(individuals_per_contest - 1)]
             generators = [islice(cycle(self.individuals), offset, None) for offset in offsets]
             for competitors in islice(zip(*generators), len(self.individuals)):
                 scores = self.eval_function(*competitors)
