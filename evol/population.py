@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Union
+from typing import Any, Callable, Iterable, Union
 from uuid import uuid4
 
 from copy import copy
@@ -20,22 +20,26 @@ from evol.serialization import SimpleSerializer
 class Population:
     """Population of Individuals
 
-    :param chromosomes: Collection of initial chromosomes of the Population.
-    :type chromosomes: Collection[chromosome]
+    :param chromosomes: Iterable of initial chromosomes of the Population.
     :param eval_function: Function that reduces a chromosome to a fitness.
-    :type eval_function: Callable[chromosome] -> float
     :param maximize: If True, fitness will be maximized, otherwise minimized.
         Defaults to True.
-    :type maximize: bool
     """
-    def __init__(self, chromosomes, eval_function, maximize=True, logger=BaseLogger(),
-                 generation=0, intended_size=None, serializer=None, checkpoint_target=None):
+    def __init__(self,
+                 chromosomes: Iterable,
+                 eval_function: Callable[Any, float],
+                 maximize: bool=True,
+                 logger=BaseLogger(),
+                 generation: int=0,
+                 intended_size: Union[int, None]=None,
+                 serializer=None,
+                 checkpoint_target: Union[str, None]=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
         self.generation = generation
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
-        self.intended_size = len(chromosomes) if intended_size is None else intended_size
+        self.intended_size = intended_size or len(self.individuals)
         self.maximize = maximize
         self.logger = logger
         self.serializer = SimpleSerializer(target=checkpoint_target) if serializer is None else serializer
