@@ -29,7 +29,7 @@ class Population:
                  chromosomes: Iterable,
                  eval_function: Callable[Any, float],
                  maximize: bool=True,
-                 logger=BaseLogger(),
+                 logger=None,
                  generation: int=0,
                  intended_size: Union[int, None]=None,
                  serializer=None,
@@ -41,8 +41,8 @@ class Population:
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
         self.intended_size = intended_size or len(self.individuals)
         self.maximize = maximize
-        self.logger = logger
-        self.serializer = SimpleSerializer(target=checkpoint_target) if serializer is None else serializer
+        self.logger = logger or BaseLogger()
+        self.serializer = serializer or SimpleSerializer(target=checkpoint_target)
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
