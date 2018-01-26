@@ -24,6 +24,16 @@ class Population:
     :param eval_function: Function that reduces a chromosome to a fitness.
     :param maximize: If True, fitness will be maximized, otherwise minimized.
         Defaults to True.
+    :param logger: Logger object for the Population. If None, a new BaseLogger
+        is created. Defaults to None.
+    :param generation: Generation of the Population. Defaults to 0.
+    :param intended_size: Intended size of the Population. The population will
+        be replenished to this size by .breed(). Defaults to the number of
+        chromosomes provided.
+    :param checkpoint_target: Target for the serializer of the Population. If
+        a serializer is provided, this target is ignored. Defaults to None.
+    :param serializer: Serializer for the Population. If None, a new
+        SimpleSerializer is created. Defaults to None.
     """
     def __init__(self,
                  chromosomes: Iterable,
@@ -32,8 +42,8 @@ class Population:
                  logger=None,
                  generation: int=0,
                  intended_size: Union[int, None]=None,
-                 serializer=None,
-                 checkpoint_target: Union[str, None]=None):
+                 checkpoint_target: Union[str, None] = None,
+                 serializer=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
