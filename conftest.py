@@ -15,6 +15,6 @@ def simple_evaluation_function():
     return eval_func
 
 
-@fixture(scope='module')
+@fixture(scope='function')
 def simple_population(simple_chromosomes, simple_evaluation_function):
     return Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)

@@ -24,8 +24,8 @@ class TestLoggerSimple:
         assert len(read_stdout) == 0
 
     def test_baselogger_can_write_to_stdout(self, capsys, simple_chromosomes, simple_evaluation_function):
-        pop = Population(chromosomes=range(10),
-                         eval_function=lambda x:x,
+        pop = Population(chromosomes=simple_chromosomes,
+                         eval_function=lambda x: x,
                          logger=BaseLogger(target=None, stdout=True))
         pop.log()
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
