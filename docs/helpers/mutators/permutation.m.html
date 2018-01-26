@@ -3,7 +3,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>evol.helpers.pickers API documentation</title>
+    <title>evol.helpers.mutators.permutation API documentation</title>
     <meta name="description" content="" />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
@@ -1044,7 +1044,8 @@ table {
     <li class="set"><h3><a href="#header-functions">Functions</a></h3>
       
   <ul>
-    <li class="mono"><a href="#evol.helpers.pickers.pick_random">pick_random</a></li>
+    <li class="mono"><a href="#evol.helpers.mutators.permutation.inversion">inversion</a></li>
+    <li class="mono"><a href="#evol.helpers.mutators.permutation.swap_elements">swap_elements</a></li>
   </ul>
 
     </li>
@@ -1061,16 +1062,41 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">evol.helpers.pickers</span> module</h1>
+  <h1 class="title"><span class="name">evol.helpers.mutators.permutation</span> module</h1>
   
   
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.pickers', this);">Show source &equiv;</a></p>
-  <div id="source-evol.helpers.pickers" class="source">
-    <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.mutators.permutation', this);">Show source &equiv;</a></p>
+  <div id="source-evol.helpers.mutators.permutation" class="source">
+    <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">sample</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">select_partition</span>
 
 
-<span class="k">def</span> <span class="nf">pick_random</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">n_parents</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_parents</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">inversion</span><span class="p">(</span><span class="n">chromosome</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">min_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Mutate a chromosome using inversion.</span>
+
+<span class="sd">    Inverts a random partition of the chromosome.</span>
+
+<span class="sd">    :param chromosome: Original chromosome.</span>
+<span class="sd">    :param min_size: Minimum partition size. Defaults to 2.</span>
+<span class="sd">    :param max_size: Maximum partition size. Defaults to length - 1.</span>
+<span class="sd">    :return: Mutated chromosome.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">select_partition</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chromosome</span><span class="p">),</span> <span class="n">min_size</span><span class="p">,</span> <span class="n">max_size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chromosome</span><span class="p">[:</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">chromosome</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]))</span> <span class="o">+</span> <span class="n">chromosome</span><span class="p">[</span><span class="n">end</span><span class="p">:]</span>
+
+
+<span class="k">def</span> <span class="nf">swap_elements</span><span class="p">(</span><span class="n">chromosome</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Randomly swap two elements of the chromosome.</span>
+
+<span class="sd">    :param chromosome: Original chromosome.</span>
+<span class="sd">    :return: Mutated chromosome.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chromosome</span><span class="p">)</span>
+    <span class="n">index_1</span><span class="p">,</span> <span class="n">index_2</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chromosome</span><span class="p">)),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">result</span><span class="p">[</span><span class="n">index_1</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="n">index_2</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">index_2</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="n">index_1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -1082,18 +1108,66 @@ table {
     <h2 class="section-title" id="header-functions">Functions</h2>
       
   <div class="item">
-    <div class="name def" id="evol.helpers.pickers.pick_random">
-    <p>def <span class="ident">pick_random</span>(</p><p>parents, n_parents=2)</p>
+    <div class="name def" id="evol.helpers.mutators.permutation.inversion">
+    <p>def <span class="ident">inversion</span>(</p><p>chromosome, min_size=2, max_size=None)</p>
     </div>
     
 
     
   
+    <div class="desc"><p>Mutate a chromosome using inversion.</p>
+<p>Inverts a random partition of the chromosome.</p>
+<p>:param chromosome: Original chromosome.
+:param min_size: Minimum partition size. Defaults to 2.
+:param max_size: Maximum partition size. Defaults to length - 1.
+:return: Mutated chromosome.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.pickers.pick_random', this);">Show source &equiv;</a></p>
-  <div id="source-evol.helpers.pickers.pick_random" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pick_random</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">n_parents</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_parents</span><span class="p">))</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.mutators.permutation.inversion', this);">Show source &equiv;</a></p>
+  <div id="source-evol.helpers.mutators.permutation.inversion" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">inversion</span><span class="p">(</span><span class="n">chromosome</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">min_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Mutate a chromosome using inversion.</span>
+
+<span class="sd">    Inverts a random partition of the chromosome.</span>
+
+<span class="sd">    :param chromosome: Original chromosome.</span>
+<span class="sd">    :param min_size: Minimum partition size. Defaults to 2.</span>
+<span class="sd">    :param max_size: Maximum partition size. Defaults to length - 1.</span>
+<span class="sd">    :return: Mutated chromosome.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">select_partition</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chromosome</span><span class="p">),</span> <span class="n">min_size</span><span class="p">,</span> <span class="n">max_size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chromosome</span><span class="p">[:</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">chromosome</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]))</span> <span class="o">+</span> <span class="n">chromosome</span><span class="p">[</span><span class="n">end</span><span class="p">:]</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="evol.helpers.mutators.permutation.swap_elements">
+    <p>def <span class="ident">swap_elements</span>(</p><p>chromosome)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Randomly swap two elements of the chromosome.</p>
+<p>:param chromosome: Original chromosome.
+:return: Mutated chromosome.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.mutators.permutation.swap_elements', this);">Show source &equiv;</a></p>
+  <div id="source-evol.helpers.mutators.permutation.swap_elements" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">swap_elements</span><span class="p">(</span><span class="n">chromosome</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Randomly swap two elements of the chromosome.</span>
+
+<span class="sd">    :param chromosome: Original chromosome.</span>
+<span class="sd">    :return: Mutated chromosome.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chromosome</span><span class="p">)</span>
+    <span class="n">index_1</span><span class="p">,</span> <span class="n">index_2</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chromosome</span><span class="p">)),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">result</span><span class="p">[</span><span class="n">index_1</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="n">index_2</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">index_2</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="n">index_1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 
   </div>
