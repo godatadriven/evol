@@ -37,7 +37,7 @@ class Population:
     """
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[Any, float],
+                 eval_function: Callable[[Any], float],
                  maximize: bool=True,
                  logger=None,
                  generation: int=0,
