@@ -42,7 +42,7 @@ class Population:
                  logger=None,
                  generation: int=0,
                  intended_size: Union[int, None]=None,
-                 checkpoint_target: Union[str, None] = None,
+                 checkpoint_target: Union[str, None]=None,
                  serializer=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
@@ -185,7 +185,7 @@ class Population:
         self._update_documented_best()
         return self
 
-    def apply(self, func, **kwargs) -> 'Population':
+    def apply(self, func: Callable, **kwargs) -> 'Population':
         """Apply the provided function to the population.
 
         :param func: Function to apply to the population.
@@ -462,9 +462,7 @@ class ContestPopulation(Population):
         self.reset_fitness()
         return self  # If we return the result of Population.survive PyCharm complains that it is of type 'Population'
 
-
     def reset_fitness(self):
         """Reset the fitness of all individuals."""
         for individual in self:
             individual.fitness = None
-
