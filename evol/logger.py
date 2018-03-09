@@ -97,7 +97,6 @@ class MultiLogger:
         """
         The handler method of the Logger object determines how it will be logged.
         In this case we print if there is no file and we append to a file otherwise.
-        :return:
         """
         with open(self.file_population, 'a') as f:
             f.write(json.dumps(dict_to_log))
