@@ -1,3 +1,10 @@
+"""
+Serializers help store (checkpoint) the state of your population during or
+after running your evolutionary algorithm. By default, each Population is
+initialized with a SimpleSerializer, which you can use to store the individuals
+in your population in pickle or json format using the .checkpoint() method of
+the population. Currently no other serializers are available.
+"""
 import json
 import pickle
 from datetime import datetime
