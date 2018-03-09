@@ -1,6 +1,8 @@
-class Problem:
-    def __init__(self):
-        pass
+from abc import ABCMeta, abstractmethod
 
-    def eval_function(self):
-        pass
+
+class Problem(metaclass=ABCMeta):
+
+    @abstractmethod
+    def eval_function(self, solution):
+        raise NotImplementedError
