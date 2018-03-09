@@ -72,8 +72,8 @@ class MultiLogger:
     call. So we are free to record to multiple files if we want as well. This is 
     not per se best practice but it would work. 
     """
-    def __init__(self, file_indidivuals, file_population):
-        self.file_individuals = file_indidivuals
+    def __init__(self, file_individuals, file_population):
+        self.file_individuals = file_individuals
         self.file_population = file_population
 
     def log(self, population, **kwargs):
@@ -97,7 +97,7 @@ class MultiLogger:
         """
         The handler method of the Logger object determines how it will be logged.
         In this case we print if there is no file and we append to a file otherwise.
-        :return: 
+        :return:
         """
         with open(self.file_population, 'a') as f:
             f.write(json.dumps(dict_to_log))
