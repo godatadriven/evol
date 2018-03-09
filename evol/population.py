@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Iterable, Union
+from typing import Any, Callable, Iterable, Union, Tuple
 from uuid import uuid4
 
 from copy import copy
@@ -340,24 +340,40 @@ class ContestPopulation(Population):
     new individuals are present, and the fitness of all individuals is reset
     when the population is modified (e.g. by calling survive, mutate etc).
 
-    :param chromosomes: Collection of initial chromosomes of the Population.
-    :type chromosomes: Collection[chromosome]
-    :param eval_function: Function that reduces multiple chromosomes to a
-        set of scores.
-    :type eval_function: Callable[*chromosomes] -> tuple[float]
+    :param chromosomes: Iterable of initial chromosomes of the Population.
+    :param eval_function: Function that reduces a chromosome to a fitness.
+    :param maximize: If True, fitness will be maximized, otherwise minimized.
+        Defaults to True.
     :param contests_per_round: Number of contests each individual takes part
         in for each evaluation round. Defaults to 10.
-    :type contests_per_round: int
     :param individuals_per_contest: Number of individuals that take part in
         each contest. The size of the population must be divisible by this
         number. Defaults to 2.
-    :type individuals_per_contest: int
-    :param maximize: If True, fitness will be maximized, otherwise minimized.
-        Defaults to True.
-    :type maximize: bool
+    :param logger: Logger object for the Population. If None, a new BaseLogger
+        is created. Defaults to None.
+    :param generation: Generation of the Population. Defaults to 0.
+    :param intended_size: Intended size of the Population. The population will
+        be replenished to this size by .breed(). Defaults to the number of
+        chromosomes provided.
+    :param checkpoint_target: Target for the serializer of the Population. If
+        a serializer is provided, this target is ignored. Defaults to None.
+    :param serializer: Serializer for the Population. If None, a new
+        SimpleSerializer is created. Defaults to None.
     """
-    def __init__(self, chromosomes, eval_function, contests_per_round=10, individuals_per_contest=2, maximize=True):
-        Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize)
+    def __init__(self,
+                 chromosomes: Iterable,
+                 eval_function: Callable[[Iterable[Any]], Tuple[float]],
+                 maximize: bool=True,
+                 contests_per_round=10,
+                 individuals_per_contest=2,
+                 logger=None,
+                 generation: int=0,
+                 intended_size: Union[int, None]=None,
+                 checkpoint_target: Union[str, None]=None,
+                 serializer=None):
+        Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize,
+                            logger=logger, generation=generation, intended_size=intended_size,
+                            checkpoint_target=checkpoint_target, serializer=serializer)
         self.contests_per_round = contests_per_round
         self.individuals_per_contest = individuals_per_contest
 
