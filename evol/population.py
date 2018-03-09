@@ -37,7 +37,7 @@ class Population:
     """
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[[Any], float],
+                 eval_function: Callable[..., Union[int, float]],
                  maximize: bool=True,
                  logger=None,
                  generation: int=0,
@@ -96,18 +96,18 @@ class Population:
 
     @classmethod
     def generate(cls,
-                 init_func: Callable[[], Any],
+                 init_function: Callable[[], Any],
                  eval_function: Callable[..., Union[int, float]],
                  size: int=100,
                  **kwargs) -> 'Population':
         """Generate a population from an initialisation function.
 
-        :param init_func: Function that returns a chromosome.
+        :param init_function: Function that returns a chromosome.
         :param eval_function: Function that reduces a chromosome to a fitness.
         :param size: Number of individuals to generate. Defaults to 100.
         :return: Population
         """
-        chromosomes = [init_func() for _ in range(size)]
+        chromosomes = [init_function() for _ in range(size)]
         return cls(chromosomes=chromosomes, eval_function=eval_function, **kwargs)
 
     @classmethod
@@ -126,7 +126,7 @@ class Population:
         result.individuals = result.serializer.load(target=target)
         return result
 
-    def checkpoint(self, target: Union[str, None]=None, method: str= 'pickle') -> 'Population':
+    def checkpoint(self, target: Union[str, None]=None, method: str='pickle') -> 'Population':
         """Checkpoint the population.
 
         :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
@@ -152,13 +152,11 @@ class Population:
         else:
             return [1-(individual.fitness - min_fitness) / (max_fitness - min_fitness) for individual in self]
 
-    def evolve(self, evolution: 'Evolution', n: int = 1) -> 'Population':
+    def evolve(self, evolution: 'Evolution', n: int=1) -> 'Population':
         """Evolve the population according to an Evolution.
 
         :param evolution: Evolution to follow
-        :type evolution: Evolution
         :param n: Times to apply the evolution. Defaults to 1.
-        :type n: int
         :return: Population
         """
         result = copy(self)
@@ -177,7 +175,6 @@ class Population:
         (most notably in the survive operation).
 
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
-        :type lazy: bool
         :return: self
         """
         for individual in self.individuals:
@@ -185,41 +182,40 @@ class Population:
         self._update_documented_best()
         return self
 
-    def apply(self, func: Callable, **kwargs) -> 'Population':
+    def apply(self, func: Callable[..., 'Population'], **kwargs) -> 'Population':
         """Apply the provided function to the population.
 
-        :param func: Function to apply to the population.
-        :type func: Callable[Population]
+        :param func: A function to apply to the population, which returns the (modified) population.
         :param kwargs: Arguments to pass to the function.
         :return: self
         """
         return func(self, **kwargs)
 
-    def map(self, func, **kwargs) -> 'Population':
+    def map(self, func: Callable[..., Individual], **kwargs) -> 'Population':
         """Apply the provided function to each individual in the population.
 
-        :param func: Function to apply to the individuals in the population.
-        :type func: Callable[Individual] -> Individual
+        :param func: A function to apply to each individual in the population,
+            which when called returns a modified individual.
         :param kwargs: Arguments to pass to the function.
         :return: self
         """
         self.individuals = [func(individual, **kwargs) for individual in self.individuals]
         return self
 
-    def filter(self, func, **kwargs) -> 'Population':
+    def filter(self, func: Callable[..., bool], **kwargs) -> 'Population':
         """Add a filter step to the Evolution.
 
         Filters the individuals in the population using the provided function.
 
-        :param func: Function to filter the individuals in the population by.
-        :type func: Callable[Individual] -> bool
+        :param func: Function to filter the individuals in the population by,
+            which returns a boolean when called on an individual.
         :param kwargs: Arguments to pass to the function.
         :return: self
         """
         self.individuals = [individual for individual in self.individuals if func(individual, **kwargs)]
         return self
 
-    def survive(self, fraction=None, n=None, luck=False) -> 'Population':
+    def survive(self, fraction: Union[float, None]=None, n: Union[int, None]=None, luck: bool=False) -> 'Population':
         """Let part of the population survive.
 
         Remove part of the population. If both fraction and n are specified,
@@ -227,13 +223,10 @@ class Population:
 
         :param fraction: Fraction of the original population that survives.
             Defaults to None.
-        :type fraction: float/None
         :param n: Number of individuals of the population that survive.
             Defaults to None.
-        :type n: int/None
         :param luck: If True, individuals randomly survive (with replacement!)
             with chances proportional to their fitness. Defaults to False.
-        :type luck: bool
         :return: self
         """
         if fraction is None:
@@ -256,19 +249,20 @@ class Population:
             self.individuals = sorted_individuals[:resulting_size]
         return self
 
-    def breed(self, parent_picker, combiner, population_size=None, **kwargs) -> 'Population':
+    def breed(self,
+              parent_picker: Callable[..., Tuple[Individual]],
+              combiner: Callable,
+              population_size: Union[int, None]=None,
+              **kwargs) -> 'Population':
         """Create new individuals by combining existing individuals.
 
-        :param parent_picker: Function that selects parents.
-        :type parent_picker: Callable[list[Individual]] -> tuple[Individual]
+        :param parent_picker: Function that selects parents from a collection of individuals.
         :param combiner: Function that combines chromosomes into a new
             chromosome. Must be able to handle the number of chromosomes
             that the combiner returns.
-        :type combiner: Callable[chromosome, ...] -> chromosome
         :param population_size: Intended population size after breeding.
             If None, take the previous intended population size.
             Defaults to None.
-        :type population_size: int/None
         :param kwargs: Kwargs to pass to the parent_picker and combiner.
             Arguments are only passed to the functions if they accept them.
         :return: self
@@ -285,16 +279,16 @@ class Population:
         # TODO: increase generation and individual's ages
         return self
 
-    def mutate(self, func, probability=1.0, **kwargs) -> 'Population':
+    def mutate(self,
+               func: Callable[..., Any],
+               probability: float=1.0, **kwargs) -> 'Population':
         """Mutate the chromosome of each individual.
 
         :param func: Function that accepts a chromosome and returns
             a mutated chromosome.
-        :type func: Callable[chromosome, **kwargs] -> chromosome
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
-        :type probability: float
         :param kwargs: Arguments to pass to the mutation function.
         :return: self
         """
@@ -362,7 +356,7 @@ class ContestPopulation(Population):
     """
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[[Iterable[Any]], Tuple[float]],
+                 eval_function: Callable[[Iterable[Any]], Tuple[Union[int, float]]],
                  maximize: bool=True,
                  contests_per_round=10,
                  individuals_per_contest=2,
@@ -377,9 +371,10 @@ class ContestPopulation(Population):
         self.contests_per_round = contests_per_round
         self.individuals_per_contest = individuals_per_contest
 
-    def evaluate(self, lazy: bool=False,
-                 contests_per_round: int = None,
-                 individuals_per_contest: int=None) -> 'ContestPopulation':
+    def evaluate(self,
+                 lazy: bool=False,
+                 contests_per_round: Union[int, None]=None,
+                 individuals_per_contest: Union[int, None]=None) -> 'ContestPopulation':
         """Evaluate the individuals in the population.
 
         This evaluates the fitness of all individuals. For each round of 
@@ -401,13 +396,10 @@ class ContestPopulation(Population):
         (most notably in the survive operation).
 
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
-        :type lazy: bool
         :param contests_per_round: If set, overwrites the population setting for the
         number of contests there will be every round.
-        :type contests_per_round: int
         :param individuals_per_contest: If set, overwrites the population setting for
         number of individuals to have in a contest during the evaluation.
-        :type individuals_per_contest: int
         :return: self
         """
         if contests_per_round is None:
@@ -427,13 +419,13 @@ class ContestPopulation(Population):
                     competitor.fitness += score
         return self
 
-    def map(self, func, **kwargs) -> 'Population':
+    def map(self, func: Callable[..., Individual], **kwargs) -> 'Population':
         """Apply the provided function to each individual in the population.
 
         Resets the fitness of all individuals.
 
-        :param func: Function to apply to the individuals in the population.
-        :type func: Callable[Individual] -> Individual
+        :param func: A function to apply to each individual in the population,
+            which when called returns a modified individual.
         :param kwargs: Arguments to pass to the function.
         :return: self
         """
@@ -441,14 +433,14 @@ class ContestPopulation(Population):
         self.reset_fitness()
         return self
 
-    def filter(self, func, **kwargs) -> 'Population':
+    def filter(self, func: Callable[..., bool], **kwargs) -> 'Population':
         """Add a filter step to the Evolution.
 
         Filters the individuals in the population using the provided function.
         Resets the fitness of all individuals.
 
-        :param func: Function to filter the individuals in the population by.
-        :type func: Callable[Individual] -> bool
+        :param func: Function to filter the individuals in the population by,
+            which returns a boolean when called on an individual.
         :param kwargs: Arguments to pass to the function.
         :return: self
         """
@@ -456,7 +448,10 @@ class ContestPopulation(Population):
         self.reset_fitness()
         return self
 
-    def survive(self, fraction=None, n=None, luck=False) -> 'ContestPopulation':
+    def survive(self,
+                fraction: Union[float, None]=None,
+                n: Union[int, None]=None,
+                luck: bool=False) -> 'ContestPopulation':
         """Let part of the population survive.
 
         Remove part of the population. If both fraction and n are specified,
@@ -465,13 +460,10 @@ class ContestPopulation(Population):
 
         :param fraction: Fraction of the original population that survives.
             Defaults to None.
-        :type fraction: float/None
         :param n: Number of individuals of the population that survive.
             Defaults to None.
-        :type n: int/None
         :param luck: If True, individuals randomly survive (with replacement!)
             with chances proportional to their fitness. Defaults to False.
-        :type luck: bool
         :return: self
         """
         Population.survive(self, fraction=fraction, n=n, luck=luck)
