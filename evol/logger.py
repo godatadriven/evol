@@ -1,3 +1,9 @@
+"""
+Loggers help keep track of the workings of your evolutionary algorithm. By
+default, each Population is initialized with a BaseLogger, which you can use
+by using the .log() method of the population. If you want more complex
+behaviour, you can supply another logger to the Population on initialisation.
+"""
 import datetime as dt
 import os
 import json
