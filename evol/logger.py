@@ -11,21 +11,22 @@ import logging
 import sys
 import uuid
 
-class BaseLogger():
+
+class BaseLogger:
     """
     The `evol.BaseLogger` is the most basic logger in evol. 
     You can supply it to a population so that the population 
     knows how to handle the `.log()` verb. 
     """
-    def __init__(self, target=None, stdout=False, format='%(asctime)s,%(message)s'):
+    def __init__(self, target=None, stdout=False, fmt='%(asctime)s,%(message)s'):
         self.file = target
         if target is not None:
             if not os.path.exists(os.path.split(target)[0]):
                 raise RuntimeError(f"path to target {os.path.split(target)[0]} does not exist!")
-        formatter = logging.Formatter(fmt=format, datefmt='%Y-%m-%d %H:%M:%S')
+        formatter = logging.Formatter(fmt=fmt, datefmt='%Y-%m-%d %H:%M:%S')
         self.logger = logging.getLogger(name=f"{uuid.uuid4()}")
         if not self.logger.handlers:
-            # we do this extra step because loggers can behave instrage ways otherwise
+            # we do this extra step because loggers can behave in strange ways otherwise
             # https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/
             if target:
                 file_handler = logging.FileHandler(filename=target)
@@ -63,7 +64,7 @@ class SummaryLogger(BaseLogger):
         self.logger.info(f'{min(fitnesses)},{sum(fitnesses)/len(fitnesses)},{max(fitnesses)}' + values)
 
 
-class MultiLogger():
+class MultiLogger:
     """
     The `evol.Multilogger` is a logger object that can handle writing to two files. 
     It is here for demonstration purposes to show how you could customize the logging. 
@@ -102,4 +103,3 @@ class MultiLogger():
             f.write(json.dumps(dict_to_log))
         with open(self.file_population, 'a') as f:
             f.writelines(ind_generator)
-
