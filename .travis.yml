@@ -11,3 +11,4 @@ script:
   - python examples/number_of_parents.py --n_parents=4
   - python examples/very_basic_tsp.py
   - python examples/simple_logging.py
+  - python examples/rock_paper_scissors.py
