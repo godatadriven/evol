@@ -1,7 +1,7 @@
 """
 Individual objects in `evol` are a wrapper around a chromosome.
 Internally we work with individuals because that allows us to 
-seperate the fitness calculation from the datastructure. This 
+separate the fitness calculation from the data structure. This
 saves a lot of CPU power.
 """
 
