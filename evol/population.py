@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Iterable, Union, Tuple
+from typing import Any, Callable, Iterable, Union, Sequence, Tuple
 from uuid import uuid4
 
 from copy import copy
@@ -356,7 +356,7 @@ class ContestPopulation(Population):
     """
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[[Iterable[Any]], Tuple[Union[int, float]]],
+                 eval_function: Callable[[Iterable[Any]], Sequence[Union[int, float], ...]],
                  maximize: bool=True,
                  contests_per_round=10,
                  individuals_per_contest=2,
