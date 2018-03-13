@@ -1,9 +1,10 @@
 from .population import Population
+from typing import Union
 
 
 class EvolutionStep:
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: Union[str, None], **kwargs):
         self.name = name
         self.kwargs = kwargs
 
