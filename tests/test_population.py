@@ -214,7 +214,7 @@ class TestPopulationBest:
         assert pop.documented_best is None
         pop.evaluate()
         assert pop.documented_best.fitness == pop.current_best.fitness
-        pop.mutate(func=lambda x: x-10, probability=1).evaluate()
+        pop.mutate(mutate_function=lambda x: x - 10, probability=1).evaluate()
         assert pop.documented_best.fitness - 20 == pop.current_best.fitness
 
 

@@ -280,11 +280,11 @@ class Population:
         return self
 
     def mutate(self,
-               func: Callable[..., Any],
+               mutate_function: Callable[..., Any],
                probability: float=1.0, **kwargs) -> 'Population':
         """Mutate the chromosome of each individual.
 
-        :param func: Function that accepts a chromosome and returns
+        :param mutate_function: Function that accepts a chromosome and returns
             a mutated chromosome.
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
@@ -293,7 +293,7 @@ class Population:
         :return: self
         """
         for individual in self.individuals:
-            individual.mutate(func, probability=probability, **kwargs)
+            individual.mutate(mutate_function, probability=probability, **kwargs)
         return self
 
     def log(self, **kwargs) -> 'Population':

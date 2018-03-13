@@ -49,15 +49,15 @@ class Individual:
         if self.fitness is None or not lazy:
             self.fitness = eval_function(self.chromosome)
 
-    def mutate(self, func: Callable[..., Any], probability: float=1.0, **kwargs):
+    def mutate(self, mutate_function: Callable[..., Any], probability: float=1.0, **kwargs):
         """Mutate the chromosome of the individual.
 
-        :param func: Function that accepts a chromosome and returns a mutated chromosome.
+        :param mutate_function: Function that accepts a chromosome and returns a mutated chromosome.
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
         :param kwargs: Arguments to pass to the mutation function.
         """
         if probability == 1.0 or random() < probability:
-            self.chromosome = func(self.chromosome, **kwargs)
+            self.chromosome = mutate_function(self.chromosome, **kwargs)
             self.fitness = None
