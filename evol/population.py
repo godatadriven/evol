@@ -250,7 +250,7 @@ class Population:
         return self
 
     def breed(self,
-              parent_picker: Callable[..., Tuple[Individual]],
+              parent_picker: Callable[..., Sequence[Individual]],
               combiner: Callable,
               population_size: Union[int, None]=None,
               **kwargs) -> 'Population':

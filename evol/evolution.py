@@ -6,7 +6,7 @@ but because an evolution is seperate from a population you can
 play around with them more easily.
 """
 
-from typing import Any, Callable, Tuple, Union
+from typing import Any, Callable, Sequence, Union
 
 from copy import copy
 
@@ -126,7 +126,7 @@ class Evolution:
         return after_evaluate._add_step(SurviveStep(name=name, fraction=fraction, n=n, luck=luck))
 
     def breed(self,
-              parent_picker: Callable[..., Tuple[Individual]],
+              parent_picker: Callable[..., Sequence[Individual]],
               combiner: Callable,
               population_size: Union[int, None]=None,
               name: Union[str, None]=None,
