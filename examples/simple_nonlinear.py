@@ -48,15 +48,15 @@ pop = Population(chromosomes=[random_start() for _ in range(200)],
 
 # We define a sequence of steps to change these candidates
 evo1 = (Evolution()
-       .survive(fraction=0.5)
-       .breed(parent_picker=pick_random_parents, combiner=make_child)
-       .mutate(func=add_noise, sigma=1))
+        .survive(fraction=0.5)
+        .breed(parent_picker=pick_random_parents, combiner=make_child)
+        .mutate(mutate_function=add_noise, sigma=1))
 
 # We define another sequence of steps to change these candidates
 evo2 = (Evolution()
-       .survive(n=1)
-       .breed(parent_picker=pick_random_parents, combiner=make_child)
-       .mutate(func=add_noise, sigma=0.2))
+        .survive(n=1)
+        .breed(parent_picker=pick_random_parents, combiner=make_child)
+        .mutate(mutate_function=add_noise, sigma=0.2))
 
 # We are combining two evolutions into a third one. You don't have to
 # but this approach demonstrates the flexibility of the library.

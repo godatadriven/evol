@@ -151,7 +151,7 @@ class Evolution:
                                         population_size=population_size, **kwargs))
 
     def mutate(self,
-               func: Callable[..., Any],
+               mutate_function: Callable[..., Any],
                probability: float=1.0,
                name: Union[str, None]=None,
                **kwargs) -> 'Evolution':
@@ -159,7 +159,7 @@ class Evolution:
 
         This mutates the chromosome of each individual.
 
-        :param func: Function that accepts a chromosome and returns
+        :param mutate_function: Function that accepts a chromosome and returns
             a mutated chromosome.
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
@@ -169,7 +169,7 @@ class Evolution:
             Arguments are only passed to the functions if they accept them.
         :return: self
         """
-        return self._add_step(MutateStep(name=name, probability=probability, func=func, **kwargs))
+        return self._add_step(MutateStep(name=name, probability=probability, mutate_function=mutate_function, **kwargs))
 
     def log(self, every: int=1, name: Union[str, None]=None, **kwargs) -> 'Evolution':
         """Logs a population.
