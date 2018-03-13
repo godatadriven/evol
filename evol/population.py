@@ -356,7 +356,7 @@ class ContestPopulation(Population):
     """
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[[Iterable[Any]], Sequence[Union[int, float], ...]],
+                 eval_function: Callable[[Iterable[Any]], Sequence[Union[int, float]]],
                  maximize: bool=True,
                  contests_per_round=10,
                  individuals_per_contest=2,
