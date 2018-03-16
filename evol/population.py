@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Iterable, Union, Sequence, Tuple
+from typing import Any, Callable, Iterable, Optional, Union, Sequence
 from uuid import uuid4
 
 from copy import copy
@@ -41,8 +41,8 @@ class Population:
                  maximize: bool=True,
                  logger=None,
                  generation: int=0,
-                 intended_size: Union[int, None]=None,
-                 checkpoint_target: Union[str, None]=None,
+                 intended_size: Optional[int]=None,
+                 checkpoint_target: Optional[str]=None,
                  serializer=None):
         self.id = str(uuid4())[:6]
         self.documented_best = None
@@ -126,7 +126,7 @@ class Population:
         result.individuals = result.serializer.load(target=target)
         return result
 
-    def checkpoint(self, target: Union[str, None]=None, method: str='pickle') -> 'Population':
+    def checkpoint(self, target: Optional[str]=None, method: str='pickle') -> 'Population':
         """Checkpoint the population.
 
         :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
@@ -215,7 +215,7 @@ class Population:
         self.individuals = [individual for individual in self.individuals if func(individual, **kwargs)]
         return self
 
-    def survive(self, fraction: Union[float, None]=None, n: Union[int, None]=None, luck: bool=False) -> 'Population':
+    def survive(self, fraction: Optional[float]=None, n: Optional[int]=None, luck: bool=False) -> 'Population':
         """Let part of the population survive.
 
         Remove part of the population. If both fraction and n are specified,
@@ -252,7 +252,7 @@ class Population:
     def breed(self,
               parent_picker: Callable[..., Sequence[Individual]],
               combiner: Callable,
-              population_size: Union[int, None]=None,
+              population_size: Optional[int]=None,
               **kwargs) -> 'Population':
         """Create new individuals by combining existing individuals.
 
@@ -362,8 +362,8 @@ class ContestPopulation(Population):
                  individuals_per_contest=2,
                  logger=None,
                  generation: int=0,
-                 intended_size: Union[int, None]=None,
-                 checkpoint_target: Union[str, None]=None,
+                 intended_size: Optional[int]=None,
+                 checkpoint_target: Optional[int]=None,
                  serializer=None):
         Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize,
                             logger=logger, generation=generation, intended_size=intended_size,
@@ -373,8 +373,8 @@ class ContestPopulation(Population):
 
     def evaluate(self,
                  lazy: bool=False,
-                 contests_per_round: Union[int, None]=None,
-                 individuals_per_contest: Union[int, None]=None) -> 'ContestPopulation':
+                 contests_per_round: Optional[int]=None,
+                 individuals_per_contest: Optional[int]=None) -> 'ContestPopulation':
         """Evaluate the individuals in the population.
 
         This evaluates the fitness of all individuals. For each round of 
@@ -449,8 +449,8 @@ class ContestPopulation(Population):
         return self
 
     def survive(self,
-                fraction: Union[float, None]=None,
-                n: Union[int, None]=None,
+                fraction: Optional[float]=None,
+                n: Optional[int]=None,
                 luck: bool=False) -> 'ContestPopulation':
         """Let part of the population survive.
 

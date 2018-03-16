@@ -5,7 +5,7 @@ separate the fitness calculation from the data structure. This
 saves a lot of CPU power.
 """
 
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 from uuid import uuid4
 
 from random import random
@@ -19,7 +19,7 @@ class Individual:
         Defaults to None.
     """
 
-    def __init__(self, chromosome: Any, fitness: Union[int, float, None]=None):
+    def __init__(self, chromosome: Any, fitness: Optional[Union[int, float]]=None):
         self.age = 0
         self.chromosome = chromosome
         self.fitness = fitness
