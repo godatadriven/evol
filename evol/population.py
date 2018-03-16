@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Iterable, Optional, Union, Sequence
+from typing import Any, Callable, Generator, Iterable, Optional, Union, Sequence
 from uuid import uuid4
 
 from copy import copy
@@ -78,19 +78,19 @@ class Population:
         return f"<Population object with size {len(self)}>"
 
     @property
-    def current_best(self):
+    def current_best(self) -> Individual:
         evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
         if len(evaluated_individuals) > 0:
             return max(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
 
     @property
-    def current_worst(self):
+    def current_worst(self) -> Individual:
         evaluated_individuals = tuple(filter(lambda x: x.fitness is not None, self.individuals))
         if len(evaluated_individuals) > 0:
             return min(evaluated_individuals, key=lambda x: x.fitness if self.maximize else -x.fitness)
 
     @property
-    def chromosomes(self):
+    def chromosomes(self) -> Generator[Any, None, None]:
         for individual in self.individuals:
             yield individual.chromosome
 
