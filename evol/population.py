@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object. 
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Generator, Iterable, Optional, Union, Sequence
+from typing import Any, Callable, Generator, Iterable, Optional, Sequence
 from uuid import uuid4
 
 from copy import copy
@@ -37,7 +37,7 @@ class Population:
     """
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[..., Union[int, float]],
+                 eval_function: Callable[..., float],
                  maximize: bool=True,
                  logger=None,
                  generation: int=0,
@@ -97,7 +97,7 @@ class Population:
     @classmethod
     def generate(cls,
                  init_function: Callable[[], Any],
-                 eval_function: Callable[..., Union[int, float]],
+                 eval_function: Callable[..., float],
                  size: int=100,
                  **kwargs) -> 'Population':
         """Generate a population from an initialisation function.
@@ -113,7 +113,7 @@ class Population:
     @classmethod
     def load(cls,
              target: str,
-             eval_function: Callable[..., Union[int, float]],
+             eval_function: Callable[..., float],
              **kwargs) -> 'Population':
         """Load a population from a checkpoint.
 
@@ -356,7 +356,7 @@ class ContestPopulation(Population):
     """
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[[Iterable[Any]], Sequence[Union[int, float]]],
+                 eval_function: Callable[[Iterable[Any]], Sequence[float]],
                  maximize: bool=True,
                  contests_per_round=10,
                  individuals_per_contest=2,
