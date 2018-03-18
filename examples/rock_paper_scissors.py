@@ -1,9 +1,7 @@
+from argparse import ArgumentParser
+
 from collections import Counter
 from random import choice, random, seed
-
-import fire
-import matplotlib.pylab as plt
-import pandas as pd
 
 from evol import Evolution, ContestPopulation
 from evol.helpers.pickers import pick_random
@@ -72,6 +70,12 @@ def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=4
         pop = pop.evolve(evo)
         preferences_over_time.append(preferences)
 
+    try:
+        import matplotlib.pylab as plt
+        import pandas as pd
+    except ImportError:
+        print("If you install matplotlib and pandas you will get a pretty plot.")
+        return
     ax = pd.DataFrame(preferences_over_time).fillna(0).plot(figsize=(10, 4))
     ax.set_ylim([0, population_size])
     ax.set_xlabel('iteration')
@@ -79,5 +83,21 @@ def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=4
     plt.show()
 
 
+def parse_arguments():
+    parser = ArgumentParser(description='Run the rock-paper-scissors example.')
+    parser.add_argument('--population-size', dest='population_size', type=int, default=100,
+                        help='the number of candidates to start the algorithm with')
+    parser.add_argument('--n-iterations', dest='n_iterations', type=int, default=200,
+                        help='the number of iterations to run')
+    parser.add_argument('--random-seed', dest='random_seed', type=int, default=42,
+                        help='the random seed to set')
+    parser.add_argument('--survive-fraction', dest='survive_fraction', type=float, default=0.9,
+                        help='the fraction of the population to survive each iteration')
+    parser.add_argument('--arbitrariness', type=float, default=0.0,
+                        help='arbitrariness of the players. if zero, player will always choose its preference')
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    fire.Fire(run_rock_paper_scissors)
+    args = parse_arguments()
+    run_rock_paper_scissors(**args.__dict__)
