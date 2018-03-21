@@ -118,3 +118,5 @@ from .individual import Individual
 from .population import Population, ContestPopulation
 from .evolution import Evolution
 from .logger import BaseLogger
+
+__version__ = "0.2.0"
