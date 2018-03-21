@@ -1,18 +1,25 @@
 """
 Individual objects in `evol` are a wrapper around a chromosome.
 Internally we work with individuals because that allows us to 
-seperate the fitness calculation from the datastructure. This 
+separate the fitness calculation from the data structure. This
 saves a lot of CPU power.
 """
 
-from random import random
+from typing import Any, Callable, Optional
 from uuid import uuid4
+
+from random import random
 
 
 class Individual:
-    """Represents an individual in a population. The individual has a chromosome."""
+    """Represents an individual in a population. The individual has a chromosome.
 
-    def __init__(self, chromosome, fitness=None):
+    :param chromosome: The chromosome of the individual.
+    :param fitness: The fitness of the individual, or None.
+        Defaults to None.
+    """
+
+    def __init__(self, chromosome: Any, fitness: Optional[float]=None):
         self.age = 0
         self.chromosome = chromosome
         self.fitness = fitness
@@ -33,28 +40,24 @@ class Individual:
         result.id = data['id']
         return result
 
-    def evaluate(self, eval_function, lazy=False):
+    def evaluate(self, eval_function: Callable[..., float], lazy: bool=False):
         """Evaluate the fitness of the individual.
 
         :param eval_function: Function that reduces a chromosome to a fitness.
-        :type eval_function: Callable[chromosome] -> float
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
-        :type lazy: bool
         """
         if self.fitness is None or not lazy:
             self.fitness = eval_function(self.chromosome)
 
-    def mutate(self, func, probability=1.0, **kwargs):
+    def mutate(self, mutate_function: Callable[..., Any], probability: float=1.0, **kwargs):
         """Mutate the chromosome of the individual.
 
-        :param func: Function that accepts a chromosome and returns a mutated chromosome.
-        :type func: Callable[chromosome, **kwargs] -> chromosome
+        :param mutate_function: Function that accepts a chromosome and returns a mutated chromosome.
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
-        :type probability: float
         :param kwargs: Arguments to pass to the mutation function.
         """
         if probability == 1.0 or random() < probability:
-            self.chromosome = func(self.chromosome, **kwargs)
+            self.chromosome = mutate_function(self.chromosome, **kwargs)
             self.fitness = None

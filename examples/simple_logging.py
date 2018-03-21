@@ -54,13 +54,13 @@ pop = Population(chromosomes=[random_start() for _ in range(200)],
 evo1 = (Evolution()
        .survive(fraction=0.1)
        .breed(parent_picker=pick_random_parents, combiner=make_child)
-       .mutate(func=add_noise, sigma=0.2)
+       .mutate(mutate_function=add_noise, sigma=0.2)
        .log())
 
 evo2 = (Evolution()
        .survive(n=10)
        .breed(parent_picker=pick_random_parents, combiner=make_child)
-       .mutate(func=add_noise, sigma=0.1)
+       .mutate(mutate_function=add_noise, sigma=0.1)
        .log())
 
 evo3 = (Evolution()

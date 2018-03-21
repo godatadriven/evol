@@ -1,5 +1,14 @@
+from typing import Sequence
+
 from random import choice
 
+from evol import Individual
 
-def pick_random(parents, n_parents=2):
+
+def pick_random(parents: Sequence[Individual], n_parents: int=2):
+    """Randomly selects parents with replacement
+
+    Accepted arguments:
+      n_parents: Number of parents to select. Defaults to 2.
+    """
     return tuple(choice(parents) for _ in range(n_parents))

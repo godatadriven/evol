@@ -8,7 +8,7 @@ the population. Currently no other serializers are available.
 import json
 import pickle
 from datetime import datetime
-from typing import List, Union
+from typing import List, Optional
 
 from os import listdir
 from os.path import isdir, exists, join
@@ -22,10 +22,10 @@ class SimpleSerializer:
     :param target: Default location (directory) to store checkpoint.
         This may be overridden in the `checkpoint` method. Defaults to None.
     """
-    def __init__(self, target: Union[str, None]=None):
+    def __init__(self, target: Optional[str]=None):
         self.target = target
 
-    def checkpoint(self, individuals: List[Individual], target: Union[str, None]=None, method: str='pickle') -> None:
+    def checkpoint(self, individuals: List[Individual], target: Optional[str]=None, method: str='pickle') -> None:
         """Checkpoint a list of individuals.
 
         :param individuals: List of individuals to checkpoint.
@@ -44,7 +44,7 @@ class SimpleSerializer:
         else:
             raise ValueError('Invalid checkpointing method "{}". Choose "pickle" or "json".'.format(method))
 
-    def load(self, target: Union[str, None]=None) -> List[Individual]:
+    def load(self, target: Optional[str]=None) -> List[Individual]:
         """Load a checkpoint.
 
         If path is a file, load that file. If it is a directory, load the most recent checkpoint.
