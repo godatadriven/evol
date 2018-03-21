@@ -122,6 +122,18 @@ class TestPopulationBreed:
         assert len(pop2) == 400
         assert pop2.intended_size == 400
 
+    def test_breed_raises_with_multiple_values_for_kwarg(self, simple_population):
+
+        def dummy_combiner(x, y):
+            return x+y
+
+        simple_population.survive(fraction=0.5).breed(parent_picker=pick_random,
+                                                      combiner=dummy_combiner)
+        with raises(TypeError):
+            simple_population.survive(fraction=0.5).breed(parent_picker=pick_random,
+                                                          combiner=dummy_combiner,
+                                                          y=2)
+
 
 class TestPopulationMutate:
 
