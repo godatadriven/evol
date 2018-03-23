@@ -1,6 +1,6 @@
-from random import random, choices, seed
-
+from copy import copy
 from pytest import raises
+from random import random, choices, seed
 
 from evol import Population, ContestPopulation
 from evol.helpers.pickers import pick_random
@@ -25,6 +25,21 @@ class TestPopulationSimple:
         assert len(pop) == 200
         assert pop.intended_size == 200
         assert pop.individuals[0].chromosome == 1
+
+
+class TestPopulationCopy:
+
+    def test_population_copy(self, simple_population):
+        copied_population = copy(simple_population)
+        for key in simple_population.__dict__.keys():
+            if key not in ('id', 'individuals'):
+                assert copied_population.__dict__[key] == simple_population.__dict__[key]
+
+    def test_contestpopulation_copy(self, simple_contestpopulation):
+        copied_population = copy(simple_contestpopulation)
+        for key in simple_contestpopulation.__dict__.keys():
+            if key not in ('id', 'individuals'):
+                assert copied_population.__dict__[key] == simple_contestpopulation.__dict__[key]
 
 
 class TestPopulationEvaluate:
