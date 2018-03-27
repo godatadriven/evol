@@ -29,23 +29,17 @@ class TestPopulationSimple:
 
 class TestPopulationCopy:
 
-    def test_population_copy(self, simple_population):
-        copied_population = copy(simple_population)
-        for key in simple_population.__dict__.keys():
+    def test_population_copy(self, any_population):
+        copied_population = copy(any_population)
+        for key in any_population.__dict__.keys():
             if key not in ('id', 'individuals'):
-                assert copied_population.__dict__[key] == simple_population.__dict__[key]
-
-    def test_contestpopulation_copy(self, simple_contestpopulation):
-        copied_population = copy(simple_contestpopulation)
-        for key in simple_contestpopulation.__dict__.keys():
-            if key not in ('id', 'individuals'):
-                assert copied_population.__dict__[key] == simple_contestpopulation.__dict__[key]
+                assert copied_population.__dict__[key] == any_population.__dict__[key]
 
 
 class TestPopulationEvaluate:
 
-    def test_individuals_are_not_initially_evaluated(self, simple_population):
-        assert all([i.fitness is None for i in simple_population])
+    def test_individuals_are_not_initially_evaluated(self, any_population):
+        assert all([i.fitness is None for i in any_population])
 
     def test_evaluate_lambda(self, simple_chromosomes):
         pop = Population(simple_chromosomes, eval_function=lambda x: x)
@@ -61,8 +55,8 @@ class TestPopulationEvaluate:
         for individual in pop:
             assert evaluation_function(individual.chromosome) == individual.fitness
 
-    def test_evaluate_lazy(self, simple_population):
-        pop = simple_population
+    def test_evaluate_lazy(self, any_population):
+        pop = any_population
         pop.evaluate(lazy=True)  # should evaluate
 
         def raise_function(_):
@@ -101,14 +95,14 @@ class TestPopulationSurvive:
         assert len(pop2.survive(fraction=0.9, n=10)) == 10
         assert len(pop3.survive(fraction=0.5, n=190, luck=True)) == 100
 
-    def test_survive_throws_correct_errors(self, simple_population):
+    def test_survive_throws_correct_errors(self, any_population):
         """If the resulting population is zero or larger than initial we need to see errors."""
         with raises(RuntimeError):
-            simple_population.survive(n=0)
+            any_population.survive(n=0)
         with raises(ValueError):
-            simple_population.survive(n=250)
+            any_population.survive(n=250)
         with raises(ValueError):
-            simple_population.survive()
+            any_population.survive()
 
 
 class TestPopulationBreed:
