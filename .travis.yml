@@ -1,6 +1,7 @@
 language: python
 python:
   - "3.6"
+  - "3.7"
 script:
   - pip install pytest
   - python setup.py install
