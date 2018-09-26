@@ -371,6 +371,19 @@ class ContestPopulation(Population):
         self.contests_per_round = contests_per_round
         self.individuals_per_contest = individuals_per_contest
 
+    def __copy__(self):
+        result = self.__class__(chromosomes=self.chromosomes,
+                                eval_function=self.eval_function,
+                                maximize=self.maximize,
+                                contests_per_round=self.contests_per_round,
+                                individuals_per_contest=self.individuals_per_contest,
+                                serializer=self.serializer,
+                                intended_size=self.intended_size,
+                                logger=self.logger,
+                                generation=self.generation)
+        result.documented_best = None
+        return result
+
     def evaluate(self,
                  lazy: bool=False,
                  contests_per_round: Optional[int]=None,
