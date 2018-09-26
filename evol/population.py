@@ -267,8 +267,6 @@ class Population:
             Arguments are only passed to the functions if they accept them.
         :return: self
         """
-        parent_picker = select_arguments(parent_picker)
-        combiner = select_arguments(combiner)
         if population_size:
             self.intended_size = population_size
         offspring = offspring_generator(parents=self.individuals,
