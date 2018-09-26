@@ -124,15 +124,16 @@ class TestPopulationBreed:
 
     def test_breed_raises_with_multiple_values_for_kwarg(self, simple_population):
 
-        def dummy_combiner(x, y):
-            return x+y
+        (simple_population
+            .survive(fraction=0.5)
+            .breed(parent_picker=pick_random,
+                   combiner=lambda x, y: x + y))
 
-        simple_population.survive(fraction=0.5).breed(parent_picker=pick_random,
-                                                      combiner=dummy_combiner)
         with raises(TypeError):
-            simple_population.survive(fraction=0.5).breed(parent_picker=pick_random,
-                                                          combiner=dummy_combiner,
-                                                          y=2)
+            (simple_population
+                .survive(fraction=0.5)
+                .breed(parent_picker=pick_random,
+                       combiner=lambda x, y: x + y, y=2))
 
 
 class TestPopulationMutate:
