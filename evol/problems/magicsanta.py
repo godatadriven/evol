@@ -2,7 +2,7 @@ import math
 from typing import List, Union
 
 from .problem import Problem
-from evol.helpers._utils import flatten, sliding_window
+from evol.helpers.utils import flatten, sliding_window
 
 
 class MagicSanta(Problem):
