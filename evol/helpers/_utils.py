@@ -1,3 +1,4 @@
+import itertools as it
 from random import randint
 from typing import Tuple
 
