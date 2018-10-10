@@ -3,7 +3,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>evol.helpers.pickers API documentation</title>
+    <title>evol.helpers.mutators API documentation</title>
     <meta name="description" content="" />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
@@ -1041,15 +1041,13 @@ table {
     <h1>Index</h1>
     <ul id="index">
 
-    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
-      
-  <ul>
-    <li class="mono"><a href="#evol.helpers.pickers.pick_random">pick_random</a></li>
-  </ul>
 
+
+    <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
+      <ul>
+        <li class="mono"><a href="permutation.m.html">evol.helpers.mutators.permutation</a></li>
+      </ul>
     </li>
-
-
     </ul>
   </div>
 
@@ -1061,48 +1059,23 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">evol.helpers.pickers</span> module</h1>
+  <h1 class="title"><span class="name">evol.helpers.mutators</span> module</h1>
   
   
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.pickers', this);">Show source &equiv;</a></p>
-  <div id="source-evol.helpers.pickers" class="source">
-    <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
-
-
-<span class="k">def</span> <span class="nf">pick_random</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">n_parents</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_parents</span><span class="p">))</span>
-</pre></div>
-
-  </div>
 
   </header>
 
   <section id="section-items">
 
-    <h2 class="section-title" id="header-functions">Functions</h2>
+
+
+    <h2 class="section-title" id="header-submodules">Sub-modules</h2>
+      <div class="item">
+      <p class="name"><a href="permutation.m.html">evol.helpers.mutators.permutation</a></p>
       
-  <div class="item">
-    <div class="name def" id="evol.helpers.pickers.pick_random">
-    <p>def <span class="ident">pick_random</span>(</p><p>parents, n_parents=2)</p>
-    </div>
-    
-
-    
-  
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.pickers.pick_random', this);">Show source &equiv;</a></p>
-  <div id="source-evol.helpers.pickers.pick_random" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pick_random</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">n_parents</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_parents</span><span class="p">))</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
   
 
-
+      </div>
   </section>
 
     </article>

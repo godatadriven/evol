@@ -1,9 +1,10 @@
 from .population import Population
+from typing import Optional
 
 
 class EvolutionStep:
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: Optional[str], **kwargs):
         self.name = name
         self.kwargs = kwargs
 

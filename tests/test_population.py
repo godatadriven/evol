@@ -1,6 +1,6 @@
-from random import random, choices, seed
-
+from copy import copy
 from pytest import raises
+from random import random, choices, seed
 
 from evol import Population, ContestPopulation
 from evol.helpers.pickers import pick_random
@@ -21,16 +21,25 @@ class TestPopulationSimple:
         def init_func():
             return 1
 
-        pop = Population.generate(init_func=init_func, eval_function=simple_evaluation_function, size=200)
+        pop = Population.generate(init_function=init_func, eval_function=simple_evaluation_function, size=200)
         assert len(pop) == 200
         assert pop.intended_size == 200
         assert pop.individuals[0].chromosome == 1
 
 
+class TestPopulationCopy:
+
+    def test_population_copy(self, any_population):
+        copied_population = copy(any_population)
+        for key in any_population.__dict__.keys():
+            if key not in ('id', 'individuals'):
+                assert copied_population.__dict__[key] == any_population.__dict__[key]
+
+
 class TestPopulationEvaluate:
 
-    def test_individuals_are_not_initially_evaluated(self, simple_population):
-        assert all([i.fitness is None for i in simple_population])
+    def test_individuals_are_not_initially_evaluated(self, any_population):
+        assert all([i.fitness is None for i in any_population])
 
     def test_evaluate_lambda(self, simple_chromosomes):
         pop = Population(simple_chromosomes, eval_function=lambda x: x)
@@ -46,8 +55,8 @@ class TestPopulationEvaluate:
         for individual in pop:
             assert evaluation_function(individual.chromosome) == individual.fitness
 
-    def test_evaluate_lazy(self, simple_population):
-        pop = simple_population
+    def test_evaluate_lazy(self, any_population):
+        pop = any_population
         pop.evaluate(lazy=True)  # should evaluate
 
         def raise_function(_):
@@ -86,14 +95,14 @@ class TestPopulationSurvive:
         assert len(pop2.survive(fraction=0.9, n=10)) == 10
         assert len(pop3.survive(fraction=0.5, n=190, luck=True)) == 100
 
-    def test_survive_throws_correct_errors(self, simple_population):
+    def test_survive_throws_correct_errors(self, any_population):
         """If the resulting population is zero or larger than initial we need to see errors."""
         with raises(RuntimeError):
-            simple_population.survive(n=0)
+            any_population.survive(n=0)
         with raises(ValueError):
-            simple_population.survive(n=250)
+            any_population.survive(n=250)
         with raises(ValueError):
-            simple_population.survive()
+            any_population.survive()
 
 
 class TestPopulationBreed:
@@ -121,6 +130,19 @@ class TestPopulationBreed:
                                  population_size=400, n_parents=3)
         assert len(pop2) == 400
         assert pop2.intended_size == 400
+
+    def test_breed_raises_with_multiple_values_for_kwarg(self, simple_population):
+
+        (simple_population
+            .survive(fraction=0.5)
+            .breed(parent_picker=pick_random,
+                   combiner=lambda x, y: x + y))
+
+        with raises(TypeError):
+            (simple_population
+                .survive(fraction=0.5)
+                .breed(parent_picker=pick_random,
+                       combiner=lambda x, y: x + y, y=2))
 
 
 class TestPopulationMutate:
@@ -214,7 +236,7 @@ class TestPopulationBest:
         assert pop.documented_best is None
         pop.evaluate()
         assert pop.documented_best.fitness == pop.current_best.fitness
-        pop.mutate(func=lambda x: x-10, probability=1).evaluate()
+        pop.mutate(mutate_function=lambda x: x - 10, probability=1).evaluate()
         assert pop.documented_best.fitness - 20 == pop.current_best.fitness
 
 

@@ -36,7 +36,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
     evo = (Evolution()
            .survive(fraction=survival)
            .breed(parent_picker=random_parent_picker, combiner=mean_parents, n_parents=n_parents)
-           .mutate(func=add_noise, sigma=noise)
+           .mutate(mutate_function=add_noise, sigma=noise)
            .evaluate())
 
     print("will start the evolutionary program, will log progress every step")

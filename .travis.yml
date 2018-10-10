@@ -1,6 +1,10 @@
 language: python
-python:
-  - "3.6"
+matrix:
+  include:
+    - python: 3.6
+    - python: 3.7
+      dist: xenial
+      sudo: true
 script:
   - pip install pytest
   - python setup.py install
@@ -11,3 +15,4 @@ script:
   - python examples/number_of_parents.py --n_parents=4
   - python examples/very_basic_tsp.py
   - python examples/simple_logging.py
+  - python examples/rock_paper_scissors.py
