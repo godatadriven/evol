@@ -88,6 +88,7 @@ class LogStep(EvolutionStep):
             return population.log(**self.kwargs)
         return population
 
+
 class RepeatStep(EvolutionStep):
 
     def apply(self, population) -> Population:
