@@ -5,9 +5,14 @@ matrix:
     - python: 3.7
       dist: xenial
       sudo: true
-script:
-  - pip install pytest
+install:
+  - pip install pytest flake8
   - python setup.py install
+before_script:
+  - flake8 evol
+  - flake8 tests
+  - flake8 examples
+script:
   - pytest
   - python examples/simple_nonlinear.py
   - python examples/number_of_parents.py --n_parents=2
