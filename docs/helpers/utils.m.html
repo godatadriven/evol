@@ -851,6 +851,77 @@ table {
 
   </style>
 
+  <style type="text/css">
+  .codehilite .hll { background-color: #ffffcc }
+.codehilite  { background: #f8f8f8; }
+.codehilite .c { color: #408080; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #FF0000 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666666 } /* Operator */
+.codehilite .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #BC7A00 } /* Comment.Preproc */
+.codehilite .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #408080; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .gr { color: #FF0000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #00A000 } /* Generic.Inserted */
+.codehilite .go { color: #888888 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #0044DD } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #7D9029 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #880000 } /* Name.Constant */
+.codehilite .nd { color: #AA22FF } /* Name.Decorator */
+.codehilite .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #0000FF } /* Name.Function */
+.codehilite .nl { color: #A0A000 } /* Name.Label */
+.codehilite .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #bbbbbb } /* Text.Whitespace */
+.codehilite .mb { color: #666666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #BB6688 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #0000FF } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666666 } /* Literal.Number.Integer.Long */
+  </style>
 
   <style type="text/css">
   
@@ -973,6 +1044,7 @@ table {
     <li class="set"><h3><a href="#header-functions">Functions</a></h3>
       
   <ul>
+    <li class="mono"><a href="#evol.helpers.utils.offspring_generator">offspring_generator</a></li>
     <li class="mono"><a href="#evol.helpers.utils.select_arguments">select_arguments</a></li>
   </ul>
 
@@ -995,27 +1067,63 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.utils', this);">Show source &equiv;</a></p>
   <div id="source-evol.helpers.utils" class="source">
-    <pre><code>from inspect import signature
+    <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">evol</span> <span class="kn">import</span> <span class="n">Individual</span>
 
 
-def select_arguments(func):
-    """Decorate a function such that it accepts any keyworded arguments.
+<span class="k">def</span> <span class="nf">offspring_generator</span><span class="p">(</span><span class="n">parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span>
+                        <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                        <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Generator for offspring.</span>
 
-    The resulting function accepts any arguments, but only arguments that
-    the original function accepts are passed. This allows keyworded 
-    arguments to be passed to multiple (decorated) functions, even if they
-    do not (all) accept these arguments.
+<span class="sd">    This helps create the right number of offspring,</span>
+<span class="sd">    especially in the case of of multiple offspring.</span>
 
-    :param func: Function to decorate.
-    :return: Callable
-    """
-    def result(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except TypeError:
-            return func(*args, **{k: v for k, v in kwargs.items() if k in signature(func).parameters})
-    return result
-</code></pre>
+<span class="sd">    :param parents: List of parents.</span>
+<span class="sd">    :param parent_picker: Function that selects parents.</span>
+<span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
+<span class="sd">    :param combiner: Function that combines chromosomes.</span>
+<span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
+<span class="sd">    :param kwargs: Arguments</span>
+<span class="sd">    :returns: Children</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="c1"># Obtain parent chromosomes</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">parent_picker</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">Individual</span><span class="p">):</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="p">(</span><span class="n">parents</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">chromosome</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">)</span>
+        <span class="c1"># Create children</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">combiner</span><span class="p">,</span> <span class="s1">&#39;multiple_offspring&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">select_arguments</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Decorate a function such that it accepts any keyworded arguments.</span>
+
+<span class="sd">    The resulting function accepts any arguments, but only arguments that</span>
+<span class="sd">    the original function accepts are passed. This allows keyworded </span>
+<span class="sd">    arguments to be passed to multiple (decorated) functions, even if they</span>
+<span class="sd">    do not (all) accept these arguments.</span>
+
+<span class="sd">    :param func: Function to decorate.</span>
+<span class="sd">    :return: Callable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+
   </div>
 
   </header>
@@ -1023,6 +1131,65 @@ def select_arguments(func):
   <section id="section-items">
 
     <h2 class="section-title" id="header-functions">Functions</h2>
+      
+  <div class="item">
+    <div class="name def" id="evol.helpers.utils.offspring_generator">
+    <p>def <span class="ident">offspring_generator</span>(</p><p>parents, parent_picker, combiner, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Generator for offspring.</p>
+<p>This helps create the right number of offspring,
+especially in the case of of multiple offspring.</p>
+<p>:param parents: List of parents.
+:param parent_picker: Function that selects parents.
+    Must accept all kwargs passed (i.e. must be decorated by select_arguments).
+:param combiner: Function that combines chromosomes.
+    Must accept all kwargs passed (i.e. must be decorated by select_arguments).
+:param kwargs: Arguments
+:returns: Children</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.utils.offspring_generator', this);">Show source &equiv;</a></p>
+  <div id="source-evol.helpers.utils.offspring_generator" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">offspring_generator</span><span class="p">(</span><span class="n">parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span>
+                        <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                        <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Generator for offspring.</span>
+
+<span class="sd">    This helps create the right number of offspring,</span>
+<span class="sd">    especially in the case of of multiple offspring.</span>
+
+<span class="sd">    :param parents: List of parents.</span>
+<span class="sd">    :param parent_picker: Function that selects parents.</span>
+<span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
+<span class="sd">    :param combiner: Function that combines chromosomes.</span>
+<span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
+<span class="sd">    :param kwargs: Arguments</span>
+<span class="sd">    :returns: Children</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="c1"># Obtain parent chromosomes</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">parent_picker</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">Individual</span><span class="p">):</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="p">(</span><span class="n">parents</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">chromosome</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">)</span>
+        <span class="c1"># Create children</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">combiner</span><span class="p">,</span> <span class="s1">&#39;multiple_offspring&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
       
   <div class="item">
     <div class="name def" id="evol.helpers.utils.select_arguments">
@@ -1042,24 +1209,25 @@ do not (all) accept these arguments.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.utils.select_arguments', this);">Show source &equiv;</a></p>
   <div id="source-evol.helpers.utils.select_arguments" class="source">
-    <pre><code>def select_arguments(func):
-    """Decorate a function such that it accepts any keyworded arguments.
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">select_arguments</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Decorate a function such that it accepts any keyworded arguments.</span>
 
-    The resulting function accepts any arguments, but only arguments that
-    the original function accepts are passed. This allows keyworded 
-    arguments to be passed to multiple (decorated) functions, even if they
-    do not (all) accept these arguments.
+<span class="sd">    The resulting function accepts any arguments, but only arguments that</span>
+<span class="sd">    the original function accepts are passed. This allows keyworded </span>
+<span class="sd">    arguments to be passed to multiple (decorated) functions, even if they</span>
+<span class="sd">    do not (all) accept these arguments.</span>
 
-    :param func: Function to decorate.
-    :return: Callable
-    """
-    def result(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except TypeError:
-            return func(*args, **{k: v for k, v in kwargs.items() if k in signature(func).parameters})
-    return result
-</code></pre>
+<span class="sd">    :param func: Function to decorate.</span>
+<span class="sd">    :return: Callable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+
   </div>
 </div>
 
