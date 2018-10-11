@@ -1,12 +1,8 @@
 import math
 from typing import List, Union
 
-from .problem import Problem
-
-
-def _rotating_window(arr):
-    for i, city in enumerate(arr):
-        yield arr[i-1], arr[i]
+from evol.problems.problem import Problem
+from evol.helpers.utils import rotating_window
 
 
 class TSPProblem(Problem):
@@ -37,9 +33,9 @@ class TSPProblem(Problem):
         set_solution = set(solution)
         set_problem = set(range(len(self.distance_matrix)))
         if len(solution) > len(self.distance_matrix):
-            raise RuntimeError("Solution is longer than number of towns!")
+            raise ValueError("Solution is longer than number of towns!")
         if set_solution != set_problem:
-            raise RuntimeError(f"Not all towns are visited! Am missing {set_problem.difference(set_solution)}")
+            raise ValueError(f"Not all towns are visited! Am missing {set_problem.difference(set_solution)}")
 
     def eval_function(self, solution: List[int]) -> Union[float, int]:
         """
@@ -49,7 +45,7 @@ class TSPProblem(Problem):
         """
         self.check_solution(solution=solution)
         cost = 0
-        for t1, t2 in _rotating_window(solution):
+        for t1, t2 in rotating_window(solution):
             cost += self.distance_matrix[t1][t2]
         return cost
 

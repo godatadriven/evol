@@ -1,16 +1,19 @@
 import math
+from itertools import chain
 from typing import List, Union
 
-from .problem import Problem
-from evol.helpers.utils import flatten, sliding_window
+from evol.problems.problem import Problem
+from evol.helpers.utils import sliding_window
 
 
 class MagicSanta(Problem):
     def __init__(self, city_coordinates, home_coordinate, gift_weight=None, sleigh_weight=1):
         """
         This problem is based on this kaggle competition: https://www.kaggle.com/c/santas-stolen-sleigh#evaluation.
-        :param distance_matrix:
-        :param gift_weight:
+        :param city_coordinates: List of tuples containing city coordinates.
+        :param home_coordinate: Tuple containing coordinate of home base.
+        :param gift_weight: Vector of weights per gift associated with city coordinates.
+        :param sleigh_weight: Weight of the sleight.
         """
         self.coordinates = city_coordinates
         self.home_coordinate = home_coordinate
@@ -29,12 +32,12 @@ class MagicSanta(Problem):
         :param solution: List of lists containing integers representing visited cities.
         :return: None, unless errors are raised.
         """
-        set_visited = set(flatten(solution))
+        set_visited = set(chain.from_iterable(solution))
         set_problem = set(range(len(self.coordinates)))
         if set_visited != set_problem:
             missing = set_problem.difference(set_visited)
             extra = set_visited.difference(set_problem)
-            raise RuntimeError(f"Not all cities are visited! Missing: {missing} Extra: {extra}")
+            raise ValueError(f"Not all cities are visited! Missing: {missing} Extra: {extra}")
         visited_cities = []
         double_cities = []
         for route in solution:
@@ -43,7 +46,7 @@ class MagicSanta(Problem):
                     double_cities.append(city)
                 visited_cities.append(city)
         if double_cities:
-            raise RuntimeError(f"Multiple occurrences found for cities: {set(double_cities)}")
+            raise ValueError(f"Multiple occurrences found for cities: {set(double_cities)}")
 
     def eval_function(self, solution: List[List[int]]) -> Union[float, int]:
         """

@@ -56,13 +56,8 @@ def select_arguments(func: Callable) -> Callable:
     return result
 
 
-def flatten(nested_list):
-    """Flatten one level of nesting"""
-    return it.chain.from_iterable(nested_list)
-
-
 def rotating_window(arr):
-    """rotating_window([1,2,3,4]) -> [(1,2), (2,3), (3,4), (4,1)]"""
+    """rotating_window([1,2,3,4]) -> [(4,1), (1,2), (2,3), (3,4)]"""
     for i, city in enumerate(arr):
         yield arr[i-1], arr[i]
 

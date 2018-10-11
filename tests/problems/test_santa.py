@@ -22,15 +22,15 @@ def adv_problem():
 
 def test_error_raised_wrong_cities(base_problem):
     # we want an error if we see too many cities
-    with pytest.raises(RuntimeError) as execinfo1:
+    with pytest.raises(ValueError) as execinfo1:
         base_problem.eval_function([[0, 1, 2, 3]])
     assert "Extra: {3}" in str(execinfo1.value)
     # we want an error if we see too few cities
-    with pytest.raises(RuntimeError) as execinfo2:
+    with pytest.raises(ValueError) as execinfo2:
         base_problem.eval_function([[0, 2]])
     assert "Missing: {1}" in str(execinfo2.value)
     # we want an error if we see multiple occurences of cities
-    with pytest.raises(RuntimeError) as execinfo3:
+    with pytest.raises(ValueError) as execinfo3:
         base_problem.eval_function([[0, 2], [0, 1]])
     assert "Multiple occurrences found for cities: {0}" in str(execinfo3.value)
 

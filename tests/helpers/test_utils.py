@@ -1,6 +1,6 @@
 from pytest import mark
 
-from evol.helpers.utils import select_arguments, flatten, rotating_window, sliding_window
+from evol.helpers.utils import select_arguments, rotating_window, sliding_window
 
 
 class TestSelectArguments:
@@ -28,12 +28,6 @@ class TestSelectArguments:
 
 
 class TestSimpleUtilFunc:
-
-    def test_flatten(self):
-        assert list(flatten([[1, 2, 3], [4, 5], [6]])) == [1, 2, 3, 4, 5, 6]
-
-    def test_set_flatten(self):
-        assert set(flatten([[1, 2, 3], [4, 5], [6]])) == {1, 2, 3, 4, 5, 6}
 
     def test_sliding_window(self):
         assert list(sliding_window([1, 2, 3, 4])) == [(1, 2), (2, 3), (3, 4)]
