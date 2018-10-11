@@ -36,18 +36,19 @@ def test_error_raised_wrong_cities(base_problem):
 
 
 def test_base_score_method(base_problem):
-    assert base_problem.distance((0,0), (0,2)) == 2
-    assert base_problem.eval_function([[0, 1, 2]]) == 1 + math.sqrt(2) + 1 + math.sqrt(2)
-    assert base_problem.eval_function([[2, 1, 0]]) == 1 + math.sqrt(2) + 1 + math.sqrt(2)
+    assert base_problem.distance((0, 0), (0, 2)) == 2
+    expected = 1 + math.sqrt(2) + 1 + math.sqrt(2)
+    assert base_problem.eval_function([[0, 1, 2]]) == pytest.approx(expected)
+    assert base_problem.eval_function([[2, 1, 0]]) == pytest.approx(expected)
     base_problem.sleigh_weight = 2
-    assert base_problem.eval_function([[2, 1, 0]]) == 2*(1 + math.sqrt(2) + 1 + math.sqrt(2))
+    assert base_problem.eval_function([[2, 1, 0]]) == pytest.approx(2*expected)
 
 
 def test_sleight_gift_weights(adv_problem):
     expected = (2+7) + (2+2) + (2+1) + (2+0)
-    assert adv_problem.eval_function([[0, 1, 2]]) == expected
+    assert adv_problem.eval_function([[0, 1, 2]]) == pytest.approx(expected)
 
 
 def test_multiple_routes(adv_problem):
     expected = (2 + 6) + (2 + 1) + math.sqrt(2)*(2 + 0) + (2 + 1) + (2 + 0)
-    assert adv_problem.eval_function([[0, 1], [2]]) == expected
+    assert adv_problem.eval_function([[0, 1], [2]]) == pytest.approx(expected)
