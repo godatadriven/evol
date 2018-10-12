@@ -1,9 +1,10 @@
 import math
+from collections import Counter
 from itertools import chain
 from typing import List, Union
 
-from evol.problems.problem import Problem
 from evol.helpers.utils import sliding_window
+from evol.problems.problem import Problem
 
 
 class MagicSanta(Problem):
@@ -38,15 +39,10 @@ class MagicSanta(Problem):
             missing = set_problem.difference(set_visited)
             extra = set_visited.difference(set_problem)
             raise ValueError(f"Not all cities are visited! Missing: {missing} Extra: {extra}")
-        visited_cities = []
-        double_cities = []
-        for route in solution:
-            for city in route:
-                if city in visited_cities:
-                    double_cities.append(city)
-                visited_cities.append(city)
-        if double_cities:
-            raise ValueError(f"Multiple occurrences found for cities: {set(double_cities)}")
+        city_counter = Counter(chain.from_iterable(solution))
+        if max(city_counter.values()) > 1:
+            double_cities = {key for key, value in city_counter.items() if value > 1}
+            raise ValueError(f"Multiple occurrences found for cities: {double_cities}")
 
     def eval_function(self, solution: List[List[int]]) -> Union[float, int]:
         """
