@@ -10,10 +10,11 @@ from evol.problems.problem import Problem
 class MagicSanta(Problem):
     def __init__(self, city_coordinates, home_coordinate, gift_weight=None, sleigh_weight=1):
         """
-        This problem is based on this kaggle competition: https://www.kaggle.com/c/santas-stolen-sleigh#evaluation.
+        This problem is based on this kaggle competition:
+        https://www.kaggle.com/c/santas-stolen-sleigh#evaluation.
         :param city_coordinates: List of tuples containing city coordinates.
         :param home_coordinate: Tuple containing coordinate of home base.
-        :param gift_weight: Vector of weights per gift associated with city coordinates.
+        :param gift_weight: Vector of weights per gift associated with cities.
         :param sleigh_weight: Weight of the sleight.
         """
         self.coordinates = city_coordinates

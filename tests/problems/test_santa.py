@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from evol.problems.magicsanta import MagicSanta
+from evol.problems.routing.magicsanta import MagicSanta
 
 
 @pytest.fixture

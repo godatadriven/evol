@@ -1,27 +1,26 @@
 import math
 import pytest
-from evol.problems.tsp import TSPProblem
+from evol.problems.routing.tsp import TSPProblem
 
 
 def test_distance_func():
-    distances = TSPProblem.calc_distance_matrix([(0, 0), (0, 1), (1, 0), (1, 1)])
-    assert distances[0][0] == 0
-    assert distances[1][0] == 1
-    assert distances[0][1] == 1
-    assert distances[1][1] == 0
-    assert distances[0][2] == 1
-    assert distances[0][3] == pytest.approx(math.sqrt(2))
+    problem = TSPProblem.from_coordinates([(0, 0), (0, 1), (1, 0), (1, 1)])
+    assert problem.distance_matrix[0][0] == 0
+    assert problem.distance_matrix[1][0] == 1
+    assert problem.distance_matrix[0][1] == 1
+    assert problem.distance_matrix[1][1] == 0
+    assert problem.distance_matrix[0][2] == 1
+    assert problem.distance_matrix[0][3] == pytest.approx(math.sqrt(2))
 
 
 def test_score_method():
-    distances = TSPProblem.calc_distance_matrix([(0, 0), (0, 1), (1, 0), (1, 1)])
-    problem = TSPProblem(distance_matrix=distances)
-    assert problem.eval_function([0, 1, 2, 3]) == pytest.approx(1 + math.sqrt(2) + 1 + math.sqrt(2))
+    problem = TSPProblem.from_coordinates([(0, 0), (0, 1), (1, 0), (1, 1)])
+    expected = 1 + math.sqrt(2) + 1 + math.sqrt(2)
+    assert problem.eval_function([0, 1, 2, 3]) == pytest.approx(expected)
 
 
 def test_score_method_can_error():
-    distances = TSPProblem.calc_distance_matrix([(0, 0), (0, 1), (1, 0), (1, 1)])
-    problem = TSPProblem(distance_matrix=distances)
+    problem = TSPProblem.from_coordinates([(0, 0), (0, 1), (1, 0), (1, 1)])
 
     with pytest.raises(ValueError) as execinfo1:
         problem.eval_function([0, 1, 2, 3, 4])
