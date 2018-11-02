@@ -76,20 +76,19 @@ class TestPickleCheckpoint:
     def test_evolution(self, tmpdir, simple_population):
         directory = tmpdir.mkdir("ckpt")
         evo = Evolution().mutate(lambda x: x+1).checkpoint(target=directory, method=self.method, every=1)
-        _ = simple_population.evolve(evolution=evo, n=100)
+        simple_population.evolve(evolution=evo, n=100)
         assert len(listdir(directory)) == 100
 
     def test_every(self, tmpdir, simple_population):
         directory = tmpdir.mkdir('ckpt')
         evo = Evolution().mutate(lambda x: x+1).checkpoint(target=directory, method=self.method, every=10)
-        _ = simple_population.evolve(evolution=evo, n=9)
+        simple_population.evolve(evolution=evo, n=9)
         assert len(listdir(directory)) == 0
-        _ = simple_population.evolve(evolution=evo, n=11)
+        simple_population.evolve(evolution=evo, n=11)
         assert len(listdir(directory)) == 2
 
 
 class TestJsonCheckpoint(TestPickleCheckpoint):
-
     method = 'json'
     extension = '.json'
     exception = TypeError

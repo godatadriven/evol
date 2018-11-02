@@ -56,7 +56,7 @@ class TestLoggerSimple:
                       combiner=lambda mom, dad: (mom + dad)/2 + (random.random() - 0.5),
                       n_parents=2)
                .log(foo='bar'))
-        _ = pop.evolve(evolution=evo, n=2)
+        pop.evolve(evolution=evo, n=2)
         # check characteristics of the file
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
@@ -72,7 +72,7 @@ class TestLoggerSimple:
     def test_summarylogger_can_write_file_without_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
         logger = SummaryLogger(target=log_file, stdout=False)
-        pop = Population(chromosomes=range(10), eval_function=lambda x:x, logger=logger)
+        pop = Population(chromosomes=range(10), eval_function=lambda x: x, logger=logger)
         # we should see that a file was created with an appropriate number of rows
         pop.log()
         with open(log_file, "r") as f:
@@ -87,17 +87,17 @@ class TestLoggerSimple:
 
     def test_summarylogger_can_write_to_stdout(self, capsys, simple_chromosomes, simple_evaluation_function):
         pop = Population(chromosomes=range(10),
-                         eval_function=lambda x:x,
+                         eval_function=lambda x: x,
                          logger=SummaryLogger(target=None, stdout=True))
         pop.log().log()
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
         assert len(read_stdout) == 2
 
-
-    def test_summarylogger_can_accept_kwargs(self, tmpdir, simple_chromosomes, simple_evaluation_function):
+    def test_summary_logger_can_accept_kwargs(self, tmpdir, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
         logger = SummaryLogger(target=log_file, stdout=False)
-        pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function, logger=logger)
+        pop = Population(chromosomes=simple_chromosomes,
+                         eval_function=simple_evaluation_function, logger=logger)
         # lets make a first simple log
         pop.log(foo="bar", buzz="meh")
         with open(log_file, "r") as f:
@@ -128,7 +128,7 @@ class TestLoggerSimple:
                       combiner=lambda mom, dad: (mom + dad)/2 + (random.random() - 0.5),
                       n_parents=2)
                .log(foo='bar'))
-        _ = pop.evolve(evolution=evo, n=5)
+        pop.evolve(evolution=evo, n=5)
         # check characteristics of the file
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
@@ -152,8 +152,8 @@ class TestLoggerSimple:
                       combiner=lambda mom, dad: (mom + dad) + 1,
                       n_parents=2)
                .log(foo="dino"))
-        _ = pop1.evolve(evolution=evo, n=5)
-        _ = pop2.evolve(evolution=evo, n=5)
+        pop1.evolve(evolution=evo, n=5)
+        pop2.evolve(evolution=evo, n=5)
         # two evolutions have now been applied, lets check the output!
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
@@ -177,7 +177,7 @@ class TestLoggerSimple:
                       combiner=lambda mom, dad: (mom + dad) + 1,
                       n_parents=2)
                .log(every=2))
-        _ = pop.evolve(evolution=evo, n=100)
+        pop.evolve(evolution=evo, n=100)
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
             assert len(read_file) == 50
