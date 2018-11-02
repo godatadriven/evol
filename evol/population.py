@@ -1,8 +1,8 @@
 """
 Population objects in `evol` are a collection of chromosomes
-at some point in an evolutionary algorithm. You can apply 
+at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
-or by appyling an `evol.Evolution` object. 
+or by appyling an `evol.Evolution` object.
 """
 from itertools import cycle, islice
 from typing import Any, Callable, Generator, Iterable, Optional, Sequence
@@ -274,7 +274,6 @@ class Population:
                                         combiner=select_arguments(combiner),
                                         **kwargs)
         self.individuals += list(islice(offspring, self.intended_size - len(self.individuals)))
-        # TODO: increase generation and individual's ages
         return self
 
     def mutate(self,
@@ -297,15 +296,28 @@ class Population:
     def log(self, **kwargs) -> 'Population':
         """
         Logs a population. If a Population object was initialized with a logger
-        object then you may specify how logging is handled. The base logging 
-        operation just logs to standard out. 
-        
+        object then you may specify how logging is handled. The base logging
+        operation just logs to standard out.
+
         :return: self
         """
         self.evaluate(lazy=True)
         self.logger.log(population=self, **kwargs)
         return self
-      
+
+    def callback(self, callback_function: Callable[..., Any],
+                 **kwargs) -> 'Population':
+        """
+        Performs a callback function on the population. Can be used for
+        custom logging/checkpointing.
+        :param callback_function: Function that accepts the population
+        as a first argument.
+        :return:
+        """
+        self.evaluate(lazy=True)
+        callback_function(self.copy(), **kwargs)
+        return self
+
     def _update_documented_best(self):
         """Update the documented best"""
         current_best = self.current_best
@@ -388,19 +400,19 @@ class ContestPopulation(Population):
                  individuals_per_contest: Optional[int]=None) -> 'ContestPopulation':
         """Evaluate the individuals in the population.
 
-        This evaluates the fitness of all individuals. For each round of 
-        evaluation, each individual participates in a given number of 
+        This evaluates the fitness of all individuals. For each round of
+        evaluation, each individual participates in a given number of
         contests, in which a given number of individuals take part.
         The resulting scores of these contests are summed to form the fitness.
         This means that the score of the individual is influenced by other
         chromosomes in the population.
-        
-        Note that in the `ContestPopulation` two settings are passed at 
-        initialisation which affect how we are evaluating individuals: 
+
+        Note that in the `ContestPopulation` two settings are passed at
+        initialisation which affect how we are evaluating individuals:
         contests_per_round and individuals_per_contest. You may overwrite them
-        here if you wish. 
-        
-        If lazy is True, the fitness is only evaluated when a fitness value 
+        here if you wish.
+
+        If lazy is True, the fitness is only evaluated when a fitness value
         is not yet known for all individuals.
         In most situations adding an explicit evaluation step is not needed, as
         lazy evaluation is implicitly included in the operations that need it

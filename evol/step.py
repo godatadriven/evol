@@ -88,8 +88,13 @@ class LogStep(EvolutionStep):
             return population.log(**self.kwargs)
         return population
 
-class RepeatStep(EvolutionStep):
 
+class RepeatStep(EvolutionStep):
     def apply(self, population) -> Population:
         return population.evolve(**self.kwargs)
-    # TODO: make a nice __repr__ that is recusive for repeat step and shows repeats 'n'
+
+
+class CallbackStep(EvolutionStep):
+    def apply(self, population) -> Population:
+        return population.callback(**self.kwargs)
+
