@@ -12,6 +12,7 @@ from copy import copy
 from random import choices, randint
 
 from evol import Individual
+from evol import Evolution
 from evol.helpers.utils import select_arguments, offspring_generator
 from evol.logger import BaseLogger
 from evol.serialization import SimpleSerializer
@@ -152,7 +153,7 @@ class Population:
         else:
             return [1-(individual.fitness - min_fitness) / (max_fitness - min_fitness) for individual in self]
 
-    def evolve(self, evolution: 'Evolution', n: int=1) -> 'Population':
+    def evolve(self, evolution: Evolution, n: int=1) -> 'Population':
         """Evolve the population according to an Evolution.
 
         :param evolution: Evolution to follow
