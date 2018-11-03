@@ -16,7 +16,7 @@ def order_one_crossover(parent_1: Tuple, parent_2: Tuple) -> Tuple:
     :return: Child chromosome.
     """
     start, end = select_partition(len(parent_1))
-    selected_partition = parent_1[start:end+1]
+    selected_partition = parent_1[start:end + 1]
     remaining_elements = filter(lambda element: element not in selected_partition, parent_2)
     return tuple(islice(remaining_elements, 0, start)) + selected_partition + tuple(remaining_elements)
 

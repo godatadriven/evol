@@ -149,9 +149,9 @@ class Population:
         if min_fitness == max_fitness:
             return [1] * len(self)
         elif self.maximize:
-            return [(individual.fitness - min_fitness)/(max_fitness-min_fitness) for individual in self]
+            return [(individual.fitness - min_fitness) / (max_fitness - min_fitness) for individual in self]
         else:
-            return [1-(individual.fitness - min_fitness) / (max_fitness - min_fitness) for individual in self]
+            return [1 - (individual.fitness - min_fitness) / (max_fitness - min_fitness) for individual in self]
 
     def evolve(self, evolution: Evolution, n: int=1) -> 'Population':
         """Evolve the population according to an Evolution.
@@ -235,9 +235,9 @@ class Population:
                 raise ValueError('everyone survives! must provide either "fraction" and/or "n".')
             resulting_size = n
         elif n is None:
-            resulting_size = round(fraction*len(self.individuals))
+            resulting_size = round(fraction * len(self.individuals))
         else:
-            resulting_size = min(round(fraction*len(self.individuals)), n)
+            resulting_size = min(round(fraction * len(self.individuals)), n)
         self.evaluate(lazy=True)
         if resulting_size == 0:
             raise RuntimeError('no one survived!')
