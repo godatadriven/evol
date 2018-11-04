@@ -6,8 +6,7 @@ matrix:
       dist: xenial
       sudo: true
 install:
-  - pip install pytest flake8
-  - python setup.py install
+  - pip install .[dev]
 script:
   - pytest
   - python examples/simple_nonlinear.py
