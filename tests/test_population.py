@@ -49,7 +49,7 @@ class TestPopulationEvaluate:
 
     def test_evaluate_func(self, simple_chromosomes):
         def evaluation_function(x):
-            return x*x
+            return x * x
         pop = Population(simple_chromosomes, eval_function=evaluation_function)
         pop.evaluate()
         for individual in pop:

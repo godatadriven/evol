@@ -1,5 +1,5 @@
 [flake8]
 max-complexity=10
 max-line-length=1000
-ignore = E252
+ignore = E252, E226
 exclude = */__init__.py, */*/__init__.py

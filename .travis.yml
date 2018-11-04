@@ -8,9 +8,6 @@ matrix:
 install:
   - pip install pytest flake8
   - python setup.py install
-before_script:
-  - flake8 evol
-  - flake8 tests
 script:
   - pytest
   - python examples/simple_nonlinear.py
@@ -20,3 +17,5 @@ script:
   - python examples/very_basic_tsp.py
   - python examples/simple_logging.py
   - python examples/rock_paper_scissors.py
+  - flake8 evol
+  - flake8 tests

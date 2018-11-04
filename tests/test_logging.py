@@ -18,7 +18,7 @@ class TestLoggerSimple:
         # we should see that a file was created with an appropriate number of rows
         pop.log()
         with open(log_file, "r") as f:
-            assert len(f.readlines()) == (2*len(simple_chromosomes))
+            assert len(f.readlines()) == (2 * len(simple_chromosomes))
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
         # there should be nothing printed
         assert len(read_stdout) == 0
@@ -43,7 +43,7 @@ class TestLoggerSimple:
         # we should see that a file was created with an appropriate number of rows
         pop.log(foo="meh")
         with open(log_file, "r") as f:
-            assert len(f.readlines()) == (2*len(simple_chromosomes))
+            assert len(f.readlines()) == (2 * len(simple_chromosomes))
             assert all(['meh' in l for l in f.readlines()[-10:]])
 
     def test_baselogger_works_via_evolution(self, tmpdir, capsys):
@@ -53,7 +53,7 @@ class TestLoggerSimple:
         evo = (Evolution()
                .survive(fraction=0.5)
                .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad)/2 + (random.random() - 0.5),
+                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
                       n_parents=2)
                .log(foo='bar'))
         pop.evolve(evolution=evo, n=2)
@@ -61,7 +61,7 @@ class TestLoggerSimple:
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
             # size of the log should be appropriate
-            assert len(read_file) == 2*len(pop)
+            assert len(read_file) == 2 * len(pop)
             # bar needs to be in every single line
             assert all(['bar' in row for row in read_file])
         # check characteristics of stoud
@@ -125,7 +125,7 @@ class TestLoggerSimple:
         evo = (Evolution()
                .survive(fraction=0.5)
                .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad)/2 + (random.random() - 0.5),
+                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
                       n_parents=2)
                .log(foo='bar'))
         pop.evolve(evolution=evo, n=5)
