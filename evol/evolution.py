@@ -198,8 +198,9 @@ class Evolution:
         """
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
 
-    def callback(self, evolution: 'Evolution', every: int=1, name: Optional[str]=None) -> 'Evolution':
-        return self._add_step(CallbackStep(name=name, evolution=evolution))
+    def callback(self, callback_function: Callable[..., Any],
+                 every: int=1, name: Optional[str]=None) -> 'Evolution':
+        return self._add_step(CallbackStep(name=name, callback_function=callback_function))
 
     def _add_step(self, step):
         result = copy(self)
