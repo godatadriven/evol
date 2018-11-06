@@ -7,7 +7,7 @@ from evol.logger import BaseLogger, SummaryLogger
 
 class TestLoggerSimple:
 
-    def test_baselogger_can_write_file_without_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
+    def test_baselogger_write_file_no_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
         logger = BaseLogger(target=log_file, stdout=False)
         pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function, logger=logger)
@@ -69,7 +69,7 @@ class TestLoggerSimple:
         assert len(read_stdout) == 2 * len(pop)
         assert all(['bar' in row for row in read_stdout])
 
-    def test_summarylogger_can_write_file_without_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
+    def test_summarylogger_write_file_mo_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
         logger = SummaryLogger(target=log_file, stdout=False)
         pop = Population(chromosomes=range(10), eval_function=lambda x: x, logger=logger)
