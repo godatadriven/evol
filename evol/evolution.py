@@ -1,8 +1,8 @@
 """
 Evolution objects in `evol` are objects that describe how the
-evolutionary algorithm will change members of a population. 
+evolutionary algorithm will change members of a population.
 Evolution objects contain the same methods as population objects
-but because an evolution is seperate from a population you can 
+but because an evolution is separate from a population you can
 play around with them more easily.
 """
 
@@ -175,7 +175,7 @@ class Evolution:
         """Logs a population.
 
         If a Population object was initialized with a logger
-        object then you may specify how logging is handled. The base logging 
+        object then you may specify how logging is handled. The base logging
         operation just logs to standard out.
 
         :param every: Setting to limit the logs being pushed. By setting this

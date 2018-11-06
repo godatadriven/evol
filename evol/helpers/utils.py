@@ -40,7 +40,7 @@ def select_arguments(func: Callable) -> Callable:
     """Decorate a function such that it accepts any keyworded arguments.
 
     The resulting function accepts any arguments, but only arguments that
-    the original function accepts are passed. This allows keyworded 
+    the original function accepts are passed. This allows keyworded
     arguments to be passed to multiple (decorated) functions, even if they
     do not (all) accept these arguments.
 

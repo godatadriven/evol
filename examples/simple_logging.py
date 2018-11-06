@@ -8,11 +8,13 @@ from evol.logger import BaseLogger
 
 random.seed(42)
 
+
 def random_start():
     """
     This function generates a random (x,y) coordinate in the searchspace
     """
     return (random.random() - 0.5) * 20, (random.random() - 0.5) * 20
+
 
 def func_to_optimise(xy):
     """
@@ -20,6 +22,7 @@ def func_to_optimise(xy):
     """
     x, y = xy
     return -(1-x)**2 - 2*(2-x**2)**2
+
 
 def pick_random_parents(pop):
     """
@@ -29,18 +32,20 @@ def pick_random_parents(pop):
     dad = random.choice(pop)
     return mom, dad
 
+
 def make_child(mom, dad):
     """
-    This is how two parents are going to make a child. 
+    This is how two parents are going to make a child.
     Note that the output of a tuple, just like the output of `random_start`
     """
     child_x = (mom[0] + dad[0])/2
     child_y = (mom[1] + dad[1])/2
     return child_x, child_y
 
+
 def add_noise(chromosome, sigma):
     """
-    This is a function that will add some noise to the chromosome. 
+    This is a function that will add some noise to the chromosome.
     """
     new_x = chromosome[0] + (random.random()-0.5) * sigma
     new_y = chromosome[1] + (random.random()-0.5) * sigma

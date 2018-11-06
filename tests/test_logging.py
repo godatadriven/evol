@@ -7,7 +7,7 @@ from evol.logger import BaseLogger, SummaryLogger
 
 class TestLoggerSimple:
 
-    def test_baselogger_can_write_file_without_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
+    def test_baselogger_write_file_no_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
         logger = BaseLogger(target=log_file, stdout=False)
         pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function, logger=logger)
@@ -18,7 +18,7 @@ class TestLoggerSimple:
         # we should see that a file was created with an appropriate number of rows
         pop.log()
         with open(log_file, "r") as f:
-            assert len(f.readlines()) == (2*len(simple_chromosomes))
+            assert len(f.readlines()) == (2 * len(simple_chromosomes))
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
         # there should be nothing printed
         assert len(read_stdout) == 0
@@ -43,7 +43,7 @@ class TestLoggerSimple:
         # we should see that a file was created with an appropriate number of rows
         pop.log(foo="meh")
         with open(log_file, "r") as f:
-            assert len(f.readlines()) == (2*len(simple_chromosomes))
+            assert len(f.readlines()) == (2 * len(simple_chromosomes))
             assert all(['meh' in l for l in f.readlines()[-10:]])
 
     def test_baselogger_works_via_evolution(self, tmpdir, capsys):
@@ -53,15 +53,15 @@ class TestLoggerSimple:
         evo = (Evolution()
                .survive(fraction=0.5)
                .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad)/2 + (random.random() - 0.5),
+                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
                       n_parents=2)
                .log(foo='bar'))
-        _ = pop.evolve(evolution=evo, n=2)
+        pop.evolve(evolution=evo, n=2)
         # check characteristics of the file
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
             # size of the log should be appropriate
-            assert len(read_file) == 2*len(pop)
+            assert len(read_file) == 2 * len(pop)
             # bar needs to be in every single line
             assert all(['bar' in row for row in read_file])
         # check characteristics of stoud
@@ -69,10 +69,10 @@ class TestLoggerSimple:
         assert len(read_stdout) == 2 * len(pop)
         assert all(['bar' in row for row in read_stdout])
 
-    def test_summarylogger_can_write_file_without_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
+    def test_summarylogger_write_file_mo_stdout(self, tmpdir, capsys, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
         logger = SummaryLogger(target=log_file, stdout=False)
-        pop = Population(chromosomes=range(10), eval_function=lambda x:x, logger=logger)
+        pop = Population(chromosomes=range(10), eval_function=lambda x: x, logger=logger)
         # we should see that a file was created with an appropriate number of rows
         pop.log()
         with open(log_file, "r") as f:
@@ -87,17 +87,17 @@ class TestLoggerSimple:
 
     def test_summarylogger_can_write_to_stdout(self, capsys, simple_chromosomes, simple_evaluation_function):
         pop = Population(chromosomes=range(10),
-                         eval_function=lambda x:x,
+                         eval_function=lambda x: x,
                          logger=SummaryLogger(target=None, stdout=True))
         pop.log().log()
         read_stdout = [line for line in capsys.readouterr().out.split('\n') if line != '']
         assert len(read_stdout) == 2
 
-
-    def test_summarylogger_can_accept_kwargs(self, tmpdir, simple_chromosomes, simple_evaluation_function):
+    def test_summary_logger_can_accept_kwargs(self, tmpdir, simple_chromosomes, simple_evaluation_function):
         log_file = tmpdir.join('log.txt')
         logger = SummaryLogger(target=log_file, stdout=False)
-        pop = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function, logger=logger)
+        pop = Population(chromosomes=simple_chromosomes,
+                         eval_function=simple_evaluation_function, logger=logger)
         # lets make a first simple log
         pop.log(foo="bar", buzz="meh")
         with open(log_file, "r") as f:
@@ -125,10 +125,10 @@ class TestLoggerSimple:
         evo = (Evolution()
                .survive(fraction=0.5)
                .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad)/2 + (random.random() - 0.5),
+                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
                       n_parents=2)
                .log(foo='bar'))
-        _ = pop.evolve(evolution=evo, n=5)
+        pop.evolve(evolution=evo, n=5)
         # check characteristics of the file
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
@@ -152,8 +152,8 @@ class TestLoggerSimple:
                       combiner=lambda mom, dad: (mom + dad) + 1,
                       n_parents=2)
                .log(foo="dino"))
-        _ = pop1.evolve(evolution=evo, n=5)
-        _ = pop2.evolve(evolution=evo, n=5)
+        pop1.evolve(evolution=evo, n=5)
+        pop2.evolve(evolution=evo, n=5)
         # two evolutions have now been applied, lets check the output!
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
@@ -177,7 +177,7 @@ class TestLoggerSimple:
                       combiner=lambda mom, dad: (mom + dad) + 1,
                       n_parents=2)
                .log(every=2))
-        _ = pop.evolve(evolution=evo, n=100)
+        pop.evolve(evolution=evo, n=100)
         with open(log_file, "r") as f:
             read_file = [item.replace("\n", "") for item in f.readlines()]
             assert len(read_file) == 50
