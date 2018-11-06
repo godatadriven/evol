@@ -4,9 +4,6 @@ This example demonstrates how logging works in evolutions.
 
 import random
 from evol import Population, Evolution
-from evol.logger import BaseLogger
-
-random.seed(42)
 
 
 def random_start():
@@ -64,6 +61,8 @@ class MyLogger():
 
 if __name__ == "__main__":
     logger = MyLogger()
+    random.seed(42)
+
     pop = Population(chromosomes=[random_start() for _ in range(200)],
                      eval_function=func_to_optimise,
                      maximize=True)
