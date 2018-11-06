@@ -14,9 +14,9 @@ import uuid
 
 class BaseLogger:
     """
-    The `evol.BaseLogger` is the most basic logger in evol. 
-    You can supply it to a population so that the population 
-    knows how to handle the `.log()` verb. 
+    The `evol.BaseLogger` is the most basic logger in evol.
+    You can supply it to a population so that the population
+    knows how to handle the `.log()` verb.
     """
     def __init__(self, target=None, stdout=False, fmt='%(asctime)s,%(message)s'):
         self.file = target
@@ -40,9 +40,9 @@ class BaseLogger:
 
     def log(self, population, **kwargs):
         """
-        The logger method of the Logger object determines what will be logged. 
+        The logger method of the Logger object determines what will be logged.
         :param population: `evol.Population` object
-        :return: nothing, it merely logs to a file and perhaps stdout 
+        :return: nothing, it merely logs to a file and perhaps stdout
         """
         values = ','.join([str(item) for item in kwargs.values()])
         if values != '':
@@ -53,8 +53,8 @@ class BaseLogger:
 
 class SummaryLogger(BaseLogger):
     """
-    The `evol.SummaryLogger` merely logs statistics per population and nothing else. 
-    You are still able to log to stdout as well. 
+    The `evol.SummaryLogger` merely logs statistics per population and nothing else.
+    You are still able to log to stdout as well.
     """
     def log(self, population, **kwargs):
         values = ','.join([str(item) for item in kwargs.values()])
@@ -66,11 +66,11 @@ class SummaryLogger(BaseLogger):
 
 class MultiLogger:
     """
-    The `evol.Multilogger` is a logger object that can handle writing to two files. 
-    It is here for demonstration purposes to show how you could customize the logging. 
+    The `evol.Multilogger` is a logger object that can handle writing to two files.
+    It is here for demonstration purposes to show how you could customize the logging.
     The only thing that matters is that all logging is handled by the `.log()`
-    call. So we are free to record to multiple files if we want as well. This is 
-    not per se best practice but it would work. 
+    call. So we are free to record to multiple files if we want as well. This is
+    not per se best practice but it would work.
     """
     def __init__(self, file_individuals, file_population):
         self.file_individuals = file_individuals
@@ -78,8 +78,8 @@ class MultiLogger:
 
     def log(self, population, **kwargs):
         """
-        The logger method of the Logger object determines what will be logged. 
-        :param population: 
+        The logger method of the Logger object determines what will be logged.
+        :param population: population to log
         :return: generator of strings to be handled
         """
         ind_generator = (f'{dt.datetime.now()},{population.id},{i.id},{i.fitness}' for i in population)

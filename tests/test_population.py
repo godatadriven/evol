@@ -49,7 +49,7 @@ class TestPopulationEvaluate:
 
     def test_evaluate_func(self, simple_chromosomes):
         def evaluation_function(x):
-            return x*x
+            return x * x
         pop = Population(simple_chromosomes, eval_function=evaluation_function)
         pop.evaluate()
         for individual in pop:
@@ -197,7 +197,7 @@ class TestPopulationWeights:
             pop = Population(chromosomes=simple_chromosomes,
                              eval_function=simple_evaluation_function, maximize=maximize)
             with raises(RuntimeError):
-                _ = pop._individual_weights
+                pop._individual_weights
             pop.evaluate()
             assert max(pop._individual_weights) == 1
             assert min(pop._individual_weights) == 0
