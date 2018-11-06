@@ -65,10 +65,10 @@ class Population:
         result.documented_best = self.documented_best
         return result
 
-    def __iter__(self):
+    def __iter__(self) -> [Individual]:
         return self.individuals.__iter__()
 
-    def __getitem__(self, i):
+    def __getitem__(self, i) -> Individual:
         return self.individuals[i]
 
     def __len__(self):
@@ -305,7 +305,7 @@ class Population:
         self.logger.log(population=self, **kwargs)
         return self
 
-    def callback(self, callback_function: Callable[..., Any],
+    def callback(self, callback_function: Callable[['Population'], None],
                  **kwargs) -> 'Population':
         """
         Performs a callback function on the population. Can be used for
