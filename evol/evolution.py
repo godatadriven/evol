@@ -200,7 +200,7 @@ class Evolution:
 
     def callback(self, callback_function: Callable[..., Any],
                  every: int=1, name: Optional[str]=None) -> 'Evolution':
-        return self._add_step(CallbackStep(name=name, callback_function=callback_function))
+        return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function))
 
     def _add_step(self, step):
         result = copy(self)

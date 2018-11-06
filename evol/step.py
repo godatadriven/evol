@@ -95,6 +95,14 @@ class RepeatStep(EvolutionStep):
 
 
 class CallbackStep(EvolutionStep):
-    def apply(self, population) -> Population:
-        return population.callback(**self.kwargs)
+    def __init__(self, name, every=1, **kwargs):
+        EvolutionStep.__init__(self, name, **kwargs)
+        self.count = 0
+        self.every = every
 
+    def apply(self, population) -> Population:
+        self.count += 1
+        if self.count >= self.every:
+            self.count = 0
+            return population.callback(**self.kwargs)
+        return population
