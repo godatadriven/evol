@@ -3,18 +3,21 @@ from evol import Population, Evolution
 
 random.seed(42)
 
+
 def random_start():
     """
     This function generates a random (x,y) coordinate
     """
     return (random.random() - 0.5) * 20, (random.random() - 0.5) * 20
 
+
 def func_to_optimise(xy):
     """
     This is the function we want to optimise (maximize)
     """
     x, y = xy
-    return -(1-x)**2 - 2*(2-x**2)**2
+    return -(1 - x) ** 2 - 2 * (2 - x ** 2) ** 2
+
 
 def pick_random_parents(pop):
     """
@@ -24,23 +27,26 @@ def pick_random_parents(pop):
     dad = random.choice(pop)
     return mom, dad
 
+
 def make_child(mom, dad):
     """
-    This function describes how two candidates combine into a new candidate 
+    This function describes how two candidates combine into a new candidate
     Note that the output is a tuple, just like the output of `random_start`
     We leave it to the developer to ensure that chromosomes are of the same type
     """
-    child_x = (mom[0] + dad[0])/2
-    child_y = (mom[1] + dad[1])/2
+    child_x = (mom[0] + dad[0]) / 2
+    child_y = (mom[1] + dad[1]) / 2
     return child_x, child_y
+
 
 def add_noise(chromosome, sigma):
     """
-    This is a function that will add some noise to the chromosome. 
+    This is a function that will add some noise to the chromosome.
     """
-    new_x = chromosome[0] + (random.random()-0.5) * sigma
-    new_y = chromosome[1] + (random.random()-0.5) * sigma
+    new_x = chromosome[0] + (random.random() - 0.5) * sigma
+    new_y = chromosome[1] + (random.random() - 0.5) * sigma
     return new_x, new_y
+
 
 # We start by defining a population with candidates.
 pop = Population(chromosomes=[random_start() for _ in range(200)],
@@ -61,9 +67,9 @@ evo2 = (Evolution()
 # We are combining two evolutions into a third one. You don't have to
 # but this approach demonstrates the flexibility of the library.
 evo3 = (Evolution()
-       .repeat(evo1, n=50)
-       .repeat(evo2, n=10)
-       .evaluate())
+        .repeat(evo1, n=50)
+        .repeat(evo2, n=10)
+        .evaluate())
 
 # In this step we are telling evol to apply the evolutions
 # to the population of candidates.

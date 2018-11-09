@@ -1,5 +1,5 @@
 """
-There are a few things to notice with this example. 
+There are a few things to notice with this example.
 
 1. from the command line you can re-run and see a different matplotlib plot
 2. `n_crossover` is set via the `.breed()` method
@@ -14,7 +14,7 @@ import argparse
 from evol import Population, Evolution
 
 
-def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
+def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):  # noqa: C901
     """
     Runs a simple evolutionary algorithm against a simple TSP problem.
     The goal is to explain the `evol` library, this is not an algorithm
@@ -29,7 +29,7 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
     # Think of these functions as if they are lego blocks.
     def init_func(num_towns):
         """
-        This function generates an individual  
+        This function generates an individual
         """
         order = list(range(num_towns))
         random.shuffle(order)
@@ -37,7 +37,7 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
 
     def dist(t1, t2):
         """
-        Calculates the distance between two towns. 
+        Calculates the distance between two towns.
         """
         return math.sqrt((t1[0] - t2[0]) ** 2 + (t1[1] - t2[1]) ** 2)
 
@@ -49,7 +49,7 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
 
     def pick_random(parents):
         """
-        This function selects two parents  
+        This function selects two parents
         """
         return random.choice(parents), random.choice(parents)
 
@@ -73,20 +73,18 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
 
     def random_flip(chromosome):
         result = chromosome[:]
-        idx1, idx2 = random.choices(list(range(len(chromosome))), k =2)
+        idx1, idx2 = random.choices(list(range(len(chromosome))), k=2)
         result[idx1], result[idx2] = result[idx2], result[idx1]
         return result
 
     pop = Population(chromosomes=[init_func(num_towns) for _ in range(population_size)],
                      eval_function=eval_func, maximize=False).evaluate()
 
-    evo = (
-        Evolution()
-            .survive(fraction=0.1)
-            .breed(parent_picker=pick_random, combiner=crossover_ox, n_crossover=2)
-            .mutate(random_flip)
-            .evaluate()
-    )
+    evo = (Evolution()
+           .survive(fraction=0.1)
+           .breed(parent_picker=pick_random, combiner=crossover_ox, n_crossover=2)
+           .mutate(random_flip)
+           .evaluate())
 
     print("will start the evolutionary program")
     scores = []
@@ -105,6 +103,7 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42):
         plt.show()
     except ImportError:
         print("If you install matplotlib you will get a pretty plot.")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run an example evol algorithm against a simple TSP problem.')
