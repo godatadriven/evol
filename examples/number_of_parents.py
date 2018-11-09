@@ -1,7 +1,7 @@
 """
-There are a few worthwhile things to notice in this example: 
+There are a few worthwhile things to notice in this example:
 
-1. you can pass hyperparams into functions from the `.breed` and `.mutate` step 
+1. you can pass hyperparams into functions from the `.breed` and `.mutate` step
 2. the algorithm does not care how many parents it will use in the `breed` step
 """
 
@@ -11,8 +11,8 @@ import argparse
 
 from evol import Population, Evolution
 
-def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200, survival=0.5, noise=0.1, seed=42):
 
+def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200, survival=0.5, noise=0.1, seed=42):
     random.seed(seed)
 
     def init_func():
@@ -28,7 +28,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
         return sum(parents) / len(parents)
 
     def add_noise(chromosome, sigma):
-        return chromosome + (random.random()-0.5) * sigma
+        return chromosome + (random.random() - 0.5) * sigma
 
     pop = Population(chromosomes=[init_func() for _ in range(population_size)],
                      eval_function=eval_func, maximize=True).evaluate()
@@ -43,6 +43,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
     for i in range(num_iter):
         pop = pop.evolve(evo).log()
     print(f"iteration:{i} best: {pop.current_best.fitness} worst: {pop.current_worst.fitness}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run an example evol algorithm against a simple continuous function.')
