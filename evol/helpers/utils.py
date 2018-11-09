@@ -23,11 +23,11 @@ def offspring_generator(parents: List[Individual],
     """
     while True:
         # Obtain parent chromosomes
-        parents = parent_picker(parents, **kwargs)
-        if isinstance(parents, Individual):
-            chromosomes = (parents.chromosome,)
+        selected_parents = parent_picker(parents, **kwargs)
+        if isinstance(selected_parents, Individual):
+            chromosomes = (selected_parents.chromosome,)
         else:
-            chromosomes = tuple(individual.chromosome for individual in parents)
+            chromosomes = tuple(individual.chromosome for individual in selected_parents)
         # Create children
         if getattr(combiner, 'multiple_offspring', False):
             for child in combiner(*chromosomes, **kwargs):
