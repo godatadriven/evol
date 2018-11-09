@@ -16,5 +16,4 @@ script:
   - python examples/very_basic_tsp.py
   - python examples/simple_logging.py
   - python examples/rock_paper_scissors.py
-  - flake8 evol
-  - flake8 tests
+  - flake8
