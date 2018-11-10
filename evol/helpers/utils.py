@@ -1,13 +1,13 @@
 import itertools as it
 from inspect import signature
-from typing import Callable, Generator, List
+from typing import Any, Callable, Generator, List, Sequence, Union
 
 from evol import Individual
 
 
 def offspring_generator(parents: List[Individual],
-                        parent_picker: Callable,
-                        combiner: Callable,
+                        parent_picker: Callable[..., Union[Individual, Sequence]],
+                        combiner: Callable[..., Any],
                         **kwargs) -> Generator[Individual, None, None]:
     """Generator for offspring.
 
@@ -15,33 +15,36 @@ def offspring_generator(parents: List[Individual],
     especially in the case of of multiple offspring.
 
     :param parents: List of parents.
-    :param parent_picker: Function that selects parents.
+    :param parent_picker: Function that selects parents. Must accept a sequence of
+        individuals and must return a single individual or a sequence of individuals.
         Must accept all kwargs passed (i.e. must be decorated by select_arguments).
-    :param combiner: Function that combines chromosomes.
+    :param combiner: Function that combines chromosomes. Must accept a tuple of
+        chromosomes and either return a single chromosome or yield multiple chromosomes.
         Must accept all kwargs passed (i.e. must be decorated by select_arguments).
     :param kwargs: Arguments
     :returns: Children
     """
     while True:
         # Obtain parent chromosomes
-        parents = parent_picker(parents, **kwargs)
-        if isinstance(parents, Individual):
-            chromosomes = (parents.chromosome,)
+        selected_parents = parent_picker(parents, **kwargs)
+        if isinstance(selected_parents, Individual):
+            chromosomes = (selected_parents.chromosome,)
         else:
-            chromosomes = tuple(individual.chromosome for individual in parents)
+            chromosomes = tuple(individual.chromosome for individual in selected_parents)
         # Create children
-        if getattr(combiner, 'multiple_offspring', False):
-            for child in combiner(*chromosomes, **kwargs):
+        combined = combiner(*chromosomes, **kwargs)
+        if isinstance(combined, Generator):
+            for child in combined:
                 yield Individual(chromosome=child)
         else:
-            yield Individual(chromosome=combiner(*chromosomes, **kwargs))
+            yield Individual(chromosome=combined)
 
 
 def select_arguments(func: Callable) -> Callable:
     """Decorate a function such that it accepts any keyworded arguments.
 
     The resulting function accepts any arguments, but only arguments that
-    the original function accepts are passed. This allows keyworded 
+    the original function accepts are passed. This allows keyworded
     arguments to be passed to multiple (decorated) functions, even if they
     do not (all) accept these arguments.
 

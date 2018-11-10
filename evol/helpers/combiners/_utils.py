@@ -86,9 +86,3 @@ def cycle_parity(cycles: List[Set[int]]) -> Dict[int, bool]:
     Indices in all odd cycles have parity False, while
     indices in even cycles have parity True."""
     return {index: bool(i % 2) for i, c in enumerate(cycles) for index in c}
-
-
-def multiple_offspring(f):
-    """Set the multiple offspring attribute of a combiner"""
-    f.multiple_offspring = True
-    return f

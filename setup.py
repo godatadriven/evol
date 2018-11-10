@@ -25,6 +25,9 @@ setup(
     tests_require=[
         "pytest==3.3.1"
     ],
+    extras_require={
+        "dev": ["flake8==3.5.0", "pytest==3.3.1"]
+    },
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',
                  'Programming Language :: Python :: 3.6',

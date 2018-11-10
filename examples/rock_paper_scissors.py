@@ -54,13 +54,11 @@ def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=4
     pop = ContestPopulation(chromosomes=[RockPaperScissorsPlayer() for _ in range(population_size)],
                             eval_function=evaluation_func, maximize=True).evaluate()
 
-    evo = (
-        Evolution()
-        .survive(fraction=survive_fraction)
-        .breed(parent_picker=pick_random, combiner=lambda x, y: x.combine(y), n_parents=2)
-        .mutate(lambda x: x.mutate())
-        .evaluate()
-    )
+    evo = (Evolution()
+           .survive(fraction=survive_fraction)
+           .breed(parent_picker=pick_random, combiner=lambda x, y: x.combine(y), n_parents=2)
+           .mutate(lambda x: x.mutate())
+           .evaluate())
 
     preferences_over_time = []
     for _ in range(n_iterations):
