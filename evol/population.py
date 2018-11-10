@@ -65,7 +65,7 @@ class Population:
         result.documented_best = self.documented_best
         return result
 
-    def __iter__(self) -> [Individual]:
+    def __iter__(self) -> Iterable[Individual]:
         return self.individuals.__iter__()
 
     def __getitem__(self, i) -> Individual:
@@ -75,7 +75,7 @@ class Population:
         return len(self.individuals)
 
     def __repr__(self):
-        return f"<Population object with size {len(self)}>"
+        return f"<Population with size {len(self)} at {id(self)}>"
 
     @property
     def current_best(self) -> Individual:
