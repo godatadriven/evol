@@ -1,6 +1,6 @@
 from pytest import mark
 
-from evol.helpers.utils import select_arguments, rotating_window, sliding_window
+from evol.helpers.utils import rotating_window, sliding_window
 from evol import Individual, Population
 from evol.helpers.pickers import pick_random
 from evol.helpers.utils import select_arguments, offspring_generator
