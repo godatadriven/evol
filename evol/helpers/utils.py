@@ -1,4 +1,3 @@
-import itertools as it
 from inspect import signature
 from typing import Any, Callable, Generator, List, Sequence, Union
 
