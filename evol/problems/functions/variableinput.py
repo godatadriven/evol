@@ -26,7 +26,7 @@ class FunctionProblem(Problem):
 class Sphere(FunctionProblem):
     def value(self, solution: Sequence[float]) -> float:
         """
-        The optimal value can be found at (1,1).
+        The optimal value can be found when a sequence of zeros is given.
         :param solution: a sequence of x_i values
         :return: the value of the Sphere function
         """
@@ -48,4 +48,9 @@ class Rosenbrock(FunctionProblem):
 
 class Rastrigin(FunctionProblem):
     def value(self, solution: Sequence[float]) -> float:
+        """
+        The optimal value can be found when a sequence of zeros is given.
+        :param solution: a sequence of x_i values
+        :return: the value of the Rosenbrock function
+        """
         return (10 * self.size) + sum([_**2 - 10 * math.cos(2*math.pi*_) for _ in solution])
