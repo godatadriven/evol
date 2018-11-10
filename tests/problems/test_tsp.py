@@ -1,6 +1,7 @@
 import math
 import pytest
-from evol.problems.routing.tsp import TSPProblem
+from evol.problems.routing import TSPProblem
+from evol.problems.routing.coordinates import united_states_capitols
 
 
 def test_distance_func():
@@ -35,3 +36,9 @@ def test_score_method_can_error():
         problem.eval_function([0, 1, 2, 2])
     assert "3" in str(execinfo3.value)
     assert "missing" in str(execinfo3.value)
+
+
+def test_can_initialize_our_datasets():
+    problem = TSPProblem.from_coordinates(united_states_capitols)
+    for i in range(len(united_states_capitols)):
+        assert problem.distance_matrix[i][i] == 0

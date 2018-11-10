@@ -19,7 +19,7 @@ class TSPProblem(Problem):
         res = [[0 for i in coordinates] for j in coordinates]
         for i, coord_i in enumerate(coordinates):
             for j, coord_j in enumerate(coordinates):
-                dist = math.sqrt(sum([(z[0] - z[1])**2 for z in zip(coord_i, coord_j)]))
+                dist = math.sqrt(sum([(z[0] - z[1])**2 for z in zip(coord_i[:2], coord_j[:2])]))
                 res[i][j] = dist
                 res[j][i] = dist
         return TSPProblem(distance_matrix=res)
