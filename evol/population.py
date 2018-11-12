@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object.
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Generator, Iterable, Optional, Sequence
+from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Sequence
 from uuid import uuid4
 
 from copy import copy
@@ -65,7 +65,7 @@ class Population:
         result.documented_best = self.documented_best
         return result
 
-    def __iter__(self) -> Iterable[Individual]:
+    def __iter__(self) -> Iterator[Individual]:
         return self.individuals.__iter__()
 
     def __getitem__(self, i) -> Individual:
