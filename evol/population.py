@@ -5,7 +5,7 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object.
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Generator, Iterable, Optional, Sequence
+from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Sequence
 from uuid import uuid4
 
 from copy import copy
@@ -65,17 +65,17 @@ class Population:
         result.documented_best = self.documented_best
         return result
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Individual]:
         return self.individuals.__iter__()
 
-    def __getitem__(self, i):
+    def __getitem__(self, i) -> Individual:
         return self.individuals[i]
 
     def __len__(self):
         return len(self.individuals)
 
     def __repr__(self):
-        return f"<Population object with size {len(self)}>"
+        return f"<Population with size {len(self)} at {id(self)}>"
 
     @property
     def current_best(self) -> Individual:
@@ -274,7 +274,6 @@ class Population:
                                         combiner=select_arguments(combiner),
                                         **kwargs)
         self.individuals += list(islice(offspring, self.intended_size - len(self.individuals)))
-        # TODO: increase generation and individual's ages
         return self
 
     def mutate(self,
@@ -304,6 +303,19 @@ class Population:
         """
         self.evaluate(lazy=True)
         self.logger.log(population=self, **kwargs)
+        return self
+
+    def callback(self, callback_function: Callable[['Population'], None],
+                 **kwargs) -> 'Population':
+        """
+        Performs a callback function on the population. Can be used for
+        custom logging/checkpointing.
+        :param callback_function: Function that accepts the population
+        as a first argument.
+        :return:
+        """
+        self.evaluate(lazy=True)
+        callback_function(copy(self), **kwargs)
         return self
 
     def _update_documented_best(self):
