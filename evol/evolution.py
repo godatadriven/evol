@@ -11,7 +11,7 @@ from typing import Any, Callable, Optional, Sequence
 from copy import copy
 
 from evol import Individual, Population
-from .step import CheckpointStep, LogStep
+from .step import CheckpointStep, LogStep, CallbackStep
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
@@ -197,6 +197,10 @@ class Evolution:
         :return: self
         """
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
+
+    def callback(self, callback_function: Callable[..., Any],
+                 every: int=1, name: Optional[str]=None) -> 'Evolution':
+        return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function))
 
     def _add_step(self, step):
         result = copy(self)
