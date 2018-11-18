@@ -26,11 +26,12 @@ setup(
         "pytest==3.3.1"
     ],
     extras_require={
-        "dev": ["flake8==3.5.0", "pytest==3.3.1"]
+        "dev": ["flake8==3.5.0", "pytest==3.3.1", "pdoc==0.3.2"]
     },
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',
                  'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',
                  'Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: MIT License',
                  'Topic :: Scientific/Engineering',

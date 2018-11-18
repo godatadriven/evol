@@ -4,7 +4,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>evol.logger API documentation</title>
-    <meta name="description" content="" />
+    <meta name="description" content="Loggers help keep track of the workings of your evolutionary algorithm. By
+default, each Population ..." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -1090,32 +1091,42 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">evol.logger</span> module</h1>
-  
+  <p>Loggers help keep track of the workings of your evolutionary algorithm. By
+default, each Population is initialized with a BaseLogger, which you can use
+by using the .log() method of the population. If you want more complex
+behaviour, you can supply another logger to the Population on initialisation.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger" class="source">
-    <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+    <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Loggers help keep track of the workings of your evolutionary algorithm. By</span>
+<span class="sd">default, each Population is initialized with a BaseLogger, which you can use</span>
+<span class="sd">by using the .log() method of the population. If you want more complex</span>
+<span class="sd">behaviour, you can supply another logger to the Population on initialisation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 
-<span class="k">class</span> <span class="nc">BaseLogger</span><span class="p">():</span>
+
+<span class="k">class</span> <span class="nc">BaseLogger</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The `evol.BaseLogger` is the most basic logger in evol. </span>
-<span class="sd">    You can supply it to a population so that the population </span>
-<span class="sd">    knows how to handle the `.log()` verb. </span>
+<span class="sd">    The `evol.BaseLogger` is the most basic logger in evol.</span>
+<span class="sd">    You can supply it to a population so that the population</span>
+<span class="sd">    knows how to handle the `.log()` verb.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">target</span>
         <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">target</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;path to target {os.path.split(target)[0]} does not exist!&quot;</span><span class="p">)</span>
-        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;{uuid.uuid4()}&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-            <span class="c1"># we do this extra step because loggers can behave instrage ways otherwise</span>
+            <span class="c1"># we do this extra step because loggers can behave in strange ways otherwise</span>
             <span class="c1"># https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/</span>
             <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
                 <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
@@ -1129,9 +1140,9 @@ table {
 
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The logger method of the Logger object determines what will be logged. </span>
+<span class="sd">        The logger method of the Logger object determines what will be logged.</span>
 <span class="sd">        :param population: `evol.Population` object</span>
-<span class="sd">        :return: nothing, it merely logs to a file and perhaps stdout </span>
+<span class="sd">        :return: nothing, it merely logs to a file and perhaps stdout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
         <span class="k">if</span> <span class="n">values</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -1142,8 +1153,8 @@ table {
 
 <span class="k">class</span> <span class="nc">SummaryLogger</span><span class="p">(</span><span class="n">BaseLogger</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The `evol.SummaryLogger` merely logs statistics per population and nothing else. </span>
-<span class="sd">    You are still able to log to stdout as well. </span>
+<span class="sd">    The `evol.SummaryLogger` merely logs statistics per population and nothing else.</span>
+<span class="sd">    You are still able to log to stdout as well.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
@@ -1153,22 +1164,22 @@ table {
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;{min(fitnesses)},{sum(fitnesses)/len(fitnesses)},{max(fitnesses)}&#39;</span> <span class="o">+</span> <span class="n">values</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">MultiLogger</span><span class="p">():</span>
+<span class="k">class</span> <span class="nc">MultiLogger</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The `evol.Multilogger` is a logger object that can handle writing to two files. </span>
-<span class="sd">    It is here for demonstration purposes to show how you could customize the logging. </span>
+<span class="sd">    The `evol.Multilogger` is a logger object that can handle writing to two files.</span>
+<span class="sd">    It is here for demonstration purposes to show how you could customize the logging.</span>
 <span class="sd">    The only thing that matters is that all logging is handled by the `.log()`</span>
-<span class="sd">    call. So we are free to record to multiple files if we want as well. This is </span>
-<span class="sd">    not per se best practice but it would work. </span>
+<span class="sd">    call. So we are free to record to multiple files if we want as well. This is</span>
+<span class="sd">    not per se best practice but it would work.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_indidivuals</span><span class="p">,</span> <span class="n">file_population</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_individuals</span> <span class="o">=</span> <span class="n">file_indidivuals</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_individuals</span><span class="p">,</span> <span class="n">file_population</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_individuals</span> <span class="o">=</span> <span class="n">file_individuals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_population</span> <span class="o">=</span> <span class="n">file_population</span>
 
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The logger method of the Logger object determines what will be logged. </span>
-<span class="sd">        :param population: </span>
+<span class="sd">        The logger method of the Logger object determines what will be logged.</span>
+<span class="sd">        :param population: population to log</span>
 <span class="sd">        :return: generator of strings to be handled</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ind_generator</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="s1">&#39;{dt.datetime.now()},{population.id},{i.id},{i.fitness}&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">population</span><span class="p">)</span>
@@ -1186,7 +1197,6 @@ table {
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The handler method of the Logger object determines how it will be logged.</span>
 <span class="sd">        In this case we print if there is no file and we append to a file otherwise.</span>
-<span class="sd">        :return: </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_population</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dict_to_log</span><span class="p">))</span>
@@ -1207,27 +1217,27 @@ table {
       <p id="evol.logger.BaseLogger" class="name">class <span class="ident">BaseLogger</span></p>
       
   
-    <div class="desc"><p>The <code>evol.BaseLogger</code> is the most basic logger in evol. 
-You can supply it to a population so that the population 
+    <div class="desc"><p>The <code>evol.BaseLogger</code> is the most basic logger in evol.
+You can supply it to a population so that the population
 knows how to handle the <code>.log()</code> verb.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.BaseLogger', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.BaseLogger" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">BaseLogger</span><span class="p">():</span>
+    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">BaseLogger</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The `evol.BaseLogger` is the most basic logger in evol. </span>
-<span class="sd">    You can supply it to a population so that the population </span>
-<span class="sd">    knows how to handle the `.log()` verb. </span>
+<span class="sd">    The `evol.BaseLogger` is the most basic logger in evol.</span>
+<span class="sd">    You can supply it to a population so that the population</span>
+<span class="sd">    knows how to handle the `.log()` verb.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">target</span>
         <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">target</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;path to target {os.path.split(target)[0]} does not exist!&quot;</span><span class="p">)</span>
-        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;{uuid.uuid4()}&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-            <span class="c1"># we do this extra step because loggers can behave instrage ways otherwise</span>
+            <span class="c1"># we do this extra step because loggers can behave in strange ways otherwise</span>
             <span class="c1"># https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/</span>
             <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
                 <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
@@ -1241,9 +1251,9 @@ knows how to handle the <code>.log()</code> verb.</p></div>
 
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The logger method of the Logger object determines what will be logged. </span>
+<span class="sd">        The logger method of the Logger object determines what will be logged.</span>
 <span class="sd">        :param population: `evol.Population` object</span>
-<span class="sd">        :return: nothing, it merely logs to a file and perhaps stdout </span>
+<span class="sd">        :return: nothing, it merely logs to a file and perhaps stdout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
         <span class="k">if</span> <span class="n">values</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -1266,7 +1276,7 @@ knows how to handle the <code>.log()</code> verb.</p></div>
             
   <div class="item">
     <div class="name def" id="evol.logger.BaseLogger.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, target=None, stdout=False, format=&#39;%(asctime)s,%(message)s&#39;)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, target=None, stdout=False, fmt=&#39;%(asctime)s,%(message)s&#39;)</p>
     </div>
     
 
@@ -1276,15 +1286,15 @@ knows how to handle the <code>.log()</code> verb.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.BaseLogger.__init__', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.BaseLogger.__init__" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">target</span>
     <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">target</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;path to target {os.path.split(target)[0]} does not exist!&quot;</span><span class="p">)</span>
-    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;{uuid.uuid4()}&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-        <span class="c1"># we do this extra step because loggers can behave instrage ways otherwise</span>
+        <span class="c1"># we do this extra step because loggers can behave in strange ways otherwise</span>
         <span class="c1"># https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/</span>
         <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
             <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
@@ -1311,7 +1321,7 @@ knows how to handle the <code>.log()</code> verb.</p></div>
 
     
   
-    <div class="desc"><p>The logger method of the Logger object determines what will be logged. 
+    <div class="desc"><p>The logger method of the Logger object determines what will be logged.
 :param population: <code>evol.Population</code> object
 :return: nothing, it merely logs to a file and perhaps stdout</p></div>
   <div class="source_cont">
@@ -1319,9 +1329,9 @@ knows how to handle the <code>.log()</code> verb.</p></div>
   <div id="source-evol.logger.BaseLogger.log" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The logger method of the Logger object determines what will be logged. </span>
+<span class="sd">    The logger method of the Logger object determines what will be logged.</span>
 <span class="sd">    :param population: `evol.Population` object</span>
-<span class="sd">    :return: nothing, it merely logs to a file and perhaps stdout </span>
+<span class="sd">    :return: nothing, it merely logs to a file and perhaps stdout</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
     <span class="k">if</span> <span class="n">values</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -1363,30 +1373,30 @@ knows how to handle the <code>.log()</code> verb.</p></div>
       <p id="evol.logger.MultiLogger" class="name">class <span class="ident">MultiLogger</span></p>
       
   
-    <div class="desc"><p>The <code>evol.Multilogger</code> is a logger object that can handle writing to two files. 
-It is here for demonstration purposes to show how you could customize the logging. 
+    <div class="desc"><p>The <code>evol.Multilogger</code> is a logger object that can handle writing to two files.
+It is here for demonstration purposes to show how you could customize the logging.
 The only thing that matters is that all logging is handled by the <code>.log()</code>
-call. So we are free to record to multiple files if we want as well. This is 
+call. So we are free to record to multiple files if we want as well. This is
 not per se best practice but it would work.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.MultiLogger', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.MultiLogger" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MultiLogger</span><span class="p">():</span>
+    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MultiLogger</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The `evol.Multilogger` is a logger object that can handle writing to two files. </span>
-<span class="sd">    It is here for demonstration purposes to show how you could customize the logging. </span>
+<span class="sd">    The `evol.Multilogger` is a logger object that can handle writing to two files.</span>
+<span class="sd">    It is here for demonstration purposes to show how you could customize the logging.</span>
 <span class="sd">    The only thing that matters is that all logging is handled by the `.log()`</span>
-<span class="sd">    call. So we are free to record to multiple files if we want as well. This is </span>
-<span class="sd">    not per se best practice but it would work. </span>
+<span class="sd">    call. So we are free to record to multiple files if we want as well. This is</span>
+<span class="sd">    not per se best practice but it would work.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_indidivuals</span><span class="p">,</span> <span class="n">file_population</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_individuals</span> <span class="o">=</span> <span class="n">file_indidivuals</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_individuals</span><span class="p">,</span> <span class="n">file_population</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_individuals</span> <span class="o">=</span> <span class="n">file_individuals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_population</span> <span class="o">=</span> <span class="n">file_population</span>
 
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The logger method of the Logger object determines what will be logged. </span>
-<span class="sd">        :param population: </span>
+<span class="sd">        The logger method of the Logger object determines what will be logged.</span>
+<span class="sd">        :param population: population to log</span>
 <span class="sd">        :return: generator of strings to be handled</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ind_generator</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="s1">&#39;{dt.datetime.now()},{population.id},{i.id},{i.fitness}&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">population</span><span class="p">)</span>
@@ -1404,7 +1414,6 @@ not per se best practice but it would work.</p></div>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The handler method of the Logger object determines how it will be logged.</span>
 <span class="sd">        In this case we print if there is no file and we append to a file otherwise.</span>
-<span class="sd">        :return: </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_population</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dict_to_log</span><span class="p">))</span>
@@ -1426,7 +1435,7 @@ not per se best practice but it would work.</p></div>
             
   <div class="item">
     <div class="name def" id="evol.logger.MultiLogger.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, file_indidivuals, file_population)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, file_individuals, file_population)</p>
     </div>
     
 
@@ -1436,8 +1445,8 @@ not per se best practice but it would work.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.MultiLogger.__init__', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.MultiLogger.__init__" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_indidivuals</span><span class="p">,</span> <span class="n">file_population</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">file_individuals</span> <span class="o">=</span> <span class="n">file_indidivuals</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_individuals</span><span class="p">,</span> <span class="n">file_population</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">file_individuals</span> <span class="o">=</span> <span class="n">file_individuals</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">file_population</span> <span class="o">=</span> <span class="n">file_population</span>
 </pre></div>
 
@@ -1456,8 +1465,7 @@ not per se best practice but it would work.</p></div>
     
   
     <div class="desc"><p>The handler method of the Logger object determines how it will be logged.
-In this case we print if there is no file and we append to a file otherwise.
-:return:</p></div>
+In this case we print if there is no file and we append to a file otherwise.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.MultiLogger.handle', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.MultiLogger.handle" class="source">
@@ -1465,7 +1473,6 @@ In this case we print if there is no file and we append to a file otherwise.
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The handler method of the Logger object determines how it will be logged.</span>
 <span class="sd">    In this case we print if there is no file and we append to a file otherwise.</span>
-<span class="sd">    :return: </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_population</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dict_to_log</span><span class="p">))</span>
@@ -1487,16 +1494,16 @@ In this case we print if there is no file and we append to a file otherwise.
 
     
   
-    <div class="desc"><p>The logger method of the Logger object determines what will be logged. 
-:param population: 
+    <div class="desc"><p>The logger method of the Logger object determines what will be logged.
+:param population: population to log
 :return: generator of strings to be handled</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.MultiLogger.log', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.MultiLogger.log" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The logger method of the Logger object determines what will be logged. </span>
-<span class="sd">    :param population: </span>
+<span class="sd">    The logger method of the Logger object determines what will be logged.</span>
+<span class="sd">    :param population: population to log</span>
 <span class="sd">    :return: generator of strings to be handled</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ind_generator</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="s1">&#39;{dt.datetime.now()},{population.id},{i.id},{i.fitness}&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">population</span><span class="p">)</span>
@@ -1544,15 +1551,15 @@ In this case we print if there is no file and we append to a file otherwise.
       <p id="evol.logger.SummaryLogger" class="name">class <span class="ident">SummaryLogger</span></p>
       
   
-    <div class="desc"><p>The <code>evol.SummaryLogger</code> merely logs statistics per population and nothing else. 
+    <div class="desc"><p>The <code>evol.SummaryLogger</code> merely logs statistics per population and nothing else.
 You are still able to log to stdout as well.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.SummaryLogger', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.SummaryLogger" class="source">
     <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SummaryLogger</span><span class="p">(</span><span class="n">BaseLogger</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The `evol.SummaryLogger` merely logs statistics per population and nothing else. </span>
-<span class="sd">    You are still able to log to stdout as well. </span>
+<span class="sd">    The `evol.SummaryLogger` merely logs statistics per population and nothing else.</span>
+<span class="sd">    You are still able to log to stdout as well.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
@@ -1577,7 +1584,7 @@ You are still able to log to stdout as well.</p></div>
             
   <div class="item">
     <div class="name def" id="evol.logger.SummaryLogger.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, target=None, stdout=False, format=&#39;%(asctime)s,%(message)s&#39;)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, target=None, stdout=False, fmt=&#39;%(asctime)s,%(message)s&#39;)</p>
     </div>
     
     <p class="inheritance">
@@ -1591,15 +1598,15 @@ You are still able to log to stdout as well.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.logger.SummaryLogger.__init__', this);">Show source &equiv;</a></p>
   <div id="source-evol.logger.SummaryLogger.__init__" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1">,</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">target</span>
     <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">target</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;path to target {os.path.split(target)[0]} does not exist!&quot;</span><span class="p">)</span>
-    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;{uuid.uuid4()}&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-        <span class="c1"># we do this extra step because loggers can behave instrage ways otherwise</span>
+        <span class="c1"># we do this extra step because loggers can behave in strange ways otherwise</span>
         <span class="c1"># https://navaspot.wordpress.com/2015/09/22/same-log-messages-multiple-times-in-python-issue/</span>
         <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
             <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
@@ -1626,7 +1633,7 @@ You are still able to log to stdout as well.</p></div>
 
     
   
-    <div class="desc"><p>The logger method of the Logger object determines what will be logged. 
+    <div class="desc"><p>The logger method of the Logger object determines what will be logged.
 :param population: <code>evol.Population</code> object
 :return: nothing, it merely logs to a file and perhaps stdout</p></div>
   <div class="source_cont">

@@ -1053,6 +1053,7 @@ table {
     <li class="mono"><a href="#evol.evolution.Evolution.__init__">__init__</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.apply">apply</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.breed">breed</a></li>
+    <li class="mono"><a href="#evol.evolution.Evolution.callback">callback</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.checkpoint">checkpoint</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.evaluate">evaluate</a></li>
     <li class="mono"><a href="#evol.evolution.Evolution.filter">filter</a></li>
@@ -1080,26 +1081,27 @@ table {
   <header id="section-intro">
   <h1 class="title"><span class="name">evol.evolution</span> module</h1>
   <p>Evolution objects in <code>evol</code> are objects that describe how the
-evolutionary algorithm will change members of a population. 
+evolutionary algorithm will change members of a population.
 Evolution objects contain the same methods as population objects
-but because an evolution is seperate from a population you can 
+but because an evolution is separate from a population you can
 play around with them more easily.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution" class="source">
     <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Evolution objects in `evol` are objects that describe how the</span>
-<span class="sd">evolutionary algorithm will change members of a population. </span>
+<span class="sd">evolutionary algorithm will change members of a population.</span>
 <span class="sd">Evolution objects contain the same methods as population objects</span>
-<span class="sd">but because an evolution is seperate from a population you can </span>
+<span class="sd">but because an evolution is separate from a population you can</span>
 <span class="sd">play around with them more easily.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
 
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 
-<span class="kn">from</span> <span class="nn">.step</span> <span class="kn">import</span> <span class="n">CheckpointStep</span><span class="p">,</span> <span class="n">LogStep</span>
+<span class="kn">from</span> <span class="nn">evol</span> <span class="kn">import</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Population</span>
+<span class="kn">from</span> <span class="nn">.step</span> <span class="kn">import</span> <span class="n">CheckpointStep</span><span class="p">,</span> <span class="n">LogStep</span><span class="p">,</span> <span class="n">CallbackStep</span>
 <span class="kn">from</span> <span class="nn">.step</span> <span class="kn">import</span> <span class="n">EvaluationStep</span><span class="p">,</span> <span class="n">ApplyStep</span><span class="p">,</span> <span class="n">MapStep</span><span class="p">,</span> <span class="n">FilterStep</span>
 <span class="kn">from</span> <span class="nn">.step</span> <span class="kn">import</span> <span class="n">SurviveStep</span><span class="p">,</span> <span class="n">BreedStep</span><span class="p">,</span> <span class="n">MutateStep</span><span class="p">,</span> <span class="n">RepeatStep</span>
 
@@ -1118,7 +1120,7 @@ play around with them more easily.</p>
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add an evaluation step to the Evolution.</span>
 
 <span class="sd">        This evaluates the fitness of all individuals. If lazy is True, the</span>
@@ -1127,91 +1129,85 @@ play around with them more easily.</p>
 <span class="sd">        lazy evaluation is implicitly included in the steps that need it (most</span>
 <span class="sd">        notably in the survive step).</span>
 
-<span class="sd">        :param name: Name of the evaluation step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param lazy: If True, do no re-evaluate the fitness if the fitness is known.</span>
-<span class="sd">        :type lazy: bool</span>
+<span class="sd">        :param name: Name of the evaluation step.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">EvaluationStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="n">lazy</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Population</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add an apply step to the Evolution.</span>
 
 <span class="sd">        This applies the provided function to the population.</span>
 
 <span class="sd">        :param func: Function to apply to the population.</span>
-<span class="sd">        :type func: Callable[Population]</span>
 <span class="sd">        :param name: Name of the apply step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">ApplyStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;pickle&#39;</span><span class="p">,</span> <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;pickle&#39;</span><span class="p">,</span>
+                   <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a checkpoint step to the Evolution.</span>
 
-<span class="sd">        :param name: Name of the map step.</span>
 <span class="sd">        :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,</span>
 <span class="sd">            which can be provided upon initialisation. Defaults to None.</span>
 <span class="sd">        :param method: One of &#39;pickle&#39; or &#39;json&#39;. When &#39;json&#39;, the chromosomes need to be json-serializable.</span>
 <span class="sd">            Defaults to &#39;pickle&#39;.</span>
+<span class="sd">        :param name: Name of the map step.</span>
 <span class="sd">        :param every: Checkpoint once every &#39;every&#39; iterations. Defaults to 1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">CheckpointStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Individual</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a map step to the Evolution.</span>
 
 <span class="sd">        This applies the provided function to each individual in the</span>
 <span class="sd">        population, in place.</span>
 
 <span class="sd">        :param func: Function to apply to the individuals in the population.</span>
-<span class="sd">        :type func: Callable[Individual] -&gt; Individual</span>
 <span class="sd">        :param name: Name of the map step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MapStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a filter step to the Evolution.</span>
 
 <span class="sd">        This filters the individuals in the population using the provided function.</span>
 
 <span class="sd">        :param func: Function to filter the individuals in the population by.</span>
-<span class="sd">        :type func: Callable[Individual] -&gt; bool</span>
 <span class="sd">        :param name: Name of the filter step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">FilterStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">survive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">luck</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">evaluate</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">survive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">fraction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">n</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">luck</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">evaluate</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a survive step to the Evolution.</span>
 
 <span class="sd">        This filters the individuals in the population according to fitness.</span>
 
 <span class="sd">        :param fraction: Fraction of the original population that survives.</span>
 <span class="sd">            Defaults to None.</span>
-<span class="sd">        :type fraction: float/None</span>
 <span class="sd">        :param n: Number of individuals of the population that survive.</span>
 <span class="sd">            Defaults to None.</span>
-<span class="sd">        :type n: int/None</span>
 <span class="sd">        :param luck: If True, individuals randomly survive (with replacement!)</span>
 <span class="sd">            with chances proportional to their fitness. Defaults to False.</span>
-<span class="sd">        :type luck: bool</span>
 <span class="sd">        :param name: Name of the filter step.</span>
-<span class="sd">        :type name: str</span>
+<span class="sd">        :param evaluate: If True, add a lazy evaluate step before the survive step.</span>
+<span class="sd">            Defaults to True.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">evaluate</span><span class="p">:</span>
             <span class="n">after_evaluate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -1219,23 +1215,24 @@ play around with them more easily.</p>
             <span class="n">after_evaluate</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="n">after_evaluate</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">SurviveStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="n">fraction</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">luck</span><span class="o">=</span><span class="n">luck</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">breed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_picker</span><span class="p">,</span> <span class="n">combiner</span><span class="p">,</span> <span class="n">population_size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">breed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Individual</span><span class="p">]],</span>
+              <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+              <span class="n">population_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+              <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a breed step to the Evolution.</span>
 
 <span class="sd">        Create new individuals by combining existing individuals.</span>
 
 <span class="sd">        :param parent_picker: Function that selects parents.</span>
-<span class="sd">        :type parent_picker: Callable[list[Individual]] -&gt; tuple[Individual]</span>
 <span class="sd">        :param combiner: Function that combines chromosomes into a new</span>
 <span class="sd">            chromosome. Must be able to handle the number of chromosomes</span>
 <span class="sd">            that the combiner returns.</span>
-<span class="sd">        :type combiner: Callable[chromosome, ...] -&gt; chromosome</span>
 <span class="sd">        :param population_size: Intended population size after breeding.</span>
 <span class="sd">            If None, take the previous intended population size.</span>
 <span class="sd">            Defaults to None.</span>
-<span class="sd">        :type population_size: int/None</span>
 <span class="sd">        :param name: Name of the breed step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Kwargs to pass to the parent_picker and combiner.</span>
 <span class="sd">            Arguments are only passed to the functions if they accept them.</span>
 <span class="sd">        :return: self</span>
@@ -1243,41 +1240,57 @@ play around with them more easily.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">BreedStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parent_picker</span><span class="o">=</span><span class="n">parent_picker</span><span class="p">,</span> <span class="n">combiner</span><span class="o">=</span><span class="n">combiner</span><span class="p">,</span>
                                         <span class="n">population_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">mutate_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+               <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+               <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a mutate step to the Evolution.</span>
 
 <span class="sd">        This mutates the chromosome of each individual.</span>
 
-<span class="sd">        :param func: Function that accepts a chromosome and returns</span>
+<span class="sd">        :param mutate_function: Function that accepts a chromosome and returns</span>
 <span class="sd">            a mutated chromosome.</span>
-<span class="sd">        :type func: Callable[chromosome, **kwargs] -&gt; chromosome</span>
 <span class="sd">        :param probability: Probability that the individual mutates.</span>
 <span class="sd">            The function is only applied in the given fraction of cases.</span>
 <span class="sd">            Defaults to 1.0.</span>
-<span class="sd">        :type probability: float</span>
 <span class="sd">        :param name: Name of the mutate step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Kwargs to pass to the parent_picker and combiner.</span>
 <span class="sd">            Arguments are only passed to the functions if they accept them.</span>
 <span class="sd">        :return: self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MutateStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MutateStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="n">mutate_function</span><span class="o">=</span><span class="n">mutate_function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Logs a population. If a Population object was initialized with a logger</span>
-<span class="sd">        object then you may specify how logging is handled. The base logging </span>
-<span class="sd">        operation just logs to standard out. </span>
-<span class="sd">        :param name: Name of the log step.</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Logs a population.</span>
+
+<span class="sd">        If a Population object was initialized with a logger</span>
+<span class="sd">        object then you may specify how logging is handled. The base logging</span>
+<span class="sd">        operation just logs to standard out.</span>
+
 <span class="sd">        :param every: Setting to limit the logs being pushed. By setting this</span>
-<span class="sd">            parameter to &#39;n&#39; we only once every &#39;n&#39; log calls. </span>
+<span class="sd">            parameter to &#39;n&#39; we only once every &#39;n&#39; log calls.</span>
+<span class="sd">        :param name: Name of the log step.</span>
 <span class="sd">        :return: self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">LogStep</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evolution</span><span class="p">:</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add an evolution as a step to this evolution.</span>
 
-    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evolution</span><span class="p">:</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+<span class="sd">        This will add a step to the evolution that repeats another evolution</span>
+<span class="sd">        several times.</span>
+
+<span class="sd">        :param evolution: The evolution to add.</span>
+<span class="sd">        :param n: Number of times to perform the evolution. Defaults to 1.</span>
+<span class="sd">        :param name: Name of the repeat step.</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">RepeatStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">evolution</span><span class="o">=</span><span class="n">evolution</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                 <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">CallbackStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">,</span> <span class="n">callback_function</span><span class="o">=</span><span class="n">callback_function</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_add_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1320,7 +1333,7 @@ play around with them more easily.</p>
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add an evaluation step to the Evolution.</span>
 
 <span class="sd">        This evaluates the fitness of all individuals. If lazy is True, the</span>
@@ -1329,91 +1342,85 @@ play around with them more easily.</p>
 <span class="sd">        lazy evaluation is implicitly included in the steps that need it (most</span>
 <span class="sd">        notably in the survive step).</span>
 
-<span class="sd">        :param name: Name of the evaluation step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param lazy: If True, do no re-evaluate the fitness if the fitness is known.</span>
-<span class="sd">        :type lazy: bool</span>
+<span class="sd">        :param name: Name of the evaluation step.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">EvaluationStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="n">lazy</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Population</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add an apply step to the Evolution.</span>
 
 <span class="sd">        This applies the provided function to the population.</span>
 
 <span class="sd">        :param func: Function to apply to the population.</span>
-<span class="sd">        :type func: Callable[Population]</span>
 <span class="sd">        :param name: Name of the apply step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">ApplyStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;pickle&#39;</span><span class="p">,</span> <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;pickle&#39;</span><span class="p">,</span>
+                   <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a checkpoint step to the Evolution.</span>
 
-<span class="sd">        :param name: Name of the map step.</span>
 <span class="sd">        :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,</span>
 <span class="sd">            which can be provided upon initialisation. Defaults to None.</span>
 <span class="sd">        :param method: One of &#39;pickle&#39; or &#39;json&#39;. When &#39;json&#39;, the chromosomes need to be json-serializable.</span>
 <span class="sd">            Defaults to &#39;pickle&#39;.</span>
+<span class="sd">        :param name: Name of the map step.</span>
 <span class="sd">        :param every: Checkpoint once every &#39;every&#39; iterations. Defaults to 1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">CheckpointStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Individual</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a map step to the Evolution.</span>
 
 <span class="sd">        This applies the provided function to each individual in the</span>
 <span class="sd">        population, in place.</span>
 
 <span class="sd">        :param func: Function to apply to the individuals in the population.</span>
-<span class="sd">        :type func: Callable[Individual] -&gt; Individual</span>
 <span class="sd">        :param name: Name of the map step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MapStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a filter step to the Evolution.</span>
 
 <span class="sd">        This filters the individuals in the population using the provided function.</span>
 
 <span class="sd">        :param func: Function to filter the individuals in the population by.</span>
-<span class="sd">        :type func: Callable[Individual] -&gt; bool</span>
 <span class="sd">        :param name: Name of the filter step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">FilterStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">survive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">luck</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">evaluate</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">survive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">fraction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">n</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">luck</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">evaluate</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a survive step to the Evolution.</span>
 
 <span class="sd">        This filters the individuals in the population according to fitness.</span>
 
 <span class="sd">        :param fraction: Fraction of the original population that survives.</span>
 <span class="sd">            Defaults to None.</span>
-<span class="sd">        :type fraction: float/None</span>
 <span class="sd">        :param n: Number of individuals of the population that survive.</span>
 <span class="sd">            Defaults to None.</span>
-<span class="sd">        :type n: int/None</span>
 <span class="sd">        :param luck: If True, individuals randomly survive (with replacement!)</span>
 <span class="sd">            with chances proportional to their fitness. Defaults to False.</span>
-<span class="sd">        :type luck: bool</span>
 <span class="sd">        :param name: Name of the filter step.</span>
-<span class="sd">        :type name: str</span>
+<span class="sd">        :param evaluate: If True, add a lazy evaluate step before the survive step.</span>
+<span class="sd">            Defaults to True.</span>
 <span class="sd">        :return: This Evolution with an additional step.</span>
-<span class="sd">        :rtype: Evolution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">evaluate</span><span class="p">:</span>
             <span class="n">after_evaluate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -1421,23 +1428,24 @@ play around with them more easily.</p>
             <span class="n">after_evaluate</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="n">after_evaluate</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">SurviveStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="n">fraction</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">luck</span><span class="o">=</span><span class="n">luck</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">breed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_picker</span><span class="p">,</span> <span class="n">combiner</span><span class="p">,</span> <span class="n">population_size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">breed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Individual</span><span class="p">]],</span>
+              <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+              <span class="n">population_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+              <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a breed step to the Evolution.</span>
 
 <span class="sd">        Create new individuals by combining existing individuals.</span>
 
 <span class="sd">        :param parent_picker: Function that selects parents.</span>
-<span class="sd">        :type parent_picker: Callable[list[Individual]] -&gt; tuple[Individual]</span>
 <span class="sd">        :param combiner: Function that combines chromosomes into a new</span>
 <span class="sd">            chromosome. Must be able to handle the number of chromosomes</span>
 <span class="sd">            that the combiner returns.</span>
-<span class="sd">        :type combiner: Callable[chromosome, ...] -&gt; chromosome</span>
 <span class="sd">        :param population_size: Intended population size after breeding.</span>
 <span class="sd">            If None, take the previous intended population size.</span>
 <span class="sd">            Defaults to None.</span>
-<span class="sd">        :type population_size: int/None</span>
 <span class="sd">        :param name: Name of the breed step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Kwargs to pass to the parent_picker and combiner.</span>
 <span class="sd">            Arguments are only passed to the functions if they accept them.</span>
 <span class="sd">        :return: self</span>
@@ -1445,41 +1453,57 @@ play around with them more easily.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">BreedStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parent_picker</span><span class="o">=</span><span class="n">parent_picker</span><span class="p">,</span> <span class="n">combiner</span><span class="o">=</span><span class="n">combiner</span><span class="p">,</span>
                                         <span class="n">population_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">mutate_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+               <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+               <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a mutate step to the Evolution.</span>
 
 <span class="sd">        This mutates the chromosome of each individual.</span>
 
-<span class="sd">        :param func: Function that accepts a chromosome and returns</span>
+<span class="sd">        :param mutate_function: Function that accepts a chromosome and returns</span>
 <span class="sd">            a mutated chromosome.</span>
-<span class="sd">        :type func: Callable[chromosome, **kwargs] -&gt; chromosome</span>
 <span class="sd">        :param probability: Probability that the individual mutates.</span>
 <span class="sd">            The function is only applied in the given fraction of cases.</span>
 <span class="sd">            Defaults to 1.0.</span>
-<span class="sd">        :type probability: float</span>
 <span class="sd">        :param name: Name of the mutate step.</span>
-<span class="sd">        :type name: str</span>
 <span class="sd">        :param kwargs: Kwargs to pass to the parent_picker and combiner.</span>
 <span class="sd">            Arguments are only passed to the functions if they accept them.</span>
 <span class="sd">        :return: self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MutateStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MutateStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="n">mutate_function</span><span class="o">=</span><span class="n">mutate_function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Logs a population. If a Population object was initialized with a logger</span>
-<span class="sd">        object then you may specify how logging is handled. The base logging </span>
-<span class="sd">        operation just logs to standard out. </span>
-<span class="sd">        :param name: Name of the log step.</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Logs a population.</span>
+
+<span class="sd">        If a Population object was initialized with a logger</span>
+<span class="sd">        object then you may specify how logging is handled. The base logging</span>
+<span class="sd">        operation just logs to standard out.</span>
+
 <span class="sd">        :param every: Setting to limit the logs being pushed. By setting this</span>
-<span class="sd">            parameter to &#39;n&#39; we only once every &#39;n&#39; log calls. </span>
+<span class="sd">            parameter to &#39;n&#39; we only once every &#39;n&#39; log calls.</span>
+<span class="sd">        :param name: Name of the log step.</span>
 <span class="sd">        :return: self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">LogStep</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evolution</span><span class="p">:</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add an evolution as a step to this evolution.</span>
 
-    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evolution</span><span class="p">:</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+<span class="sd">        This will add a step to the evolution that repeats another evolution</span>
+<span class="sd">        several times.</span>
+
+<span class="sd">        :param evolution: The evolution to add.</span>
+<span class="sd">        :param n: Number of times to perform the evolution. Defaults to 1.</span>
+<span class="sd">        :param name: Name of the repeat step.</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">RepeatStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">evolution</span><span class="o">=</span><span class="n">evolution</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                 <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">CallbackStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">,</span> <span class="n">callback_function</span><span class="o">=</span><span class="n">callback_function</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_add_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1536,25 +1560,19 @@ play around with them more easily.</p>
     <div class="desc"><p>Add an apply step to the Evolution.</p>
 <p>This applies the provided function to the population.</p>
 <p>:param func: Function to apply to the population.
-:type func: Callable[Population]
 :param name: Name of the apply step.
-:type name: str
 :param kwargs: Arguments to pass to the function.
-:return: This Evolution with an additional step.
-:rtype: Evolution</p></div>
+:return: This Evolution with an additional step.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.apply', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.apply" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Population</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add an apply step to the Evolution.</span>
 <span class="sd">    This applies the provided function to the population.</span>
 <span class="sd">    :param func: Function to apply to the population.</span>
-<span class="sd">    :type func: Callable[Population]</span>
 <span class="sd">    :param name: Name of the apply step.</span>
-<span class="sd">    :type name: str</span>
 <span class="sd">    :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">    :return: This Evolution with an additional step.</span>
-<span class="sd">    :rtype: Evolution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">ApplyStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 </pre></div>
@@ -1576,38 +1594,35 @@ play around with them more easily.</p>
     <div class="desc"><p>Add a breed step to the Evolution.</p>
 <p>Create new individuals by combining existing individuals.</p>
 <p>:param parent_picker: Function that selects parents.
-:type parent_picker: Callable[list[Individual]] -&gt; tuple[Individual]
 :param combiner: Function that combines chromosomes into a new
     chromosome. Must be able to handle the number of chromosomes
     that the combiner returns.
-:type combiner: Callable[chromosome, ...] -&gt; chromosome
 :param population_size: Intended population size after breeding.
     If None, take the previous intended population size.
     Defaults to None.
-:type population_size: int/None
 :param name: Name of the breed step.
-:type name: str
 :param kwargs: Kwargs to pass to the parent_picker and combiner.
     Arguments are only passed to the functions if they accept them.
 :return: self</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.breed', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.breed" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">breed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_picker</span><span class="p">,</span> <span class="n">combiner</span><span class="p">,</span> <span class="n">population_size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">breed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+          <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Individual</span><span class="p">]],</span>
+          <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+          <span class="n">population_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+          <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add a breed step to the Evolution.</span>
 <span class="sd">    Create new individuals by combining existing individuals.</span>
 <span class="sd">    :param parent_picker: Function that selects parents.</span>
-<span class="sd">    :type parent_picker: Callable[list[Individual]] -&gt; tuple[Individual]</span>
 <span class="sd">    :param combiner: Function that combines chromosomes into a new</span>
 <span class="sd">        chromosome. Must be able to handle the number of chromosomes</span>
 <span class="sd">        that the combiner returns.</span>
-<span class="sd">    :type combiner: Callable[chromosome, ...] -&gt; chromosome</span>
 <span class="sd">    :param population_size: Intended population size after breeding.</span>
 <span class="sd">        If None, take the previous intended population size.</span>
 <span class="sd">        Defaults to None.</span>
-<span class="sd">    :type population_size: int/None</span>
 <span class="sd">    :param name: Name of the breed step.</span>
-<span class="sd">    :type name: str</span>
 <span class="sd">    :param kwargs: Kwargs to pass to the parent_picker and combiner.</span>
 <span class="sd">        Arguments are only passed to the functions if they accept them.</span>
 <span class="sd">    :return: self</span>
@@ -1623,30 +1638,56 @@ play around with them more easily.</p>
   
             
   <div class="item">
+    <div class="name def" id="evol.evolution.Evolution.callback">
+    <p>def <span class="ident">callback</span>(</p><p>self, callback_function, every=1, name=None)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.callback', this);">Show source &equiv;</a></p>
+  <div id="source-evol.evolution.Evolution.callback" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+             <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">CallbackStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">,</span> <span class="n">callback_function</span><span class="o">=</span><span class="n">callback_function</span><span class="p">))</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="evol.evolution.Evolution.checkpoint">
-    <p>def <span class="ident">checkpoint</span>(</p><p>self, name=None, target=None, method=&#39;pickle&#39;, every=1)</p>
+    <p>def <span class="ident">checkpoint</span>(</p><p>self, target=None, method=&#39;pickle&#39;, name=None, every=1)</p>
     </div>
     
 
     
   
     <div class="desc"><p>Add a checkpoint step to the Evolution.</p>
-<p>:param name: Name of the map step.
-:param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
+<p>:param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
     which can be provided upon initialisation. Defaults to None.
 :param method: One of 'pickle' or 'json'. When 'json', the chromosomes need to be json-serializable.
     Defaults to 'pickle'.
+:param name: Name of the map step.
 :param every: Checkpoint once every 'every' iterations. Defaults to 1.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.checkpoint', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.checkpoint" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;pickle&#39;</span><span class="p">,</span> <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;pickle&#39;</span><span class="p">,</span>
+               <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add a checkpoint step to the Evolution.</span>
-<span class="sd">    :param name: Name of the map step.</span>
 <span class="sd">    :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,</span>
 <span class="sd">        which can be provided upon initialisation. Defaults to None.</span>
 <span class="sd">    :param method: One of &#39;pickle&#39; or &#39;json&#39;. When &#39;json&#39;, the chromosomes need to be json-serializable.</span>
 <span class="sd">        Defaults to &#39;pickle&#39;.</span>
+<span class="sd">    :param name: Name of the map step.</span>
 <span class="sd">    :param every: Checkpoint once every &#39;every&#39; iterations. Defaults to 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">CheckpointStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">))</span>
@@ -1660,7 +1701,7 @@ play around with them more easily.</p>
             
   <div class="item">
     <div class="name def" id="evol.evolution.Evolution.evaluate">
-    <p>def <span class="ident">evaluate</span>(</p><p>self, name=None, lazy=False)</p>
+    <p>def <span class="ident">evaluate</span>(</p><p>self, lazy=False, name=None)</p>
     </div>
     
 
@@ -1672,28 +1713,22 @@ fitness is only evaluated when a fitness value is not yet known. In
 most situations adding an explicit evaluation step is not needed, as
 lazy evaluation is implicitly included in the steps that need it (most
 notably in the survive step).</p>
-<p>:param name: Name of the evaluation step.
-:type name: str
-:param lazy: If True, do no re-evaluate the fitness if the fitness is known.
-:type lazy: bool
-:return: This Evolution with an additional step.
-:rtype: Evolution</p></div>
+<p>:param lazy: If True, do no re-evaluate the fitness if the fitness is known.
+:param name: Name of the evaluation step.
+:return: This Evolution with an additional step.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.evaluate', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.evaluate" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add an evaluation step to the Evolution.</span>
 <span class="sd">    This evaluates the fitness of all individuals. If lazy is True, the</span>
 <span class="sd">    fitness is only evaluated when a fitness value is not yet known. In</span>
 <span class="sd">    most situations adding an explicit evaluation step is not needed, as</span>
 <span class="sd">    lazy evaluation is implicitly included in the steps that need it (most</span>
 <span class="sd">    notably in the survive step).</span>
-<span class="sd">    :param name: Name of the evaluation step.</span>
-<span class="sd">    :type name: str</span>
 <span class="sd">    :param lazy: If True, do no re-evaluate the fitness if the fitness is known.</span>
-<span class="sd">    :type lazy: bool</span>
+<span class="sd">    :param name: Name of the evaluation step.</span>
 <span class="sd">    :return: This Evolution with an additional step.</span>
-<span class="sd">    :rtype: Evolution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">EvaluationStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="n">lazy</span><span class="p">))</span>
 </pre></div>
@@ -1715,25 +1750,19 @@ notably in the survive step).</p>
     <div class="desc"><p>Add a filter step to the Evolution.</p>
 <p>This filters the individuals in the population using the provided function.</p>
 <p>:param func: Function to filter the individuals in the population by.
-:type func: Callable[Individual] -&gt; bool
 :param name: Name of the filter step.
-:type name: str
 :param kwargs: Arguments to pass to the function.
-:return: This Evolution with an additional step.
-:rtype: Evolution</p></div>
+:return: This Evolution with an additional step.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.filter', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.filter" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add a filter step to the Evolution.</span>
 <span class="sd">    This filters the individuals in the population using the provided function.</span>
 <span class="sd">    :param func: Function to filter the individuals in the population by.</span>
-<span class="sd">    :type func: Callable[Individual] -&gt; bool</span>
 <span class="sd">    :param name: Name of the filter step.</span>
-<span class="sd">    :type name: str</span>
 <span class="sd">    :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">    :return: This Evolution with an additional step.</span>
-<span class="sd">    :rtype: Evolution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">FilterStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 </pre></div>
@@ -1746,30 +1775,31 @@ notably in the survive step).</p>
             
   <div class="item">
     <div class="name def" id="evol.evolution.Evolution.log">
-    <p>def <span class="ident">log</span>(</p><p>self, name=None, every=1, **kwargs)</p>
+    <p>def <span class="ident">log</span>(</p><p>self, every=1, name=None, **kwargs)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Logs a population. If a Population object was initialized with a logger
-object then you may specify how logging is handled. The base logging 
-operation just logs to standard out. 
+    <div class="desc"><p>Logs a population.</p>
+<p>If a Population object was initialized with a logger
+object then you may specify how logging is handled. The base logging
+operation just logs to standard out.</p>
+<p>:param every: Setting to limit the logs being pushed. By setting this
+    parameter to 'n' we only once every 'n' log calls.
 :param name: Name of the log step.
-:param every: Setting to limit the logs being pushed. By setting this
-    parameter to 'n' we only once every 'n' log calls. 
 :return: self</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.log', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.log" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Logs a population. If a Population object was initialized with a logger</span>
-<span class="sd">    object then you may specify how logging is handled. The base logging </span>
-<span class="sd">    operation just logs to standard out. </span>
-<span class="sd">    :param name: Name of the log step.</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">every</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Logs a population.</span>
+<span class="sd">    If a Population object was initialized with a logger</span>
+<span class="sd">    object then you may specify how logging is handled. The base logging</span>
+<span class="sd">    operation just logs to standard out.</span>
 <span class="sd">    :param every: Setting to limit the logs being pushed. By setting this</span>
-<span class="sd">        parameter to &#39;n&#39; we only once every &#39;n&#39; log calls. </span>
+<span class="sd">        parameter to &#39;n&#39; we only once every &#39;n&#39; log calls.</span>
+<span class="sd">    :param name: Name of the log step.</span>
 <span class="sd">    :return: self</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">LogStep</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
@@ -1793,26 +1823,20 @@ operation just logs to standard out.
 <p>This applies the provided function to each individual in the
 population, in place.</p>
 <p>:param func: Function to apply to the individuals in the population.
-:type func: Callable[Individual] -&gt; Individual
 :param name: Name of the map step.
-:type name: str
 :param kwargs: Arguments to pass to the function.
-:return: This Evolution with an additional step.
-:rtype: Evolution</p></div>
+:return: This Evolution with an additional step.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.map', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.map" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Individual</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add a map step to the Evolution.</span>
 <span class="sd">    This applies the provided function to each individual in the</span>
 <span class="sd">    population, in place.</span>
 <span class="sd">    :param func: Function to apply to the individuals in the population.</span>
-<span class="sd">    :type func: Callable[Individual] -&gt; Individual</span>
 <span class="sd">    :param name: Name of the map step.</span>
-<span class="sd">    :type name: str</span>
 <span class="sd">    :param kwargs: Arguments to pass to the function.</span>
 <span class="sd">    :return: This Evolution with an additional step.</span>
-<span class="sd">    :rtype: Evolution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MapStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 </pre></div>
@@ -1825,7 +1849,7 @@ population, in place.</p>
             
   <div class="item">
     <div class="name def" id="evol.evolution.Evolution.mutate">
-    <p>def <span class="ident">mutate</span>(</p><p>self, func, probability=1.0, name=None, **kwargs)</p>
+    <p>def <span class="ident">mutate</span>(</p><p>self, mutate_function, probability=1.0, name=None, **kwargs)</p>
     </div>
     
 
@@ -1833,38 +1857,36 @@ population, in place.</p>
   
     <div class="desc"><p>Add a mutate step to the Evolution.</p>
 <p>This mutates the chromosome of each individual.</p>
-<p>:param func: Function that accepts a chromosome and returns
+<p>:param mutate_function: Function that accepts a chromosome and returns
     a mutated chromosome.
-:type func: Callable[chromosome, **kwargs] -&gt; chromosome
 :param probability: Probability that the individual mutates.
     The function is only applied in the given fraction of cases.
     Defaults to 1.0.
-:type probability: float
 :param name: Name of the mutate step.
-:type name: str
 :param kwargs: Kwargs to pass to the parent_picker and combiner.
     Arguments are only passed to the functions if they accept them.
 :return: self</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.mutate', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.mutate" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+           <span class="n">mutate_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+           <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add a mutate step to the Evolution.</span>
 <span class="sd">    This mutates the chromosome of each individual.</span>
-<span class="sd">    :param func: Function that accepts a chromosome and returns</span>
+<span class="sd">    :param mutate_function: Function that accepts a chromosome and returns</span>
 <span class="sd">        a mutated chromosome.</span>
-<span class="sd">    :type func: Callable[chromosome, **kwargs] -&gt; chromosome</span>
 <span class="sd">    :param probability: Probability that the individual mutates.</span>
 <span class="sd">        The function is only applied in the given fraction of cases.</span>
 <span class="sd">        Defaults to 1.0.</span>
-<span class="sd">    :type probability: float</span>
 <span class="sd">    :param name: Name of the mutate step.</span>
-<span class="sd">    :type name: str</span>
 <span class="sd">    :param kwargs: Kwargs to pass to the parent_picker and combiner.</span>
 <span class="sd">        Arguments are only passed to the functions if they accept them.</span>
 <span class="sd">    :return: self</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MutateStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">MutateStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="n">mutate_function</span><span class="o">=</span><span class="n">mutate_function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 </pre></div>
 
   </div>
@@ -1881,10 +1903,25 @@ population, in place.</p>
 
     
   
+    <div class="desc"><p>Add an evolution as a step to this evolution.</p>
+<p>This will add a step to the evolution that repeats another evolution
+several times.</p>
+<p>:param evolution: The evolution to add.
+:param n: Number of times to perform the evolution. Defaults to 1.
+:param name: Name of the repeat step.
+:return: self</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.repeat', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.repeat" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evolution</span><span class="p">:</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evolution</span><span class="p">:</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Add an evolution as a step to this evolution.</span>
+<span class="sd">    This will add a step to the evolution that repeats another evolution</span>
+<span class="sd">    several times.</span>
+<span class="sd">    :param evolution: The evolution to add.</span>
+<span class="sd">    :param n: Number of times to perform the evolution. Defaults to 1.</span>
+<span class="sd">    :param name: Name of the repeat step.</span>
+<span class="sd">    :return: self</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_step</span><span class="p">(</span><span class="n">RepeatStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">evolution</span><span class="o">=</span><span class="n">evolution</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">))</span>
 </pre></div>
 
@@ -1906,36 +1943,35 @@ population, in place.</p>
 <p>This filters the individuals in the population according to fitness.</p>
 <p>:param fraction: Fraction of the original population that survives.
     Defaults to None.
-:type fraction: float/None
 :param n: Number of individuals of the population that survive.
     Defaults to None.
-:type n: int/None
 :param luck: If True, individuals randomly survive (with replacement!)
     with chances proportional to their fitness. Defaults to False.
-:type luck: bool
 :param name: Name of the filter step.
-:type name: str
-:return: This Evolution with an additional step.
-:rtype: Evolution</p></div>
+:param evaluate: If True, add a lazy evaluate step before the survive step.
+    Defaults to True.
+:return: This Evolution with an additional step.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.evolution.Evolution.survive', this);">Show source &equiv;</a></p>
   <div id="source-evol.evolution.Evolution.survive" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">survive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">luck</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">evaluate</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">survive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">fraction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">n</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">luck</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">evaluate</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Evolution&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add a survive step to the Evolution.</span>
 <span class="sd">    This filters the individuals in the population according to fitness.</span>
 <span class="sd">    :param fraction: Fraction of the original population that survives.</span>
 <span class="sd">        Defaults to None.</span>
-<span class="sd">    :type fraction: float/None</span>
 <span class="sd">    :param n: Number of individuals of the population that survive.</span>
 <span class="sd">        Defaults to None.</span>
-<span class="sd">    :type n: int/None</span>
 <span class="sd">    :param luck: If True, individuals randomly survive (with replacement!)</span>
 <span class="sd">        with chances proportional to their fitness. Defaults to False.</span>
-<span class="sd">    :type luck: bool</span>
 <span class="sd">    :param name: Name of the filter step.</span>
-<span class="sd">    :type name: str</span>
+<span class="sd">    :param evaluate: If True, add a lazy evaluate step before the survive step.</span>
+<span class="sd">        Defaults to True.</span>
 <span class="sd">    :return: This Evolution with an additional step.</span>
-<span class="sd">    :rtype: Evolution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">evaluate</span><span class="p">:</span>
         <span class="n">after_evaluate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>

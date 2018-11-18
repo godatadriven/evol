@@ -1080,27 +1080,34 @@ table {
   <header id="section-intro">
   <h1 class="title"><span class="name">evol.individual</span> module</h1>
   <p>Individual objects in <code>evol</code> are a wrapper around a chromosome.
-Internally we work with individuals because that allows us to 
-seperate the fitness calculation from the datastructure. This 
+Internally we work with individuals because that allows us to
+separate the fitness calculation from the data structure. This
 saves a lot of CPU power.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.individual', this);">Show source &equiv;</a></p>
   <div id="source-evol.individual" class="source">
     <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Individual objects in `evol` are a wrapper around a chromosome.</span>
-<span class="sd">Internally we work with individuals because that allows us to </span>
-<span class="sd">seperate the fitness calculation from the datastructure. This </span>
+<span class="sd">Internally we work with individuals because that allows us to</span>
+<span class="sd">separate the fitness calculation from the data structure. This</span>
 <span class="sd">saves a lot of CPU power.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 
 
 <span class="k">class</span> <span class="nc">Individual</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Represents an individual in a population. The individual has a chromosome.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents an individual in a population. The individual has a chromosome.</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="sd">    :param chromosome: The chromosome of the individual.</span>
+<span class="sd">    :param fitness: The fitness of the individual, or None.</span>
+<span class="sd">        Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">fitness</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">chromosome</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">fitness</span>
@@ -1121,30 +1128,26 @@ saves a lot of CPU power.</p>
         <span class="n">result</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_function</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Evaluate the fitness of the individual.</span>
 
 <span class="sd">        :param eval_function: Function that reduces a chromosome to a fitness.</span>
-<span class="sd">        :type eval_function: Callable[chromosome] -&gt; float</span>
 <span class="sd">        :param lazy: If True, do no re-evaluate the fitness if the fitness is known.</span>
-<span class="sd">        :type lazy: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">lazy</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">eval_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mutate_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Mutate the chromosome of the individual.</span>
 
-<span class="sd">        :param func: Function that accepts a chromosome and returns a mutated chromosome.</span>
-<span class="sd">        :type func: Callable[chromosome, **kwargs] -&gt; chromosome</span>
+<span class="sd">        :param mutate_function: Function that accepts a chromosome and returns a mutated chromosome.</span>
 <span class="sd">        :param probability: Probability that the individual mutates.</span>
 <span class="sd">            The function is only applied in the given fraction of cases.</span>
 <span class="sd">            Defaults to 1.0.</span>
-<span class="sd">        :type probability: float</span>
 <span class="sd">        :param kwargs: Arguments to pass to the mutation function.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">probability</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probability</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">mutate_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 
@@ -1177,14 +1180,22 @@ saves a lot of CPU power.</p>
       <p id="evol.individual.Individual" class="name">class <span class="ident">Individual</span></p>
       
   
-    <div class="desc"><p>Represents an individual in a population. The individual has a chromosome.</p></div>
+    <div class="desc"><p>Represents an individual in a population. The individual has a chromosome.</p>
+<p>:param chromosome: The chromosome of the individual.
+:param fitness: The fitness of the individual, or None.
+    Defaults to None.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.individual.Individual', this);">Show source &equiv;</a></p>
   <div id="source-evol.individual.Individual" class="source">
     <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Individual</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Represents an individual in a population. The individual has a chromosome.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents an individual in a population. The individual has a chromosome.</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="sd">    :param chromosome: The chromosome of the individual.</span>
+<span class="sd">    :param fitness: The fitness of the individual, or None.</span>
+<span class="sd">        Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">fitness</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">chromosome</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">fitness</span>
@@ -1205,30 +1216,26 @@ saves a lot of CPU power.</p>
         <span class="n">result</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_function</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Evaluate the fitness of the individual.</span>
 
 <span class="sd">        :param eval_function: Function that reduces a chromosome to a fitness.</span>
-<span class="sd">        :type eval_function: Callable[chromosome] -&gt; float</span>
 <span class="sd">        :param lazy: If True, do no re-evaluate the fitness if the fitness is known.</span>
-<span class="sd">        :type lazy: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">lazy</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">eval_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mutate_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Mutate the chromosome of the individual.</span>
 
-<span class="sd">        :param func: Function that accepts a chromosome and returns a mutated chromosome.</span>
-<span class="sd">        :type func: Callable[chromosome, **kwargs] -&gt; chromosome</span>
+<span class="sd">        :param mutate_function: Function that accepts a chromosome and returns a mutated chromosome.</span>
 <span class="sd">        :param probability: Probability that the individual mutates.</span>
 <span class="sd">            The function is only applied in the given fraction of cases.</span>
 <span class="sd">            Defaults to 1.0.</span>
-<span class="sd">        :type probability: float</span>
 <span class="sd">        :param kwargs: Arguments to pass to the mutation function.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">probability</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probability</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">mutate_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 
@@ -1256,7 +1263,7 @@ saves a lot of CPU power.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.individual.Individual.__init__', this);">Show source &equiv;</a></p>
   <div id="source-evol.individual.Individual.__init__" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">fitness</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">chromosome</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">fitness</span>
@@ -1279,18 +1286,14 @@ saves a lot of CPU power.</p>
   
     <div class="desc"><p>Evaluate the fitness of the individual.</p>
 <p>:param eval_function: Function that reduces a chromosome to a fitness.
-:type eval_function: Callable[chromosome] -&gt; float
-:param lazy: If True, do no re-evaluate the fitness if the fitness is known.
-:type lazy: bool</p></div>
+:param lazy: If True, do no re-evaluate the fitness if the fitness is known.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.individual.Individual.evaluate', this);">Show source &equiv;</a></p>
   <div id="source-evol.individual.Individual.evaluate" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_function</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Evaluate the fitness of the individual.</span>
 <span class="sd">    :param eval_function: Function that reduces a chromosome to a fitness.</span>
-<span class="sd">    :type eval_function: Callable[chromosome] -&gt; float</span>
 <span class="sd">    :param lazy: If True, do no re-evaluate the fitness if the fitness is known.</span>
-<span class="sd">    :type lazy: bool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">lazy</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">eval_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">)</span>
@@ -1304,35 +1307,31 @@ saves a lot of CPU power.</p>
             
   <div class="item">
     <div class="name def" id="evol.individual.Individual.mutate">
-    <p>def <span class="ident">mutate</span>(</p><p>self, func, probability=1.0, **kwargs)</p>
+    <p>def <span class="ident">mutate</span>(</p><p>self, mutate_function, probability=1.0, **kwargs)</p>
     </div>
     
 
     
   
     <div class="desc"><p>Mutate the chromosome of the individual.</p>
-<p>:param func: Function that accepts a chromosome and returns a mutated chromosome.
-:type func: Callable[chromosome, **kwargs] -&gt; chromosome
+<p>:param mutate_function: Function that accepts a chromosome and returns a mutated chromosome.
 :param probability: Probability that the individual mutates.
     The function is only applied in the given fraction of cases.
     Defaults to 1.0.
-:type probability: float
 :param kwargs: Arguments to pass to the mutation function.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.individual.Individual.mutate', this);">Show source &equiv;</a></p>
   <div id="source-evol.individual.Individual.mutate" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mutate_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Mutate the chromosome of the individual.</span>
-<span class="sd">    :param func: Function that accepts a chromosome and returns a mutated chromosome.</span>
-<span class="sd">    :type func: Callable[chromosome, **kwargs] -&gt; chromosome</span>
+<span class="sd">    :param mutate_function: Function that accepts a chromosome and returns a mutated chromosome.</span>
 <span class="sd">    :param probability: Probability that the individual mutates.</span>
 <span class="sd">        The function is only applied in the given fraction of cases.</span>
 <span class="sd">        Defaults to 1.0.</span>
-<span class="sd">    :type probability: float</span>
 <span class="sd">    :param kwargs: Arguments to pass to the mutation function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">probability</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probability</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">mutate_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 

@@ -1071,42 +1071,42 @@ table {
   <p><img alt="Imgur" src="https://i.imgur.com/7MHcIq1.png" /></p>
 <p><code>Evol</code> is clear dsl for composable evolutionary algorithms that optimised for joy.</p>
 <p>Evol is a library that helps you make evolutionary algorithms. The
-goal is to have a library that is fun and clear to use, but not fast. </p>
+goal is to have a library that is fun and clear to use, but not fast.</p>
 <p>If you're looking at the library for the first time we recommend
 that you first take a look at the examples in the /examples folder
-on github. It is usually a better starting point to get started. </p>
-<p>Any details can be discovered on the docs. We hope that this 
+on github. It is usually a better starting point to get started.</p>
+<p>Any details can be discovered on the docs. We hope that this
 library makes it fun to write heuristics again.</p>
 <h2>The Gist</h2>
-<p>The main idea is that you should be able to define a complex algorithm 
-in a composable way. To explain what we mean by this:  let's consider 
+<p>The main idea is that you should be able to define a complex algorithm
+in a composable way. To explain what we mean by this:  let's consider
 two evolutionary algorithms for travelling salesman problems.</p>
 <p>The first approach takes a collections of solutions and applies:</p>
 <ol>
-<li>a survival where only the top 50% solutions survive </li>
-<li>the population reproduces using a crossover of genes </li>
+<li>a survival where only the top 50% solutions survive</li>
+<li>the population reproduces using a crossover of genes</li>
 <li>certain members mutate</li>
 <li>repeat this, maybe 1000 times or more!</li>
 </ol>
 <p><img src="https://i.imgur.com/is9g07u.png" alt="Drawing" style="width: 100%;"/></p>
-<p>We can also think of another approach: </p>
+<p>We can also think of another approach:</p>
 <ol>
-<li>pick the best solution of the population </li>
-<li>make random changes to this parent and generate new solutions </li>
+<li>pick the best solution of the population</li>
+<li>make random changes to this parent and generate new solutions</li>
 <li>repeat this, maybe 1000 times or more!</li>
 </ol>
 <p><img src="https://i.imgur.com/JRSWbTd.png" alt="Drawing" style="width: 100%;"/></p>
-<p>One could even combine the two algorithms into a new one: </p>
+<p>One could even combine the two algorithms into a new one:</p>
 <ol>
 <li>run algorithm 1 50 times</li>
 <li>run algorithm 2 10 times</li>
 <li>repeat this, maybe 1000 times or more!</li>
 </ol>
 <p><img src="https://i.imgur.com/SZTBWX2.png" alt="Drawing" style="width: 100%;"/></p>
-<p>You might notice that many parts of these algorithms are similar and it is 
-the goal of this library is to automate these parts. In fact, you can 
-expect the code for these algorithms to look something like this. </p>
-<p>A speudo-example of what is decribed about looks a bit like this: </p>
+<p>You might notice that many parts of these algorithms are similar and it is
+the goal of this library is to automate these parts. In fact, you can
+expect the code for these algorithms to look something like this.</p>
+<p>A speudo-example of what is decribed about looks a bit like this:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">evol</span> <span class="kn">import</span> <span class="n">Population</span><span class="p">,</span> <span class="n">Evolution</span>
 
@@ -1123,15 +1123,15 @@ expect the code for these algorithms to look something like this. </p>
 
 <span class="n">evo1</span> <span class="o">=</span> <span class="p">(</span><span class="n">Evolution</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;first_algorithm&quot;</span><span class="p">)</span>
        <span class="o">.</span><span class="n">survive</span><span class="p">(</span><span class="n">fraction</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-       <span class="o">.</span><span class="n">breed</span><span class="p">(</span><span class="n">parentpicker</span><span class="o">=</span><span class="n">pick_n_parents</span><span class="p">,</span> 
-              <span class="n">combiner</span><span class="o">=</span><span class="n">combiner</span><span class="p">,</span> 
+       <span class="o">.</span><span class="n">breed</span><span class="p">(</span><span class="n">parentpicker</span><span class="o">=</span><span class="n">pick_n_parents</span><span class="p">,</span>
+              <span class="n">combiner</span><span class="o">=</span><span class="n">combiner</span><span class="p">,</span>
               <span class="n">num_parents</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
        <span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">add_noise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)))</span>
 
 <span class="n">evo2</span> <span class="o">=</span> <span class="p">(</span><span class="n">Evolution</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;second_algorithm&quot;</span><span class="p">)</span>
        <span class="o">.</span><span class="n">survive</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-       <span class="o">.</span><span class="n">breed</span><span class="p">(</span><span class="n">parentpicker</span><span class="o">=</span><span class="n">pick_n_parents</span><span class="p">,</span> 
-              <span class="n">combiner</span><span class="o">=</span><span class="n">random_copy</span><span class="p">,</span> 
+       <span class="o">.</span><span class="n">breed</span><span class="p">(</span><span class="n">parentpicker</span><span class="o">=</span><span class="n">pick_n_parents</span><span class="p">,</span>
+              <span class="n">combiner</span><span class="o">=</span><span class="n">random_copy</span><span class="p">,</span>
               <span class="n">num_parents</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_max</span><span class="o">=</span><span class="mi">100</span><span class="p">))</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1001</span><span class="p">):</span>
@@ -1140,21 +1140,21 @@ expect the code for these algorithms to look something like this. </p>
 
 
 <h2>Getting Started</h2>
-<p>The best place to get started is the <code>/examples</code> folder on github. 
-This folder contains self contained examples that work out of the 
-box. </p>
+<p>The best place to get started is the <code>/examples</code> folder on github.
+This folder contains self contained examples that work out of the
+box.</p>
 <h2>Contributing Guide</h2>
 <h3>Local development</h3>
-<p>Python can help you. Don't reinstall all the time, rather use a 
+<p>Python can help you. Don't reinstall all the time, rather use a
 virtulenv that has a link to the code.</p>
 <div class="codehilite"><pre><span></span>python setup.py develop
 </pre></div>
 
 
-<p>When you submit a pull request it will be tested in travis. Once 
-the build is green the review can start. Please try to keep your 
-branch up to date to ensure you're not missing any tests. Larger 
-commits need to be discussed in github before we can accept them.  </p>
+<p>When you submit a pull request it will be tested in travis. Once
+the build is green the review can start. Please try to keep your
+branch up to date to ensure you're not missing any tests. Larger
+commits need to be discussed in github before we can accept them.</p>
 <h3>Generating New Documentation</h3>
 <p>Updating documentation is currently a manual step. From the <code>docs</code> folder:</p>
 <div class="codehilite"><pre><span></span>pdoc --html --overwrite evol
@@ -1173,40 +1173,40 @@ rm -rf evol
 <span class="sd">`Evol` is clear dsl for composable evolutionary algorithms that optimised for joy.</span>
 
 <span class="sd">Evol is a library that helps you make evolutionary algorithms. The</span>
-<span class="sd">goal is to have a library that is fun and clear to use, but not fast. </span>
+<span class="sd">goal is to have a library that is fun and clear to use, but not fast.</span>
 
 <span class="sd">If you&#39;re looking at the library for the first time we recommend</span>
 <span class="sd">that you first take a look at the examples in the /examples folder</span>
-<span class="sd">on github. It is usually a better starting point to get started. </span>
+<span class="sd">on github. It is usually a better starting point to get started.</span>
 
-<span class="sd">Any details can be discovered on the docs. We hope that this </span>
+<span class="sd">Any details can be discovered on the docs. We hope that this</span>
 <span class="sd">library makes it fun to write heuristics again.</span>
 
 <span class="sd">The Gist</span>
 <span class="sd">---------------------------------------</span>
-<span class="sd"> </span>
-<span class="sd">The main idea is that you should be able to define a complex algorithm </span>
-<span class="sd">in a composable way. To explain what we mean by this:  let&#39;s consider </span>
+
+<span class="sd">The main idea is that you should be able to define a complex algorithm</span>
+<span class="sd">in a composable way. To explain what we mean by this:  let&#39;s consider</span>
 <span class="sd">two evolutionary algorithms for travelling salesman problems.</span>
-<span class="sd"> </span>
+
 <span class="sd">The first approach takes a collections of solutions and applies:</span>
 
-<span class="sd">1. a survival where only the top 50% solutions survive </span>
-<span class="sd">2. the population reproduces using a crossover of genes </span>
+<span class="sd">1. a survival where only the top 50% solutions survive</span>
+<span class="sd">2. the population reproduces using a crossover of genes</span>
 <span class="sd">3. certain members mutate</span>
 <span class="sd">4. repeat this, maybe 1000 times or more!</span>
 
 <span class="sd">&lt;img src=&quot;https://i.imgur.com/is9g07u.png&quot; alt=&quot;Drawing&quot; style=&quot;width: 100%;&quot;/&gt;</span>
 
-<span class="sd">We can also think of another approach: </span>
+<span class="sd">We can also think of another approach:</span>
 
-<span class="sd">1. pick the best solution of the population </span>
-<span class="sd">2. make random changes to this parent and generate new solutions </span>
+<span class="sd">1. pick the best solution of the population</span>
+<span class="sd">2. make random changes to this parent and generate new solutions</span>
 <span class="sd">3. repeat this, maybe 1000 times or more!</span>
 
 <span class="sd">&lt;img src=&quot;https://i.imgur.com/JRSWbTd.png&quot; alt=&quot;Drawing&quot; style=&quot;width: 100%;&quot;/&gt;</span>
 
-<span class="sd">One could even combine the two algorithms into a new one: </span>
+<span class="sd">One could even combine the two algorithms into a new one:</span>
 
 <span class="sd">1. run algorithm 1 50 times</span>
 <span class="sd">2. run algorithm 2 10 times</span>
@@ -1214,63 +1214,63 @@ rm -rf evol
 
 <span class="sd">&lt;img src=&quot;https://i.imgur.com/SZTBWX2.png&quot; alt=&quot;Drawing&quot; style=&quot;width: 100%;&quot;/&gt;</span>
 
-<span class="sd">You might notice that many parts of these algorithms are similar and it is </span>
-<span class="sd">the goal of this library is to automate these parts. In fact, you can </span>
-<span class="sd">expect the code for these algorithms to look something like this. </span>
+<span class="sd">You might notice that many parts of these algorithms are similar and it is</span>
+<span class="sd">the goal of this library is to automate these parts. In fact, you can</span>
+<span class="sd">expect the code for these algorithms to look something like this.</span>
 
-<span class="sd">A speudo-example of what is decribed about looks a bit like this: </span>
+<span class="sd">A speudo-example of what is decribed about looks a bit like this:</span>
 
 <span class="sd">    import random</span>
 <span class="sd">    from evol import Population, Evolution</span>
 
 <span class="sd">    population = Population(init_func=init_func, eval_func=eval_func, size=100)</span>
-<span class="sd">    </span>
+
 <span class="sd">    def pick_n_parents(population, num_parents):</span>
 <span class="sd">        return [random.choice(population) for i in range(num_parents)]</span>
-<span class="sd">    </span>
+
 <span class="sd">    def crossover(*parents):</span>
 <span class="sd">        ...</span>
-<span class="sd">    </span>
+
 <span class="sd">    def random_copy(parent):</span>
 <span class="sd">        ...</span>
 
 <span class="sd">    evo1 = (Evolution(name=&quot;first_algorithm&quot;)</span>
 <span class="sd">           .survive(fraction=0.5)</span>
-<span class="sd">           .breed(parentpicker=pick_n_parents, </span>
-<span class="sd">                  combiner=combiner, </span>
+<span class="sd">           .breed(parentpicker=pick_n_parents,</span>
+<span class="sd">                  combiner=combiner,</span>
 <span class="sd">                  num_parents=2, n_max=100)</span>
 <span class="sd">           .mutate(lambda x: add_noise(x, 0.1)))</span>
 
 <span class="sd">    evo2 = (Evolution(name=&quot;second_algorithm&quot;)</span>
 <span class="sd">           .survive(n=1)</span>
-<span class="sd">           .breed(parentpicker=pick_n_parents, </span>
-<span class="sd">                  combiner=random_copy, </span>
+<span class="sd">           .breed(parentpicker=pick_n_parents,</span>
+<span class="sd">                  combiner=random_copy,</span>
 <span class="sd">                  num_parents=1, n_max=100))</span>
 
 <span class="sd">    for i in range(1001):</span>
 <span class="sd">        population.evolve(evo1, n=50).evolve(evo2, n=10)</span>
 
-<span class="sd">Getting Started </span>
+<span class="sd">Getting Started</span>
 <span class="sd">---------------------------------------</span>
 
-<span class="sd">The best place to get started is the `/examples` folder on github. </span>
-<span class="sd">This folder contains self contained examples that work out of the </span>
-<span class="sd">box. </span>
+<span class="sd">The best place to get started is the `/examples` folder on github.</span>
+<span class="sd">This folder contains self contained examples that work out of the</span>
+<span class="sd">box.</span>
 
 <span class="sd">Contributing Guide</span>
 <span class="sd">---------------------------------------</span>
 
 <span class="sd">### Local development</span>
 
-<span class="sd">Python can help you. Don&#39;t reinstall all the time, rather use a </span>
+<span class="sd">Python can help you. Don&#39;t reinstall all the time, rather use a</span>
 <span class="sd">virtulenv that has a link to the code.</span>
 
 <span class="sd">    python setup.py develop</span>
 
-<span class="sd">When you submit a pull request it will be tested in travis. Once </span>
-<span class="sd">the build is green the review can start. Please try to keep your </span>
-<span class="sd">branch up to date to ensure you&#39;re not missing any tests. Larger </span>
-<span class="sd">commits need to be discussed in github before we can accept them.  </span>
+<span class="sd">When you submit a pull request it will be tested in travis. Once</span>
+<span class="sd">the build is green the review can start. Please try to keep your</span>
+<span class="sd">branch up to date to ensure you&#39;re not missing any tests. Larger</span>
+<span class="sd">commits need to be discussed in github before we can accept them.</span>
 
 <span class="sd">### Generating New Documentation</span>
 
@@ -1284,9 +1284,11 @@ rm -rf evol
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">.individual</span> <span class="kn">import</span> <span class="n">Individual</span>
-<span class="kn">from</span> <span class="nn">.evolution</span> <span class="kn">import</span> <span class="n">Evolution</span>
 <span class="kn">from</span> <span class="nn">.population</span> <span class="kn">import</span> <span class="n">Population</span><span class="p">,</span> <span class="n">ContestPopulation</span>
+<span class="kn">from</span> <span class="nn">.evolution</span> <span class="kn">import</span> <span class="n">Evolution</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">BaseLogger</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.2.2&quot;</span>
 </pre></div>
 
   </div>
@@ -1303,9 +1305,9 @@ rm -rf evol
       
   
     <div class="desc"><p>Evolution objects in <code>evol</code> are objects that describe how the
-evolutionary algorithm will change members of a population. 
+evolutionary algorithm will change members of a population.
 Evolution objects contain the same methods as population objects
-but because an evolution is seperate from a population you can 
+but because an evolution is separate from a population you can
 play around with them more easily.</p></div>
 
       </div>
@@ -1322,8 +1324,8 @@ designing algorithms. We archive these helping functions per usecase.</p></div>
       
   
     <div class="desc"><p>Individual objects in <code>evol</code> are a wrapper around a chromosome.
-Internally we work with individuals because that allows us to 
-seperate the fitness calculation from the datastructure. This 
+Internally we work with individuals because that allows us to
+separate the fitness calculation from the data structure. This
 saves a lot of CPU power.</p></div>
 
       </div>
@@ -1331,6 +1333,10 @@ saves a lot of CPU power.</p></div>
       <p class="name"><a href="logger.m.html">evol.logger</a></p>
       
   
+    <div class="desc"><p>Loggers help keep track of the workings of your evolutionary algorithm. By
+default, each Population is initialized with a BaseLogger, which you can use
+by using the .log() method of the population. If you want more complex
+behaviour, you can supply another logger to the Population on initialisation....</p></div>
 
       </div>
       <div class="item">
@@ -1338,7 +1344,7 @@ saves a lot of CPU power.</p></div>
       
   
     <div class="desc"><p>Population objects in <code>evol</code> are a collection of chromosomes
-at some point in an evolutionary algorithm. You can apply 
+at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
 or by appyling an <code>evol.Evolution</code> object.</p></div>
 
@@ -1347,6 +1353,10 @@ or by appyling an <code>evol.Evolution</code> object.</p></div>
       <p class="name"><a href="serialization.m.html">evol.serialization</a></p>
       
   
+    <div class="desc"><p>Serializers help store (checkpoint) the state of your population during or
+after running your evolutionary algorithm. By default, each Population is
+initialized with a SimpleSerializer, which you can use to store the individuals
+in your population in pickle or json format using the .checkpoint() met...</p></div>
 
       </div>
       <div class="item">

@@ -1068,14 +1068,14 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.utils', this);">Show source &equiv;</a></p>
   <div id="source-evol.helpers.utils" class="source">
     <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">evol</span> <span class="kn">import</span> <span class="n">Individual</span>
 
 
 <span class="k">def</span> <span class="nf">offspring_generator</span><span class="p">(</span><span class="n">parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span>
-                        <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-                        <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                        <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">]],</span>
+                        <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Generator for offspring.</span>
 
@@ -1083,33 +1083,36 @@ table {
 <span class="sd">    especially in the case of of multiple offspring.</span>
 
 <span class="sd">    :param parents: List of parents.</span>
-<span class="sd">    :param parent_picker: Function that selects parents.</span>
+<span class="sd">    :param parent_picker: Function that selects parents. Must accept a sequence of</span>
+<span class="sd">        individuals and must return a single individual or a sequence of individuals.</span>
 <span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
-<span class="sd">    :param combiner: Function that combines chromosomes.</span>
+<span class="sd">    :param combiner: Function that combines chromosomes. Must accept a tuple of</span>
+<span class="sd">        chromosomes and either return a single chromosome or yield multiple chromosomes.</span>
 <span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
 <span class="sd">    :param kwargs: Arguments</span>
 <span class="sd">    :returns: Children</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
         <span class="c1"># Obtain parent chromosomes</span>
-        <span class="n">parents</span> <span class="o">=</span> <span class="n">parent_picker</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">Individual</span><span class="p">):</span>
-            <span class="n">chromosomes</span> <span class="o">=</span> <span class="p">(</span><span class="n">parents</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,)</span>
+        <span class="n">selected_parents</span> <span class="o">=</span> <span class="n">parent_picker</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected_parents</span><span class="p">,</span> <span class="n">Individual</span><span class="p">):</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="p">(</span><span class="n">selected_parents</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">chromosomes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">chromosome</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">)</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">chromosome</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">selected_parents</span><span class="p">)</span>
         <span class="c1"># Create children</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">combiner</span><span class="p">,</span> <span class="s1">&#39;multiple_offspring&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">combined</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">combined</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">child</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+            <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">combined</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">select_arguments</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Decorate a function such that it accepts any keyworded arguments.</span>
 
 <span class="sd">    The resulting function accepts any arguments, but only arguments that</span>
-<span class="sd">    the original function accepts are passed. This allows keyworded </span>
+<span class="sd">    the original function accepts are passed. This allows keyworded</span>
 <span class="sd">    arguments to be passed to multiple (decorated) functions, even if they</span>
 <span class="sd">    do not (all) accept these arguments.</span>
 
@@ -1144,9 +1147,11 @@ table {
 <p>This helps create the right number of offspring,
 especially in the case of of multiple offspring.</p>
 <p>:param parents: List of parents.
-:param parent_picker: Function that selects parents.
+:param parent_picker: Function that selects parents. Must accept a sequence of
+    individuals and must return a single individual or a sequence of individuals.
     Must accept all kwargs passed (i.e. must be decorated by select_arguments).
-:param combiner: Function that combines chromosomes.
+:param combiner: Function that combines chromosomes. Must accept a tuple of
+    chromosomes and either return a single chromosome or yield multiple chromosomes.
     Must accept all kwargs passed (i.e. must be decorated by select_arguments).
 :param kwargs: Arguments
 :returns: Children</p></div>
@@ -1154,8 +1159,8 @@ especially in the case of of multiple offspring.</p>
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-evol.helpers.utils.offspring_generator', this);">Show source &equiv;</a></p>
   <div id="source-evol.helpers.utils.offspring_generator" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">offspring_generator</span><span class="p">(</span><span class="n">parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span>
-                        <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-                        <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                        <span class="n">parent_picker</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">]],</span>
+                        <span class="n">combiner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Individual</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Generator for offspring.</span>
 
@@ -1163,26 +1168,29 @@ especially in the case of of multiple offspring.</p>
 <span class="sd">    especially in the case of of multiple offspring.</span>
 
 <span class="sd">    :param parents: List of parents.</span>
-<span class="sd">    :param parent_picker: Function that selects parents.</span>
+<span class="sd">    :param parent_picker: Function that selects parents. Must accept a sequence of</span>
+<span class="sd">        individuals and must return a single individual or a sequence of individuals.</span>
 <span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
-<span class="sd">    :param combiner: Function that combines chromosomes.</span>
+<span class="sd">    :param combiner: Function that combines chromosomes. Must accept a tuple of</span>
+<span class="sd">        chromosomes and either return a single chromosome or yield multiple chromosomes.</span>
 <span class="sd">        Must accept all kwargs passed (i.e. must be decorated by select_arguments).</span>
 <span class="sd">    :param kwargs: Arguments</span>
 <span class="sd">    :returns: Children</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
         <span class="c1"># Obtain parent chromosomes</span>
-        <span class="n">parents</span> <span class="o">=</span> <span class="n">parent_picker</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">Individual</span><span class="p">):</span>
-            <span class="n">chromosomes</span> <span class="o">=</span> <span class="p">(</span><span class="n">parents</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,)</span>
+        <span class="n">selected_parents</span> <span class="o">=</span> <span class="n">parent_picker</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected_parents</span><span class="p">,</span> <span class="n">Individual</span><span class="p">):</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="p">(</span><span class="n">selected_parents</span><span class="o">.</span><span class="n">chromosome</span><span class="p">,)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">chromosomes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">chromosome</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">)</span>
+            <span class="n">chromosomes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">chromosome</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">selected_parents</span><span class="p">)</span>
         <span class="c1"># Create children</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">combiner</span><span class="p">,</span> <span class="s1">&#39;multiple_offspring&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">combined</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">combined</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">child</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">combiner</span><span class="p">(</span><span class="o">*</span><span class="n">chromosomes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+            <span class="k">yield</span> <span class="n">Individual</span><span class="p">(</span><span class="n">chromosome</span><span class="o">=</span><span class="n">combined</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -1201,7 +1209,7 @@ especially in the case of of multiple offspring.</p>
   
     <div class="desc"><p>Decorate a function such that it accepts any keyworded arguments.</p>
 <p>The resulting function accepts any arguments, but only arguments that
-the original function accepts are passed. This allows keyworded 
+the original function accepts are passed. This allows keyworded
 arguments to be passed to multiple (decorated) functions, even if they
 do not (all) accept these arguments.</p>
 <p>:param func: Function to decorate.
@@ -1213,7 +1221,7 @@ do not (all) accept these arguments.</p>
     <span class="sd">&quot;&quot;&quot;Decorate a function such that it accepts any keyworded arguments.</span>
 
 <span class="sd">    The resulting function accepts any arguments, but only arguments that</span>
-<span class="sd">    the original function accepts are passed. This allows keyworded </span>
+<span class="sd">    the original function accepts are passed. This allows keyworded</span>
 <span class="sd">    arguments to be passed to multiple (decorated) functions, even if they</span>
 <span class="sd">    do not (all) accept these arguments.</span>
 
