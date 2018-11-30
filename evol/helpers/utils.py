@@ -56,3 +56,15 @@ def select_arguments(func: Callable) -> Callable:
         except TypeError:
             return func(*args, **{k: v for k, v in kwargs.items() if k in signature(func).parameters})
     return result
+
+
+def rotating_window(arr):
+    """rotating_window([1,2,3,4]) -> [(4,1), (1,2), (2,3), (3,4)]"""
+    for i, city in enumerate(arr):
+        yield arr[i-1], arr[i]
+
+
+def sliding_window(arr):
+    """sliding_window([1,2,3,4]) -> [(1,2), (2,3), (3,4)]"""
+    for i, city in enumerate(arr[:-1]):
+        yield arr[i], arr[i+1]

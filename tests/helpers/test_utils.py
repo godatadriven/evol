@@ -1,5 +1,6 @@
 from pytest import mark
 
+from evol.helpers.utils import rotating_window, sliding_window
 from evol import Individual, Population
 from evol.helpers.pickers import pick_random
 from evol.helpers.utils import select_arguments, offspring_generator
@@ -72,3 +73,12 @@ class TestSelectArguments:
         def fct(a, b=0, **kwargs):
             return a + b + sum(kwargs.values())
         assert fct(*args, **kwargs) == result
+
+
+class TestSimpleUtilFunc:
+
+    def test_sliding_window(self):
+        assert list(sliding_window([1, 2, 3, 4])) == [(1, 2), (2, 3), (3, 4)]
+
+    def test_rotating_window(self):
+        assert list(rotating_window([1, 2, 3, 4])) == [(4, 1), (1, 2), (2, 3), (3, 4)]
