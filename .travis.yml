@@ -1,19 +1,29 @@
 language: python
+
 matrix:
   include:
-    - python: 3.6
-    - python: 3.7
-      dist: xenial
-      sudo: true
+  - python: 3.6
+  - python: 3.7
+    dist: xenial
+    sudo: true
+
 install:
-  - pip install .[dev]
+- pip install .[dev]
+
 script:
-  - pytest
-  - python examples/simple_nonlinear.py
-  - python examples/number_of_parents.py --n_parents=2
-  - python examples/number_of_parents.py --n_parents=3
-  - python examples/number_of_parents.py --n_parents=4
-  - python examples/very_basic_tsp.py
-  - python examples/simple_logging.py
-  - python examples/rock_paper_scissors.py
-  - flake8
+- pytest
+- python examples/simple_nonlinear.py
+- python examples/number_of_parents.py --n_parents=2
+- python examples/number_of_parents.py --n_parents=3
+- python examples/number_of_parents.py --n_parents=4
+- python examples/very_basic_tsp.py
+- python examples/simple_logging.py
+- python examples/rock_paper_scissors.py
+- flake8
+
+deploy:
+  provider: pypi
+  skip_existing: true
+  user: koaning
+  password:
+    secure: kK7arlqX228wI5PdBl793dfc1N9oZNSx4IrCSSZVX/n39LAxfor6yByLdkYV7Y1YzK5qAlkaQr1smRHvLmksmI26FnbncUTKLbFg0jitKi9HVWTcMIopU9CA0pUpEAO2HGZKqFasCVCc6t0QhiVu9uu0z789mx5+xJ8duAJwPRZND6ZYXsL9XMDxbuBArXGx5T4y4u6MB8VIsqMOHZHSgRsSmXifXQ+fKhNXK9Utuxu9z1ZQkVbE3MA6Cwid9PXOe9b4zbULKu9DOFtDx0sj+8YjKQZVmjRWB7dSFiH8fyj1pDN5fb0dPJibjPgSTr1ttmfI2BVQQtUT5q3rHTuz9J+Pfq57plmzMJginzbjN9HuY0lQUIqZ2IgQVfSLapSY69F2XvrYl6qtBogLu+1Wi9kM1hFGAlzxl30iR7rSHrMjJs8q7QljNdeOiHtWK+pGvFptqrXJnttTp3Sq7X7LdrL7Hkgm4TbgJMP54LW3kjSPTu7MYD/TcOpvUsnWk2F2d+KzK8HM7GQ9OYc1Qcs/UMob3zCDq6DmaqOwAN8SknmcnLSfKJEBBl8kgzTSTp3OAxfpU6/pJ64FU67wZuk/oHG1x5xBqnVMpUkVQPTUtTU3KkYGE8Ea52WJBGSQYP7fBdsoZ52R6JM/qnwwxEkqYVG19OMU5kyjpvfytrtD0R0=
