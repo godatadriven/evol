@@ -7,7 +7,7 @@ saves a lot of CPU power.
 
 from typing import Any, Callable, Optional
 from uuid import uuid4
-
+from pathos.multiprocessing import Pool
 from random import random
 
 
@@ -40,14 +40,19 @@ class Individual:
         result.id = data['id']
         return result
 
-    def evaluate(self, eval_function: Callable[..., float], lazy: bool=False):
+    def evaluate(self, eval_function: Callable[..., float], lazy: bool=False, pool: Pool=None):
         """Evaluate the fitness of the individual.
 
         :param eval_function: Function that reduces a chromosome to a fitness.
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
         """
         if self.fitness is None or not lazy:
-            self.fitness = eval_function(self.chromosome)
+            if pool is not None:
+                results = pool.map(eval_function, (self.chromosome,))
+                if results is not None and len(results) > 0:
+                    self.fitness = results[0]
+            else:
+                self.fitness = eval_function(self.chromosome)
 
     def mutate(self, mutate_function: Callable[..., Any], probability: float=1.0, **kwargs):
         """Mutate the chromosome of the individual.

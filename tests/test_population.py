@@ -67,6 +67,20 @@ class TestPopulationEvaluate:
         with raises(Exception):
             pop.evaluate(lazy=False)
 
+    def test_evaluate_lambda_concurrent(self, simple_chromosomes):
+        pop = Population(simple_chromosomes, eval_function=lambda x: x, concurrent_workers=3)
+        pop.evaluate()
+        for individual in pop:
+            assert individual.chromosome == individual.fitness
+
+    def test_evaluate_func_concurrent(self, simple_chromosomes):
+        def evaluation_function(x):
+            return x * x
+        pop = Population(simple_chromosomes, eval_function=evaluation_function, concurrent_workers=3)
+        pop.evaluate()
+        for individual in pop:
+            assert evaluation_function(individual.chromosome) == individual.fitness
+
 
 class TestPopulationSurvive:
 

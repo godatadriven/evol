@@ -7,7 +7,7 @@ or by appyling an `evol.Evolution` object.
 from itertools import cycle, islice
 from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Sequence
 from uuid import uuid4
-
+from pathos.multiprocessing import Pool
 from copy import copy
 from random import choices, randint
 
@@ -34,6 +34,8 @@ class Population:
         a serializer is provided, this target is ignored. Defaults to None.
     :param serializer: Serializer for the Population. If None, a new
         SimpleSerializer is created. Defaults to None.
+    :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers} 
+        separate processes.
     """
     def __init__(self,
                  chromosomes: Iterable,
@@ -43,7 +45,8 @@ class Population:
                  generation: int=0,
                  intended_size: Optional[int]=None,
                  checkpoint_target: Optional[str]=None,
-                 serializer=None):
+                 serializer=None,
+                 concurrent_workers: int=1):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
@@ -53,6 +56,10 @@ class Population:
         self.maximize = maximize
         self.logger = logger or BaseLogger()
         self.serializer = serializer or SimpleSerializer(target=checkpoint_target)
+        if concurrent_workers > 1:
+            self.pool = Pool(processes=concurrent_workers)
+        else:
+            self.pool = None
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
@@ -160,7 +167,7 @@ class Population:
         :return: Population
         """
         result = copy(self)
-        for evo_batch in range(n):
+        for _ in range(n):
             for step in evolution:
                 step.apply(result)
         return result
@@ -178,7 +185,7 @@ class Population:
         :return: self
         """
         for individual in self.individuals:
-            individual.evaluate(eval_function=self.eval_function, lazy=lazy)
+            individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=self.pool)
         self._update_documented_best()
         return self
 
