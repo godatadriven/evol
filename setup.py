@@ -21,6 +21,7 @@ setup(
     url='https://github.com/godatadriven/evol',
     packages=['evol', 'evol.helpers'],
     keywords=['genetic', 'algorithms', 'heuristics'],
+    install_requires=['pathos>=0.2.2.1'],
     python_requires='>=3.6',
     tests_require=[
         "pytest==3.3.1"
