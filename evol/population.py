@@ -186,6 +186,10 @@ class Population:
         """
         for individual in self.individuals:
             individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=self.pool)
+        if self.pool is not None:
+            # Prevent further submissions and wait for workers to finish
+            self.pool.close()
+            self.pool.join()
         self._update_documented_best()
         return self
 

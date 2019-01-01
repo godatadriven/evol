@@ -39,6 +39,9 @@ class Individual:
         result.age = data['age']
         result.id = data['id']
         return result
+    
+    def post_evaluate(self, result):
+        self.fitness = result
 
     def evaluate(self, eval_function: Callable[..., float], lazy: bool=False, pool: Pool=None):
         """Evaluate the fitness of the individual.
@@ -48,9 +51,7 @@ class Individual:
         """
         if self.fitness is None or not lazy:
             if pool is not None:
-                results = pool.map(eval_function, (self.chromosome,))
-                if results is not None and len(results) > 0:
-                    self.fitness = results[0]
+                pool.apply_async(eval_function, args=(self.chromosome,), callback=self.post_evaluate)
             else:
                 self.fitness = eval_function(self.chromosome)
 
