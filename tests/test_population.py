@@ -4,7 +4,6 @@ from random import random, choices, seed
 
 from evol import Population, ContestPopulation
 from evol.helpers.pickers import pick_random
-from time import sleep, time
 
 class TestPopulationSimple:
 
@@ -49,15 +48,9 @@ class TestPopulationEvaluate:
 
     def test_evaluate_func(self, simple_chromosomes):
         def evaluation_function(x):
-            sleep(0.5)
             return x * x
         pop = Population(simple_chromosomes, eval_function=evaluation_function)
-        t0 = time()
         pop.evaluate()
-        t1 = time()
-        td = t1 - t0
-        print(f"time to execute eval WITHOUT parallelism: {td}")
-        assert 0
         for individual in pop:
             assert evaluation_function(individual.chromosome) == individual.fitness
 
@@ -81,15 +74,9 @@ class TestPopulationEvaluate:
 
     def test_evaluate_func_concurrent(self, simple_chromosomes):
         def evaluation_function(x):
-            sleep(0.5)
             return x * x
         pop = Population(simple_chromosomes, eval_function=evaluation_function, concurrent_workers=3)
-        t0 = time()
         pop.evaluate()
-        t1 = time()
-        td = t1 - t0
-        print(f"time to execute eval WITH parallelism: {td}")
-        assert 0
         for individual in pop:
             assert evaluation_function(individual.chromosome) == individual.fitness
 
