@@ -22,6 +22,9 @@ setup(
     packages=['evol', 'evol.helpers'],
     keywords=['genetic', 'algorithms', 'heuristics'],
     python_requires='>=3.6',
+    install_requires=[
+        "pathos>=0.2.2.1"
+    ],
     tests_require=[
         "pytest==3.3.1"
     ],
