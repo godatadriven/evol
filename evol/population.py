@@ -7,7 +7,7 @@ or by appyling an `evol.Evolution` object.
 from itertools import cycle, islice
 from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Sequence
 from uuid import uuid4
-from pathos.multiprocessing import Pool
+from multiprocess import Pool
 from copy import copy
 from random import choices, randint
 

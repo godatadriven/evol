@@ -7,7 +7,7 @@ saves a lot of CPU power.
 
 from typing import Any, Callable, Optional
 from uuid import uuid4
-from pathos.multiprocessing import Pool
+from multiprocess import Pool
 from random import random
 
 

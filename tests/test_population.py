@@ -4,7 +4,7 @@ from random import random, choices, seed
 from time import sleep, time
 from evol import Population, ContestPopulation
 from evol.helpers.pickers import pick_random
-from pathos.multiprocessing import cpu_count
+from multiprocess import cpu_count
 
 cpus = cpu_count()
 latency = 0.005
