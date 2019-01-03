@@ -34,7 +34,7 @@ class Population:
         a serializer is provided, this target is ignored. Defaults to None.
     :param serializer: Serializer for the Population. If None, a new
         SimpleSerializer is created. Defaults to None.
-    :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers} 
+    :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
         separate processes.
     """
     def __init__(self,

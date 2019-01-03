@@ -39,7 +39,7 @@ class Individual:
         result.age = data['age']
         result.id = data['id']
         return result
-    
+
     def post_evaluate(self, result):
         self.fitness = result
 
