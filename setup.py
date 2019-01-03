@@ -1,6 +1,7 @@
-import evol
-from setuptools import setup
+import codecs
 from os import path
+from re import search, M
+from setuptools import setup
 
 
 def load_readme():
@@ -9,9 +10,25 @@ def load_readme():
         return f.read()
 
 
+here = path.abspath(path.dirname(__file__))
+
+
+def read(*parts):
+    with codecs.open(path.join(here, *parts), 'r') as fp:
+        return fp.read()
+
+
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+
+
 setup(
     name='evol',
-    version=evol.__version__,
+    version=find_version('evol', '__init__.py'),
     description='A Grammar for Evolutionary Algorithms and Heuristics',
     long_description=load_readme(),
     long_description_content_type='text/markdown',
