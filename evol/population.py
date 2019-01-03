@@ -7,7 +7,7 @@ or by appyling an `evol.Evolution` object.
 from itertools import cycle, islice
 from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Sequence
 from uuid import uuid4
-from multiprocess import Pool
+from multiprocess.pool import Pool
 from copy import copy
 from random import choices, randint
 
@@ -46,7 +46,7 @@ class Population:
                  intended_size: Optional[int]=None,
                  checkpoint_target: Optional[str]=None,
                  serializer=None,
-                 concurrent_workers: int=1):
+                 concurrent_workers: Optional[int]=1):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
