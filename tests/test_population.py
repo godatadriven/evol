@@ -9,6 +9,7 @@ from multiprocess import cpu_count
 cpus = cpu_count()
 latency = 0.005
 
+
 class TestPopulationSimple:
 
     def test_filter_works(self, simple_chromosomes, simple_evaluation_function):
