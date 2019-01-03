@@ -7,9 +7,7 @@ matrix:
       sudo: true
 before_install:
   - pip install --upgrade pip
-  - pip --version
 install:
-  - pip install multiprocess
   - pip install .[dev]
 script:
   - pytest
