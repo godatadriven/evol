@@ -7,7 +7,7 @@ or by appyling an `evol.Evolution` object.
 from itertools import cycle, islice
 from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Sequence
 from uuid import uuid4
-
+from multiprocess.pool import Pool
 from copy import copy
 from random import choices, randint
 
@@ -34,6 +34,8 @@ class Population:
         a serializer is provided, this target is ignored. Defaults to None.
     :param serializer: Serializer for the Population. If None, a new
         SimpleSerializer is created. Defaults to None.
+    :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
+        separate processes.
     """
     def __init__(self,
                  chromosomes: Iterable,
@@ -43,7 +45,8 @@ class Population:
                  generation: int=0,
                  intended_size: Optional[int]=None,
                  checkpoint_target: Optional[str]=None,
-                 serializer=None):
+                 serializer=None,
+                 concurrent_workers: Optional[int]=1):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
@@ -53,6 +56,11 @@ class Population:
         self.maximize = maximize
         self.logger = logger or BaseLogger()
         self.serializer = serializer or SimpleSerializer(target=checkpoint_target)
+        self.concurrent_workers = concurrent_workers
+        if self.concurrent_workers > 1:
+            self.pool = Pool(processes=self.concurrent_workers)
+        else:
+            self.pool = None
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
@@ -61,7 +69,8 @@ class Population:
                                 serializer=self.serializer,
                                 intended_size=self.intended_size,
                                 logger=self.logger,
-                                generation=self.generation)
+                                generation=self.generation,
+                                concurrent_workers=self.concurrent_workers)
         result.documented_best = self.documented_best
         return result
 
@@ -160,7 +169,7 @@ class Population:
         :return: Population
         """
         result = copy(self)
-        for evo_batch in range(n):
+        for _ in range(n):
             for step in evolution:
                 step.apply(result)
         return result
@@ -178,7 +187,11 @@ class Population:
         :return: self
         """
         for individual in self.individuals:
-            individual.evaluate(eval_function=self.eval_function, lazy=lazy)
+            individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=self.pool)
+        if self.pool is not None:
+            # Prevent further submissions and wait for workers to finish
+            self.pool.close()
+            self.pool.join()
         self._update_documented_best()
         return self
 
@@ -327,6 +340,36 @@ class Population:
             self.documented_best = copy(current_best)
 
 
+class Contest:
+    """A single contest among a group of competitors.
+
+    This is encapsulated in an object so that scores for many sets of
+    competitors can be evaluated concurrently without resorting to a
+    dict or some similar madness to correlate score vectors with an
+    ever-widening matrix of contests and competitors.
+
+    :param competitors: Iterable of Individuals in this Contest.
+    :param eval_function: Function that reduces an individual to a fitness.
+    """
+    def __init__(self,
+                 competitors: Iterable,
+                 eval_function: Callable[[Iterable[Any]], Sequence[float]],
+                 process_pool: Optional[Any]=None):
+        self.competitors = competitors
+        self.eval_function = eval_function
+        self.pool = process_pool
+
+    def __post_evaluate(self, scores):
+        for competitor, score in zip(self.competitors, scores):
+            competitor.fitness += score
+
+    def evaluate(self):
+        if self.pool is not None:
+            self.pool.apply_async(self.eval_function, args=(self.competitors,), callback=self.__post_evaluate)
+        else:
+            self.__post_evaluate(self.eval_function(*self.competitors))
+
+
 class ContestPopulation(Population):
     """Population which is evaluated through contests.
 
@@ -374,10 +417,12 @@ class ContestPopulation(Population):
                  generation: int=0,
                  intended_size: Optional[int]=None,
                  checkpoint_target: Optional[int]=None,
-                 serializer=None):
+                 serializer=None,
+                 concurrent_workers: Optional[int]=1):
         Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize,
                             logger=logger, generation=generation, intended_size=intended_size,
-                            checkpoint_target=checkpoint_target, serializer=serializer)
+                            checkpoint_target=checkpoint_target, serializer=serializer,
+                            concurrent_workers=concurrent_workers)
         self.contests_per_round = contests_per_round
         self.individuals_per_contest = individuals_per_contest
 
@@ -390,7 +435,8 @@ class ContestPopulation(Population):
                                 serializer=self.serializer,
                                 intended_size=self.intended_size,
                                 logger=self.logger,
-                                generation=self.generation)
+                                generation=self.generation,
+                                concurrent_workers=self.concurrent_workers)
         result.documented_best = None
         return result
 
@@ -437,9 +483,12 @@ class ContestPopulation(Population):
             offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(individuals_per_contest - 1)]
             generators = [islice(cycle(self.individuals), offset, None) for offset in offsets]
             for competitors in islice(zip(*generators), len(self.individuals)):
-                scores = self.eval_function(*competitors)
-                for competitor, score in zip(competitors, scores):
-                    competitor.fitness += score
+                contest = Contest(competitors, self.eval_function, self.pool)
+                contest.evaluate()
+        if self.pool is not None:
+            # Prevent further submissions and wait for workers to finish
+            self.pool.close()
+            self.pool.join()
         return self
 
     def map(self, func: Callable[..., Individual], **kwargs) -> 'Population':

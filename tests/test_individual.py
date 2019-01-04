@@ -13,16 +13,16 @@ class TestIndividual:
         ind = Individual(chromosome=(1, 2))
         ind.evaluate(sum)
 
-        def eval_func(chromosome):
+        def eval_func1(chromosome):
             raise RuntimeError
 
-        ind.evaluate(eval_function=eval_func, lazy=True)
+        ind.evaluate(eval_function=eval_func1, lazy=True)
         assert ind.fitness == 3
 
-        def eval_func(chromosome):
+        def eval_func2(chromosome):
             return 5
 
-        ind.evaluate(eval_function=eval_func, lazy=False)
+        ind.evaluate(eval_function=eval_func2, lazy=False)
         assert ind.fitness == 5
 
     def test_mutate(self):
