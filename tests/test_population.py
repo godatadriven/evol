@@ -293,13 +293,13 @@ class TestContestPopulationBest:
         pop.evaluate()
         assert pop.documented_best is None
         pop = ContestPopulation([0, 1, 2],
-                                lambda x, y: [min(x.chromosome, y.chromosome), max(x.chromosome, y.chromosome)],
+                                lambda x, y: [x.chromosome, y.chromosome],
                                 contests_per_round=100, individuals_per_contest=2)
         pop.evaluate()
         assert pop.documented_best is None
         # with concurrency
         pop = ContestPopulation([0, 1, 2],
-                                lambda x, y: [min(x.chromosome, y.chromosome), max(x.chromosome, y.chromosome)],
+                                lambda x, y: [x.chromosome, y.chromosome],
                                 contests_per_round=100, individuals_per_contest=2,
                                 concurrent_workers=3)
         pop.evaluate()

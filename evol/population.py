@@ -340,7 +340,7 @@ class Population:
             self.documented_best = copy(current_best)
 
 
-class Contest(object):
+class Contest:
     """A single contest among a group of competitors.
 
     This is encapsulated in an object so that scores for many sets of
@@ -359,15 +359,15 @@ class Contest(object):
         self.eval_function = eval_function
         self.pool = process_pool
 
-    def post_evaluate(self, scores):
+    def __post_evaluate(self, scores):
         for competitor, score in zip(self.competitors, scores):
             competitor.fitness += score
 
     def evaluate(self):
         if self.pool is not None:
-            self.pool.apply_async(self.eval_function, args=(self.competitors,), callback=self.post_evaluate)
+            self.pool.apply_async(self.eval_function, args=(self.competitors,), callback=self.__post_evaluate)
         else:
-            self.post_evaluate(self.eval_function(*self.competitors))
+            self.__post_evaluate(self.eval_function(*self.competitors))
 
 
 class ContestPopulation(Population):
