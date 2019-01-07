@@ -12,7 +12,8 @@ import argparse
 from evol import Population, Evolution
 
 
-def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200, survival=0.5, noise=0.1, seed=42):
+def run_evolutionary(opt_value=1, population_size=100, n_parents=2, workers=1,
+                     num_iter=200, survival=0.5, noise=0.1, seed=42):
     random.seed(seed)
 
     def init_func():
@@ -31,7 +32,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
         return chromosome + (random.random() - 0.5) * sigma
 
     pop = Population(chromosomes=[init_func() for _ in range(population_size)],
-                     eval_function=eval_func, maximize=True, concurrent_workers=2).evaluate()
+                     eval_function=eval_func, maximize=True, concurrent_workers=workers).evaluate()
 
     evo = (Evolution()
            .survive(fraction=survival)
@@ -39,7 +40,6 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
            .mutate(mutate_function=add_noise, sigma=noise)
            .evaluate())
 
-    print("will start the evolutionary program, will log progress every step")
     for i in range(num_iter):
         pop = pop.evolve(evo).log()
     print(f"iteration:{i} best: {pop.current_best.fitness} worst: {pop.current_worst.fitness}")
@@ -47,13 +47,13 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run an example evol algorithm against a simple continuous function.')
-    parser.add_argument('--opt_value', type=int, default=0,
+    parser.add_argument('--opt-value', type=int, default=0,
                         help='the true optimal value of the problem')
-    parser.add_argument('--population_size', type=int, default=20,
+    parser.add_argument('--population-size', type=int, default=20,
                         help='the number of candidates to start the algorithm with')
-    parser.add_argument('--n_parents', type=int, default=2,
+    parser.add_argument('--n-parents', type=int, default=2,
                         help='the number of parents the algorithm with use to generate new indivuals')
-    parser.add_argument('--num_iter', type=int, default=20,
+    parser.add_argument('--num-iter', type=int, default=20,
                         help='the number of evolutionary cycles to run')
     parser.add_argument('--survival', type=float, default=0.7,
                         help='the fraction of individuals who will survive a generation')
@@ -61,9 +61,10 @@ if __name__ == "__main__":
                         help='the amount of noise the mutate step will add to each individual')
     parser.add_argument('--seed', type=int, default=42,
                         help='the random seed for all this')
+    parser.add_argument('--workers', type=int, default=1,
+                        help='the number of workers to run the command in')
 
     args = parser.parse_args()
-    print(f"i am aware of these arguments: {args}")
     run_evolutionary(opt_value=args.opt_value, population_size=args.population_size,
                      n_parents=args.n_parents, num_iter=args.num_iter,
-                     noise=args.noise, seed=args.seed)
+                     noise=args.noise, seed=args.seed, workers=args.workers)
