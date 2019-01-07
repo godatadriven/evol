@@ -50,7 +50,7 @@ def add_noise(chromosome, sigma):
 
 # We start by defining a population with candidates.
 pop = Population(chromosomes=[random_start() for _ in range(200)],
-                 eval_function=func_to_optimise, maximize=True)
+                 eval_function=func_to_optimise, maximize=True, concurrent_workers=2)
 
 # We define a sequence of steps to change these candidates
 evo1 = (Evolution()

@@ -31,7 +31,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, num_iter=200
         return chromosome + (random.random() - 0.5) * sigma
 
     pop = Population(chromosomes=[init_func() for _ in range(population_size)],
-                     eval_function=eval_func, maximize=True).evaluate()
+                     eval_function=eval_func, maximize=True, concurrent_workers=2).evaluate()
 
     evo = (Evolution()
            .survive(fraction=survival)
