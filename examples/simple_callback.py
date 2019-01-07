@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     pop = Population(chromosomes=[random_start() for _ in range(200)],
                      eval_function=func_to_optimise,
-                     maximize=True)
+                     maximize=True, concurrent_workers=2)
 
     evo1 = (Evolution()
             .survive(fraction=0.1)
