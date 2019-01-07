@@ -39,11 +39,14 @@ setup(
     packages=['evol', 'evol.helpers'],
     keywords=['genetic', 'algorithms', 'heuristics'],
     python_requires='>=3.6',
+    install_requires=[
+        "multiprocess==0.70.6.1"
+    ],
     tests_require=[
         "pytest==3.3.1"
     ],
     extras_require={
-        "dev": ["flake8==3.5.0", "pytest==3.3.1"]
+        "dev": ["flake8==3.5.0", "pytest==3.3.1", "multiprocess==0.70.6.1"]
     },
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',
