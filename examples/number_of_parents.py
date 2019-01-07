@@ -41,7 +41,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, workers=1,
            .evaluate())
 
     for i in range(num_iter):
-        pop = pop.evolve(evo).log()
+        pop = pop.evolve(evo)
     print(f"iteration:{i} best: {pop.current_best.fitness} worst: {pop.current_worst.fitness}")
 
 
