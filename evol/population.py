@@ -35,7 +35,7 @@ class Population:
     :param serializer: Serializer for the Population. If None, a new
         SimpleSerializer is created. Defaults to None.
     :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
-        separate processes.
+        separate processes. If None, concurrent_workers is set to n_cpus. Defaults to 1.
     """
     def __init__(self,
                  chromosomes: Iterable,
@@ -406,6 +406,8 @@ class ContestPopulation(Population):
         a serializer is provided, this target is ignored. Defaults to None.
     :param serializer: Serializer for the Population. If None, a new
         SimpleSerializer is created. Defaults to None.
+    :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
+        separate processes. If None, concurrent_workers is set to n_cpus. Defaults to 1.
     """
     def __init__(self,
                  chromosomes: Iterable,
