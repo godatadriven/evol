@@ -7,7 +7,7 @@ saves a lot of CPU power.
 
 from typing import Any, Callable, Optional
 from uuid import uuid4
-from pathos.multiprocessing import Pool
+from multiprocess.pool import Pool
 from random import random
 
 
@@ -39,8 +39,8 @@ class Individual:
         result.age = data['age']
         result.id = data['id']
         return result
-    
-    def post_evaluate(self, result):
+
+    def __post_evaluate(self, result):
         self.fitness = result
 
     def evaluate(self, eval_function: Callable[..., float], lazy: bool=False, pool: Pool=None):
@@ -51,7 +51,7 @@ class Individual:
         """
         if self.fitness is None or not lazy:
             if pool is not None:
-                pool.apply_async(eval_function, args=(self.chromosome,), callback=self.post_evaluate)
+                pool.apply_async(eval_function, args=(self.chromosome,), callback=self.__post_evaluate)
             else:
                 self.fitness = eval_function(self.chromosome)
 

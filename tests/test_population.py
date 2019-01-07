@@ -1,9 +1,11 @@
 from copy import copy
 from pytest import raises
 from random import random, choices, seed
-
+from time import sleep, time
 from evol import Population, ContestPopulation
 from evol.helpers.pickers import pick_random
+import os
+
 
 class TestPopulationSimple:
 
@@ -37,22 +39,54 @@ class TestPopulationCopy:
 
 class TestPopulationEvaluate:
 
+    cpus = os.cpu_count()
+    latency = 0.005
+
     def test_individuals_are_not_initially_evaluated(self, any_population):
         assert all([i.fitness is None for i in any_population])
 
     def test_evaluate_lambda(self, simple_chromosomes):
-        pop = Population(simple_chromosomes, eval_function=lambda x: x)
+        # without concurrency (note that I'm abusing a boolean operator to introduce some latency)
+        pop = Population(simple_chromosomes, eval_function=lambda x: (sleep(self.latency) or x))
+        t0 = time()
         pop.evaluate()
+        t1 = time()
+        single_proc_time = t1 - t0
         for individual in pop:
             assert individual.chromosome == individual.fitness
+        # with concurrency
+        pop = Population(simple_chromosomes, eval_function=lambda x: (sleep(self.latency) or x),
+                         concurrent_workers=self.cpus)
+        t0 = time()
+        pop.evaluate()
+        t1 = time()
+        multi_proc_time = t1 - t0
+        for individual in pop:
+            assert individual.chromosome == individual.fitness
+        if self.cpus > 1:
+            assert multi_proc_time < single_proc_time
 
     def test_evaluate_func(self, simple_chromosomes):
         def evaluation_function(x):
+            sleep(self.latency)
             return x * x
         pop = Population(simple_chromosomes, eval_function=evaluation_function)
+        t0 = time()
         pop.evaluate()
+        t1 = time()
+        single_proc_time = t1 - t0
         for individual in pop:
             assert evaluation_function(individual.chromosome) == individual.fitness
+        # with concurrency
+        pop = Population(simple_chromosomes, eval_function=evaluation_function, concurrent_workers=self.cpus)
+        t0 = time()
+        pop.evaluate()
+        t1 = time()
+        multi_proc_time = t1 - t0
+        for individual in pop:
+            assert evaluation_function(individual.chromosome) == individual.fitness
+        if self.cpus > 1:
+            assert multi_proc_time < single_proc_time
 
     def test_evaluate_lazy(self, any_population):
         pop = any_population
@@ -65,20 +99,6 @@ class TestPopulationEvaluate:
         pop.evaluate(lazy=True)  # should not evaluate
         with raises(Exception):
             pop.evaluate(lazy=False)
-
-    def test_evaluate_lambda_concurrent(self, simple_chromosomes):
-        pop = Population(simple_chromosomes, eval_function=lambda x: x, concurrent_workers=3)
-        pop.evaluate()
-        for individual in pop:
-            assert individual.chromosome == individual.fitness
-
-    def test_evaluate_func_concurrent(self, simple_chromosomes):
-        def evaluation_function(x):
-            return x * x
-        pop = Population(simple_chromosomes, eval_function=evaluation_function, concurrent_workers=3)
-        pop.evaluate()
-        for individual in pop:
-            assert evaluation_function(individual.chromosome) == individual.fitness
 
 
 class TestPopulationSurvive:
@@ -265,5 +285,22 @@ class TestContestPopulationBest:
 
     def test_no_documented(self):
         pop = ContestPopulation([0, 1, 2], lambda x, y: [0, 0], contests_per_round=100, individuals_per_contest=2)
+        pop.evaluate()
+        assert pop.documented_best is None
+        # with concurrency
+        pop = ContestPopulation([0, 1, 2], lambda x, y: [0, 0], contests_per_round=100, individuals_per_contest=2,
+                                concurrent_workers=3)
+        pop.evaluate()
+        assert pop.documented_best is None
+        pop = ContestPopulation([0, 1, 2],
+                                lambda x, y: [x.chromosome, y.chromosome],
+                                contests_per_round=100, individuals_per_contest=2)
+        pop.evaluate()
+        assert pop.documented_best is None
+        # with concurrency
+        pop = ContestPopulation([0, 1, 2],
+                                lambda x, y: [x.chromosome, y.chromosome],
+                                contests_per_round=100, individuals_per_contest=2,
+                                concurrent_workers=3)
         pop.evaluate()
         assert pop.documented_best is None
