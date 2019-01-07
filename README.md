@@ -7,7 +7,7 @@
 
 ## Installation
 
-We currently support python3.6 and you can install it via pip.
+We currently support python3.6 and python3.7 and you can install it via pip.
 
 ```
 pip install evol
@@ -128,12 +128,17 @@ pop = pop.evolve(evo3, n=5)
 print(f"the best score found: {max([i.fitness for i in pop])}")
 ```
 
-Features
+Roadmap 2019
 --------
 
-Besides a lovely api we're currently working on logging and serializing
-these algorithms.
+For 2019 we have the following items on the shortlist, if you feel like 
+contributing or sharing thoughts, feel welcome to discuss it in the issues. 
 
+- parallel processing support
+- proper logging/serialising support via callback steps 
+- automatic generation of documentation 
+- more support for building blocks for certain problems 
+- more support for predefined problems to help students
 
 Getting Started
 ---------------------------------------
@@ -146,3 +151,4 @@ box.
 
 - [... deap?](https://github.com/DEAP/deap) We think our library is more composable and pythonic while not removing any functionality. Our library may be a bit slower though.
 - [... hyperopt?](http://jaberg.github.io/hyperopt/) Since we force the user to make the actual algorithm we are less black boxy. Hyperopt is meant for hyperparameter tuning for machine learning and has better support for search in scikit learn.
+- [... inspyred?](https://pypi.org/project/inspyred/) The library offers a simple way to get started but it seems the project is less actively maintained than ours. 
