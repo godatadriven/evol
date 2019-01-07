@@ -57,10 +57,6 @@ class Population:
         self.logger = logger or BaseLogger()
         self.serializer = serializer or SimpleSerializer(target=checkpoint_target)
         self.concurrent_workers = concurrent_workers
-        if self.concurrent_workers > 1:
-            self.pool = Pool(processes=self.concurrent_workers)
-        else:
-            self.pool = None
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
@@ -186,12 +182,13 @@ class Population:
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
         :return: self
         """
+        pool = Pool(processes=self.concurrent_workers) if self.concurrent_workers != 1 else None
         for individual in self.individuals:
-            individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=self.pool)
-        if self.pool is not None:
+            individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=pool)
+        if pool is not None:
             # Prevent further submissions and wait for workers to finish
-            self.pool.close()
-            self.pool.join()
+            pool.close()
+            pool.join()
         self._update_documented_best()
         return self
 
@@ -473,6 +470,7 @@ class ContestPopulation(Population):
         number of individuals to have in a contest during the evaluation.
         :return: self
         """
+        pool = Pool(processes=self.concurrent_workers) if self.concurrent_workers != 1 else None
         if contests_per_round is None:
             contests_per_round = self.contests_per_round
         if individuals_per_contest is None:
@@ -485,12 +483,12 @@ class ContestPopulation(Population):
             offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(individuals_per_contest - 1)]
             generators = [islice(cycle(self.individuals), offset, None) for offset in offsets]
             for competitors in islice(zip(*generators), len(self.individuals)):
-                contest = Contest(competitors, self.eval_function, self.pool)
+                contest = Contest(competitors, self.eval_function, pool)
                 contest.evaluate()
-        if self.pool is not None:
+        if pool is not None:
             # Prevent further submissions and wait for workers to finish
-            self.pool.close()
-            self.pool.join()
+            pool.close()
+            pool.join()
         return self
 
     def map(self, func: Callable[..., Individual], **kwargs) -> 'Population':
