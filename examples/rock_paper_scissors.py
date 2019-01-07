@@ -52,7 +52,7 @@ def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=4
     RockPaperScissorsPlayer.arbitrariness = arbitrariness
 
     pop = ContestPopulation(chromosomes=[RockPaperScissorsPlayer() for _ in range(population_size)],
-                            eval_function=evaluation_func, maximize=True, concurrent_workers=4).evaluate()
+                            eval_function=evaluation_func, maximize=True, concurrent_workers=2).evaluate()
 
     evo = (Evolution()
            .survive(fraction=survive_fraction)
