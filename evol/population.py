@@ -57,6 +57,7 @@ class Population:
         self.logger = logger or BaseLogger()
         self.serializer = serializer or SimpleSerializer(target=checkpoint_target)
         self.concurrent_workers = concurrent_workers
+        self.pool = None if concurrent_workers == 1 else Pool(concurrent_workers)
 
     def __copy__(self):
         result = self.__class__(chromosomes=self.chromosomes,
@@ -66,7 +67,9 @@ class Population:
                                 intended_size=self.intended_size,
                                 logger=self.logger,
                                 generation=self.generation,
-                                concurrent_workers=self.concurrent_workers)
+                                concurrent_workers=1)  # Prevent new pool from being made
+        result.concurrent_workers = self.concurrent_workers
+        result.pool = self.pool
         result.documented_best = self.documented_best
         return result
 
@@ -182,13 +185,21 @@ class Population:
         :param lazy: If True, do no re-evaluate the fitness if the fitness is known.
         :return: self
         """
-        pool = Pool(processes=self.concurrent_workers) if self.concurrent_workers != 1 else None
-        for individual in self.individuals:
-            individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=pool)
-        if pool is not None:
-            # Prevent further submissions and wait for workers to finish
-            pool.close()
-            pool.join()
+        if self.pool:
+            f = self.eval_function
+
+            def evaluate_pool(i: Individual):
+                if i.fitness and lazy:
+                    return i.fitness
+                else:
+                    return f(i.chromosome)
+
+            scores = self.pool.map(evaluate_pool, self.individuals)
+            for i, s in zip(self.individuals, scores):
+                i.fitness = s
+        else:
+            for individual in self.individuals:
+                individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=None)
         self._update_documented_best()
         return self
 
