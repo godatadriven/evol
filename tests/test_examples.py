@@ -3,8 +3,8 @@ import sys
 
 sys.path.append('.')
 
-from examples.number_of_parents import run_evolutionary
-from examples.rock_paper_scissors import run_rock_paper_scissors
+from examples.number_of_parents import run_evolutionary  # noqa: E402
+from examples.rock_paper_scissors import run_rock_paper_scissors  # noqa: E402
 
 
 N_WORKERS = [1, 2, None]
