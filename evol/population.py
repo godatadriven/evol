@@ -188,20 +188,13 @@ class Population:
         :return: self
         """
         if self.pool:
-            f = self.eval_function
-
-            def evaluate_pool(i: Individual):
-                if i.fitness and lazy:
-                    return i.fitness
-                else:
-                    return f(i.chromosome)
-
-            scores = self.pool.map(evaluate_pool, self.individuals)
-            for i, s in zip(self.individuals, scores):
-                i.fitness = s
+            f = self.eval_function  # We cannot refer to self in the map
+            scores = self.pool.map(lambda i: i.fitness if (i.fitness and lazy) else f(i.chromosome), self.individuals)
+            for individual, fitness in zip(self.individuals, scores):
+                individual.fitness = fitness
         else:
             for individual in self.individuals:
-                individual.evaluate(eval_function=self.eval_function, lazy=lazy, pool=None)
+                individual.evaluate(eval_function=self.eval_function, lazy=lazy)
         self._update_documented_best()
         return self
 
