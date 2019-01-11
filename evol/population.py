@@ -5,11 +5,13 @@ evolutionary steps by directly calling methods on the population
 or by appyling an `evol.Evolution` object.
 """
 from itertools import cycle, islice
-from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Sequence
-from uuid import uuid4
-from multiprocess.pool import Pool
+from math import ceil
+
 from copy import copy
+from multiprocess.pool import Pool
 from random import choices, randint
+from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence
+from uuid import uuid4
 
 from evol import Individual
 from evol.helpers.utils import select_arguments, offspring_generator
@@ -357,25 +359,34 @@ class Contest:
     ever-widening matrix of contests and competitors.
 
     :param competitors: Iterable of Individuals in this Contest.
-    :param eval_function: Function that reduces an individual to a fitness.
     """
-    def __init__(self,
-                 competitors: Iterable,
-                 eval_function: Callable[[Iterable[Any]], Sequence[float]],
-                 process_pool: Optional[Any]=None):
+    def __init__(self, competitors: Iterable):
         self.competitors = competitors
-        self.eval_function = eval_function
-        self.pool = process_pool
 
-    def __post_evaluate(self, scores):
+    def assign_scores(self, scores: Sequence[float]) -> None:
         for competitor, score in zip(self.competitors, scores):
             competitor.fitness += score
 
-    def evaluate(self):
-        if self.pool is not None:
-            self.pool.apply_async(self.eval_function, args=(self.competitors,), callback=self.__post_evaluate)
-        else:
-            self.__post_evaluate(self.eval_function(*self.competitors))
+    @classmethod
+    def generate(cls, individuals: Sequence[Individual],
+                 individuals_per_contest: int, contests_per_round: int) -> List['Contest']:
+        """Generate contests for a round of evaluations.
+
+        :param individuals: A sequence of competing Individuals.
+        :param individuals_per_contest: Number of Individuals participating in each Contest.
+        :param contests_per_round: Minimum number of contests each individual
+            takes part in for each evaluation round. The actual number of contests
+            per round is a multiple of individuals_per_contest.
+        :return: List of Contests
+        """
+        contests = []
+        n_rounds = ceil(contests_per_round / individuals_per_contest)
+        for _ in range(n_rounds):
+            offsets = [0] + [randint(0, len(individuals) - 1) for _ in range(individuals_per_contest - 1)]
+            generators = [islice(cycle(individuals), offset, None) for offset in offsets]
+            for competitors in islice(zip(*generators), len(individuals)):
+                contests.append(Contest(competitors))
+        return contests
 
 
 class ContestPopulation(Population):
@@ -399,11 +410,12 @@ class ContestPopulation(Population):
     :param eval_function: Function that reduces a chromosome to a fitness.
     :param maximize: If True, fitness will be maximized, otherwise minimized.
         Defaults to True.
-    :param contests_per_round: Number of contests each individual takes part
-        in for each evaluation round. Defaults to 10.
     :param individuals_per_contest: Number of individuals that take part in
         each contest. The size of the population must be divisible by this
         number. Defaults to 2.
+    :param contests_per_round: Minimum number of contests each individual
+        takes part in for each evaluation round. The actual number of contests
+        per round is a multiple of individuals_per_contest. Defaults to 10.
     :param logger: Logger object for the Population. If None, a new BaseLogger
         is created. Defaults to None.
     :param generation: Generation of the Population. Defaults to 0.
@@ -417,12 +429,14 @@ class ContestPopulation(Population):
     :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
         separate processes. If None, concurrent_workers is set to n_cpus. Defaults to 1.
     """
+    eval_function: Callable[[Iterable[Any]], Sequence[float]]  # This population expects a different eval signature
+
     def __init__(self,
                  chromosomes: Iterable,
                  eval_function: Callable[[Iterable[Any]], Sequence[float]],
                  maximize: bool=True,
-                 contests_per_round=10,
                  individuals_per_contest=2,
+                 contests_per_round=10,
                  logger=None,
                  generation: int=0,
                  intended_size: Optional[int]=None,
@@ -446,7 +460,9 @@ class ContestPopulation(Population):
                                 intended_size=self.intended_size,
                                 logger=self.logger,
                                 generation=self.generation,
-                                concurrent_workers=self.concurrent_workers)
+                                concurrent_workers=1)
+        result.pool = self.pool
+        result.concurrent_workers = self.concurrent_workers
         result.documented_best = None
         return result
 
@@ -481,7 +497,6 @@ class ContestPopulation(Population):
         number of individuals to have in a contest during the evaluation.
         :return: self
         """
-        pool = Pool(processes=self.concurrent_workers) if self.concurrent_workers != 1 else None
         if contests_per_round is None:
             contests_per_round = self.contests_per_round
         if individuals_per_contest is None:
@@ -490,16 +505,16 @@ class ContestPopulation(Population):
             return self
         for individual in self.individuals:
             individual.fitness = 0
-        for _ in range(contests_per_round):
-            offsets = [0] + [randint(0, len(self.individuals) - 1) for _ in range(individuals_per_contest - 1)]
-            generators = [islice(cycle(self.individuals), offset, None) for offset in offsets]
-            for competitors in islice(zip(*generators), len(self.individuals)):
-                contest = Contest(competitors, self.eval_function, pool)
-                contest.evaluate()
-        if pool is not None:
-            # Prevent further submissions and wait for workers to finish
-            pool.close()
-            pool.join()
+        contests = Contest.generate(individuals=self.individuals, individuals_per_contest=individuals_per_contest,
+                                    contests_per_round=contests_per_round)
+        if self.pool is None:
+            for contest in contests:
+                contest.assign_scores(self.eval_function(*contest.competitors))
+        else:
+            f = self.eval_function  # We cannot refer to self in the map
+            results = self.pool.map(lambda c: f(*c.competitors), contests)
+            for result, contest in zip(results, contests):
+                contest.assign_scores(result)
         return self
 
     def map(self, func: Callable[..., Individual], **kwargs) -> 'Population':

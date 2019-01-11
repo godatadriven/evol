@@ -1,11 +1,19 @@
 from pytest import fixture
 
-from evol import Population, ContestPopulation
+from evol import Individual, Population, ContestPopulation
 
 
 @fixture(scope='module')
 def simple_chromosomes():
     return list(range(-50, 50))
+
+
+@fixture(scope='function')
+def simple_individuals(simple_chromosomes):
+    result = [Individual(chromosome=chromosome) for chromosome in simple_chromosomes]
+    for individual in result:
+        individual.fitness = 0
+    return result
 
 
 @fixture(scope='module')

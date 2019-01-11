@@ -1,10 +1,13 @@
-from copy import copy
-from pytest import raises
-from random import random, choices, seed
 from time import sleep, time
+
+import os
+from copy import copy
+from pytest import raises, mark
+from random import random, choices, seed
+
 from evol import Population, ContestPopulation
 from evol.helpers.pickers import pick_random
-import os
+from evol.population import Contest
 
 
 class TestPopulationSimple:
@@ -271,6 +274,29 @@ class TestPopulationBest:
         assert pop.documented_best.fitness == pop.current_best.fitness
         pop.mutate(mutate_function=lambda x: x - 10, probability=1).evaluate()
         assert pop.documented_best.fitness - 20 == pop.current_best.fitness
+
+
+class TestContest:
+
+    def test_assign_score(self, simple_individuals):
+        contest = Contest(simple_individuals)
+        contest.assign_scores(range(len(simple_individuals)))
+        for score, individual in zip(range(len(simple_individuals)), simple_individuals):
+            assert individual.fitness == score
+
+    @mark.parametrize('individuals_per_contest,contests_per_round', [(2, 1), (5, 1), (7, 1), (2, 5), (5, 4), (3, 3)])
+    def test_generate_n_contests(self, simple_individuals, individuals_per_contest, contests_per_round):
+        contests = Contest.generate(simple_individuals, contests_per_round=contests_per_round,
+                                    individuals_per_contest=individuals_per_contest)
+        for contest in contests:
+            contest.assign_scores([1]*individuals_per_contest)  # Now the fitness equals the number of contests played
+        # All individuals competed in the same number of contests
+        assert len({individual.fitness for individual in simple_individuals}) == 1
+        # The number of contests is _at least_ contests_per_round
+        assert all([individual.fitness >= contests_per_round for individual in simple_individuals])
+        # The number of contests is smaller than contests_per_round + individuals_per_contest
+        assert all([individual.fitness < contests_per_round + individuals_per_contest
+                    for individual in simple_individuals])
 
 
 class TestContestPopulation:
