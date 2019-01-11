@@ -1,4 +1,7 @@
 from pytest import mark
+import sys
+
+sys.path.append('.')
 
 from examples.number_of_parents import run_evolutionary
 from examples.rock_paper_scissors import run_rock_paper_scissors
