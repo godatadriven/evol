@@ -5,7 +5,7 @@ from random import choice
 from evol import Individual
 
 
-def pick_random(parents: Sequence[Individual], n_parents: int=2) -> Tuple:
+def pick_random(parents: Sequence[Individual], n_parents: int = 2) -> Tuple:
     """Randomly selects parents with replacement
 
     Accepted arguments:

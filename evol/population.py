@@ -37,16 +37,17 @@ class Population:
     :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
         separate processes.
     """
+
     def __init__(self,
                  chromosomes: Iterable,
                  eval_function: Callable[..., float],
-                 maximize: bool=True,
+                 maximize: bool = True,
                  logger=None,
-                 generation: int=0,
-                 intended_size: Optional[int]=None,
-                 checkpoint_target: Optional[str]=None,
+                 generation: int = 0,
+                 intended_size: Optional[int] = None,
+                 checkpoint_target: Optional[str] = None,
                  serializer=None,
-                 concurrent_workers: Optional[int]=1):
+                 concurrent_workers: Optional[int] = 1):
         self.id = str(uuid4())[:6]
         self.documented_best = None
         self.eval_function = eval_function
@@ -107,7 +108,7 @@ class Population:
     def generate(cls,
                  init_function: Callable[[], Any],
                  eval_function: Callable[..., float],
-                 size: int=100,
+                 size: int = 100,
                  **kwargs) -> 'Population':
         """Generate a population from an initialisation function.
 
@@ -135,7 +136,7 @@ class Population:
         result.individuals = result.serializer.load(target=target)
         return result
 
-    def checkpoint(self, target: Optional[str]=None, method: str='pickle') -> 'Population':
+    def checkpoint(self, target: Optional[str] = None, method: str = 'pickle') -> 'Population':
         """Checkpoint the population.
 
         :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
@@ -161,7 +162,7 @@ class Population:
         else:
             return [1 - (individual.fitness - min_fitness) / (max_fitness - min_fitness) for individual in self]
 
-    def evolve(self, evolution: 'Evolution', n: int=1) -> 'Population':
+    def evolve(self, evolution: 'Evolution', n: int = 1) -> 'Population':  # noqa: F821
         """Evolve the population according to an Evolution.
 
         :param evolution: Evolution to follow
@@ -174,7 +175,7 @@ class Population:
                 step.apply(result)
         return result
 
-    def evaluate(self, lazy: bool=False) -> 'Population':
+    def evaluate(self, lazy: bool = False) -> 'Population':
         """Evaluate the individuals in the population.
 
         This evaluates the fitness of all individuals. If lazy is True, the
@@ -228,7 +229,7 @@ class Population:
         self.individuals = [individual for individual in self.individuals if func(individual, **kwargs)]
         return self
 
-    def survive(self, fraction: Optional[float]=None, n: Optional[int]=None, luck: bool=False) -> 'Population':
+    def survive(self, fraction: Optional[float] = None, n: Optional[int] = None, luck: bool = False) -> 'Population':
         """Let part of the population survive.
 
         Remove part of the population. If both fraction and n are specified,
@@ -265,7 +266,7 @@ class Population:
     def breed(self,
               parent_picker: Callable[..., Sequence[Individual]],
               combiner: Callable,
-              population_size: Optional[int]=None,
+              population_size: Optional[int] = None,
               **kwargs) -> 'Population':
         """Create new individuals by combining existing individuals.
 
@@ -291,7 +292,7 @@ class Population:
 
     def mutate(self,
                mutate_function: Callable[..., Any],
-               probability: float=1.0, **kwargs) -> 'Population':
+               probability: float = 1.0, **kwargs) -> 'Population':
         """Mutate the chromosome of each individual.
 
         :param mutate_function: Function that accepts a chromosome and returns
@@ -351,10 +352,11 @@ class Contest:
     :param competitors: Iterable of Individuals in this Contest.
     :param eval_function: Function that reduces an individual to a fitness.
     """
+
     def __init__(self,
                  competitors: Iterable,
                  eval_function: Callable[[Iterable[Any]], Sequence[float]],
-                 process_pool: Optional[Any]=None):
+                 process_pool: Optional[Any] = None):
         self.competitors = competitors
         self.eval_function = eval_function
         self.pool = process_pool
@@ -407,18 +409,19 @@ class ContestPopulation(Population):
     :param serializer: Serializer for the Population. If None, a new
         SimpleSerializer is created. Defaults to None.
     """
+
     def __init__(self,
                  chromosomes: Iterable,
                  eval_function: Callable[[Iterable[Any]], Sequence[float]],
-                 maximize: bool=True,
+                 maximize: bool = True,
                  contests_per_round=10,
                  individuals_per_contest=2,
                  logger=None,
-                 generation: int=0,
-                 intended_size: Optional[int]=None,
-                 checkpoint_target: Optional[int]=None,
+                 generation: int = 0,
+                 intended_size: Optional[int] = None,
+                 checkpoint_target: Optional[int] = None,
                  serializer=None,
-                 concurrent_workers: Optional[int]=1):
+                 concurrent_workers: Optional[int] = 1):
         Population.__init__(self, chromosomes=chromosomes, eval_function=eval_function, maximize=maximize,
                             logger=logger, generation=generation, intended_size=intended_size,
                             checkpoint_target=checkpoint_target, serializer=serializer,
@@ -441,9 +444,9 @@ class ContestPopulation(Population):
         return result
 
     def evaluate(self,
-                 lazy: bool=False,
-                 contests_per_round: Optional[int]=None,
-                 individuals_per_contest: Optional[int]=None) -> 'ContestPopulation':
+                 lazy: bool = False,
+                 contests_per_round: Optional[int] = None,
+                 individuals_per_contest: Optional[int] = None) -> 'ContestPopulation':
         """Evaluate the individuals in the population.
 
         This evaluates the fitness of all individuals. For each round of
@@ -521,9 +524,9 @@ class ContestPopulation(Population):
         return self
 
     def survive(self,
-                fraction: Optional[float]=None,
-                n: Optional[int]=None,
-                luck: bool=False) -> 'ContestPopulation':
+                fraction: Optional[float] = None,
+                n: Optional[int] = None,
+                luck: bool = False) -> 'ContestPopulation':
         """Let part of the population survive.
 
         Remove part of the population. If both fraction and n are specified,

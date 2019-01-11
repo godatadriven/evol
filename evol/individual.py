@@ -19,7 +19,7 @@ class Individual:
         Defaults to None.
     """
 
-    def __init__(self, chromosome: Any, fitness: Optional[float]=None):
+    def __init__(self, chromosome: Any, fitness: Optional[float] = None):
         self.age = 0
         self.chromosome = chromosome
         self.fitness = fitness
@@ -43,7 +43,7 @@ class Individual:
     def __post_evaluate(self, result):
         self.fitness = result
 
-    def evaluate(self, eval_function: Callable[..., float], lazy: bool=False, pool: Pool=None):
+    def evaluate(self, eval_function: Callable[..., float], lazy: bool = False, pool: Pool = None):
         """Evaluate the fitness of the individual.
 
         :param eval_function: Function that reduces a chromosome to a fitness.
@@ -55,7 +55,7 @@ class Individual:
             else:
                 self.fitness = eval_function(self.chromosome)
 
-    def mutate(self, mutate_function: Callable[..., Any], probability: float=1.0, **kwargs):
+    def mutate(self, mutate_function: Callable[..., Any], probability: float = 1.0, **kwargs):
         """Mutate the chromosome of the individual.
 
         :param mutate_function: Function that accepts a chromosome and returns a mutated chromosome.
