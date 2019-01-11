@@ -13,7 +13,7 @@ from evol import Population, Evolution
 
 
 def run_evolutionary(opt_value=1, population_size=100, n_parents=2, workers=1,
-                     num_iter=200, survival=0.5, noise=0.1, seed=42):
+                     num_iter=200, survival=0.5, noise=0.1, seed=42, verbose=True):
     random.seed(seed)
 
     def init_func():
@@ -42,7 +42,9 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, workers=1,
 
     for i in range(num_iter):
         pop = pop.evolve(evo)
-    print(f"iteration:{i} best: {pop.current_best.fitness} worst: {pop.current_worst.fitness}")
+
+    if verbose:
+        print(f"iteration:{i} best: {pop.current_best.fitness} worst: {pop.current_worst.fitness}")
 
 
 if __name__ == "__main__":
