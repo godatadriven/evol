@@ -30,7 +30,7 @@ class Evolution:
     def __iter__(self):
         return self.chain.__iter__()
 
-    def evaluate(self, lazy: bool=False, name: Optional[str]=None) -> 'Evolution':
+    def evaluate(self, lazy: bool = False, name: Optional[str] = None) -> 'Evolution':
         """Add an evaluation step to the Evolution.
 
         This evaluates the fitness of all individuals. If lazy is True, the
@@ -45,7 +45,7 @@ class Evolution:
         """
         return self._add_step(EvaluationStep(name=name, lazy=lazy))
 
-    def apply(self, func: Callable[..., Population], name: Optional[str]=None, **kwargs) -> 'Evolution':
+    def apply(self, func: Callable[..., Population], name: Optional[str] = None, **kwargs) -> 'Evolution':
         """Add an apply step to the Evolution.
 
         This applies the provided function to the population.
@@ -58,10 +58,10 @@ class Evolution:
         return self._add_step(ApplyStep(name=name, func=func, **kwargs))
 
     def checkpoint(self,
-                   target: Optional[str]=None,
-                   method: str='pickle',
-                   name: Optional[str]=None,
-                   every: int=1) -> 'Evolution':
+                   target: Optional[str] = None,
+                   method: str = 'pickle',
+                   name: Optional[str] = None,
+                   every: int = 1) -> 'Evolution':
         """Add a checkpoint step to the Evolution.
 
         :param target: Directory to write checkpoint to. If None, the Serializer default target is taken,
@@ -73,7 +73,7 @@ class Evolution:
         """
         return self._add_step(CheckpointStep(name=name, target=target, method=method, every=every))
 
-    def map(self, func: Callable[..., Individual], name: Optional[str]=None, **kwargs) -> 'Evolution':
+    def map(self, func: Callable[..., Individual], name: Optional[str] = None, **kwargs) -> 'Evolution':
         """Add a map step to the Evolution.
 
         This applies the provided function to each individual in the
@@ -86,7 +86,7 @@ class Evolution:
         """
         return self._add_step(MapStep(name=name, func=func, **kwargs))
 
-    def filter(self, func: Callable[..., bool], name: Optional[str]=None, **kwargs) -> 'Evolution':
+    def filter(self, func: Callable[..., bool], name: Optional[str] = None, **kwargs) -> 'Evolution':
         """Add a filter step to the Evolution.
 
         This filters the individuals in the population using the provided function.
@@ -99,11 +99,11 @@ class Evolution:
         return self._add_step(FilterStep(name=name, func=func, **kwargs))
 
     def survive(self,
-                fraction: Optional[float]=None,
-                n: Optional[int]=None,
-                luck: bool=False,
-                name: Optional[str]=None,
-                evaluate: bool=True) -> 'Evolution':
+                fraction: Optional[float] = None,
+                n: Optional[int] = None,
+                luck: bool = False,
+                name: Optional[str] = None,
+                evaluate: bool = True) -> 'Evolution':
         """Add a survive step to the Evolution.
 
         This filters the individuals in the population according to fitness.
@@ -128,8 +128,8 @@ class Evolution:
     def breed(self,
               parent_picker: Callable[..., Sequence[Individual]],
               combiner: Callable,
-              population_size: Optional[int]=None,
-              name: Optional[str]=None,
+              population_size: Optional[int] = None,
+              name: Optional[str] = None,
               **kwargs) -> 'Evolution':
         """Add a breed step to the Evolution.
 
@@ -152,8 +152,8 @@ class Evolution:
 
     def mutate(self,
                mutate_function: Callable[..., Any],
-               probability: float=1.0,
-               name: Optional[str]=None,
+               probability: float = 1.0,
+               name: Optional[str] = None,
                **kwargs) -> 'Evolution':
         """Add a mutate step to the Evolution.
 
@@ -171,7 +171,7 @@ class Evolution:
         """
         return self._add_step(MutateStep(name=name, probability=probability, mutate_function=mutate_function, **kwargs))
 
-    def log(self, every: int=1, name: Optional[str]=None, **kwargs) -> 'Evolution':
+    def log(self, every: int = 1, name: Optional[str] = None, **kwargs) -> 'Evolution':
         """Logs a population.
 
         If a Population object was initialized with a logger
@@ -185,7 +185,7 @@ class Evolution:
         """
         return self._add_step(LogStep(name, every=every, **kwargs))
 
-    def repeat(self, evolution: 'Evolution', n: int=1, name: Optional[str]=None) -> 'Evolution':
+    def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None) -> 'Evolution':
         """Add an evolution as a step to this evolution.
 
         This will add a step to the evolution that repeats another evolution
@@ -199,7 +199,7 @@ class Evolution:
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
 
     def callback(self, callback_function: Callable[..., Any],
-                 every: int=1, name: Optional[str]=None) -> 'Evolution':
+                 every: int = 1, name: Optional[str] = None) -> 'Evolution':
         return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function))
 
     def _add_step(self, step):

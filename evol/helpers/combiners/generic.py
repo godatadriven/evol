@@ -1,5 +1,3 @@
-
-
 def select_min_fitness(*parents):
     return min(parents, key=lambda parent: parent.fitness)
 

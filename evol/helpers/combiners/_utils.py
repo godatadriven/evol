@@ -59,7 +59,7 @@ def identify_cycles(chromosome_1: Tuple[Any], chromosome_2: Tuple[Any]) -> List[
     return cycles
 
 
-def _identify_cycle(chromosome_1: Tuple[Any], chromosome_2: Tuple[Any], start_index: int=0) -> Set[int]:
+def _identify_cycle(chromosome_1: Tuple[Any], chromosome_2: Tuple[Any], start_index: int = 0) -> Set[int]:
     """Identify a cycle between the chromosomes starting at the provided index.
 
     A cycle is found by following this procedure: given an index, look up the
