@@ -18,6 +18,7 @@ class BaseLogger:
     You can supply it to a population so that the population
     knows how to handle the `.log()` verb.
     """
+
     def __init__(self, target=None, stdout=False, fmt='%(asctime)s,%(message)s'):
         self.file = target
         if target is not None:
@@ -56,12 +57,13 @@ class SummaryLogger(BaseLogger):
     The `evol.SummaryLogger` merely logs statistics per population and nothing else.
     You are still able to log to stdout as well.
     """
+
     def log(self, population, **kwargs):
         values = ','.join([str(item) for item in kwargs.values()])
         if values != '':
             values = f',{values}'
         fitnesses = [i.fitness for i in population]
-        self.logger.info(f'{min(fitnesses)},{sum(fitnesses)/len(fitnesses)},{max(fitnesses)}' + values)
+        self.logger.info(f'{min(fitnesses)},{sum(fitnesses) / len(fitnesses)},{max(fitnesses)}' + values)
 
 
 class MultiLogger:
@@ -72,6 +74,7 @@ class MultiLogger:
     call. So we are free to record to multiple files if we want as well. This is
     not per se best practice but it would work.
     """
+
     def __init__(self, file_individuals, file_population):
         self.file_individuals = file_individuals
         self.file_population = file_population

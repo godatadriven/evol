@@ -2,7 +2,7 @@ from random import randint
 from typing import Tuple
 
 
-def select_partition(length: int, min_size: int=1, max_size: int=None) -> Tuple[int, int]:
+def select_partition(length: int, min_size: int = 1, max_size: int = None) -> Tuple[int, int]:
     """Select a partition of a chromosome.
 
     :param length: Length of the chromosome.
