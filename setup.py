@@ -46,7 +46,7 @@ setup(
         "pytest==3.3.1"
     ],
     extras_require={
-        "dev": ["flake8==3.6.0", "pytest==3.3.1", "sphinx==1.8.3"]
+        "dev": ["flake8==3.6.0", "pytest==3.3.1"]
     },
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',
