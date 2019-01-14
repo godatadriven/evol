@@ -13,9 +13,12 @@ install:
 script:
   - pytest
   - python examples/simple_nonlinear.py
-  - python examples/number_of_parents.py --n_parents=2
-  - python examples/number_of_parents.py --n_parents=3
-  - python examples/number_of_parents.py --n_parents=4
+  - python examples/number_of_parents.py --n-parents=2 --workers=1
+  - python examples/number_of_parents.py --n-parents=3 --workers=1
+  - python examples/number_of_parents.py --n-parents=4 --workers=1
+  - python examples/number_of_parents.py --n-parents=2 --workers=2
+  - python examples/number_of_parents.py --n-parents=3 --workers=2
+  - python examples/number_of_parents.py --n-parents=4 --workers=2
   - python examples/very_basic_tsp.py
   - python examples/simple_logging.py
   - python examples/rock_paper_scissors.py

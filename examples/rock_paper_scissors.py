@@ -46,13 +46,15 @@ def evaluation_func(player_1, player_2):
 
 
 def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=42,
-                            survive_fraction=0.90, arbitrariness=0.0):
+                            survive_fraction=0.90, arbitrariness=0.0, concurrent_workers=1,
+                            silent: bool = False):
     seed(random_seed)
 
     RockPaperScissorsPlayer.arbitrariness = arbitrariness
 
     pop = ContestPopulation(chromosomes=[RockPaperScissorsPlayer() for _ in range(population_size)],
-                            eval_function=evaluation_func, maximize=True).evaluate()
+                            eval_function=evaluation_func, maximize=True,
+                            concurrent_workers=concurrent_workers).evaluate()
 
     evo = (Evolution()
            .survive(fraction=survive_fraction)
@@ -68,6 +70,8 @@ def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=4
         pop = pop.evolve(evo)
         preferences_over_time.append(preferences)
 
+    if silent:
+        return
     try:
         import matplotlib.pylab as plt
         import pandas as pd
@@ -93,6 +97,8 @@ def parse_arguments():
                         help='the fraction of the population to survive each iteration')
     parser.add_argument('--arbitrariness', type=float, default=0.0,
                         help='arbitrariness of the players. if zero, player will always choose its preference')
+    parser.add_argument('--concurrent_workers', type=int, default=None,
+                        help='Concurrent workers to use to evaluate the population.')
     return parser.parse_args()
 
 

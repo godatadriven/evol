@@ -78,7 +78,7 @@ def run_evolutionary(num_towns=42, population_size=100, num_iter=200, seed=42): 
         return result
 
     pop = Population(chromosomes=[init_func(num_towns) for _ in range(population_size)],
-                     eval_function=eval_func, maximize=False).evaluate()
+                     eval_function=eval_func, maximize=False, concurrent_workers=2).evaluate()
 
     evo = (Evolution()
            .survive(fraction=0.1)
