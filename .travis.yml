@@ -23,12 +23,13 @@ script:
   - python examples/simple_logging.py
   - python examples/rock_paper_scissors.py
   - flake8
-  - pdoc evol --html --overwrite --html-dir docs
 deploy:
   provider: pages
-  local-dir: docs
+  local-dir: docs/evol/
   skip-cleanup: true
   github-token: $GH-PAGES-KEY
   keep-history: true
+  script:
+    - pdoc evol --html --overwrite --html-dir docs
   on:
     branch: master
