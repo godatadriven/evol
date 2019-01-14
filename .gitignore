@@ -105,5 +105,7 @@ evol-env/
 # Mac
 .DS_Store
 
-# Pytest 
+# Pytest
 .pytest_cache/
+
+docs/
