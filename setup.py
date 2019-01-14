@@ -1,7 +1,7 @@
 import codecs
 from os import path
 from re import search, M
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def load_readme():
@@ -36,7 +36,7 @@ setup(
     author=['Vincent D. Warmerdam', 'Rogier van der Geer'],
     author_email='vincentwarmerdam@gmail.com',
     url='https://github.com/godatadriven/evol',
-    packages=['evol', 'evol.helpers'],
+    packages=find_packages(),
     keywords=['genetic', 'algorithms', 'heuristics'],
     install_requires=['pathos>=0.2.2.1'],
     python_requires='>=3.6',
@@ -47,7 +47,7 @@ setup(
         "pytest==3.3.1"
     ],
     extras_require={
-        "dev": ["flake8==3.5.0", "pytest==3.3.1", "multiprocess==0.70.6.1"]
+        "dev": ["flake8==3.6.0", "pytest==3.3.1", "multiprocess==0.70.6.1"]
     },
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',

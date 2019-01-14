@@ -4,7 +4,7 @@ from typing import Any, Tuple
 from .._utils import select_partition
 
 
-def inversion(chromosome: Tuple[Any, ...], min_size: int=2, max_size: int=None) -> Tuple[Any, ...]:
+def inversion(chromosome: Tuple[Any, ...], min_size: int = 2, max_size: int = None) -> Tuple[Any, ...]:
     """Mutate a chromosome using inversion.
 
     Inverts a random partition of the chromosome.
