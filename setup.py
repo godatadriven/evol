@@ -39,9 +39,7 @@ setup(
     packages=find_packages(),
     keywords=['genetic', 'algorithms', 'heuristics'],
     python_requires='>=3.6',
-    install_requires=[
-        "multiprocess==0.70.6.1"
-    ],
+    install_requires=["multiprocess==0.70.6.1"],
     tests_require=[
         "pytest==3.3.1"
     ],
