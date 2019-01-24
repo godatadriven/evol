@@ -10,13 +10,16 @@ from math import ceil
 from copy import copy
 from multiprocess.pool import Pool
 from random import choices, randint
-from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence
+from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence, TYPE_CHECKING
 from uuid import uuid4
 
 from evol import Individual
 from evol.helpers.utils import select_arguments, offspring_generator
 from evol.logger import BaseLogger
 from evol.serialization import SimpleSerializer
+
+if TYPE_CHECKING:
+    from .evolution import Evolution
 
 
 class Population:
