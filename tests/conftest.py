@@ -26,7 +26,7 @@ def simple_evaluation_function():
 @fixture(scope='module')
 def simple_contest_evaluation_function():
     def eval_func(x, y, z):
-        return [1, -1, 0] if x.chromosome > y.chromosome else [-1, 1, 0]
+        return [1, -1, 0] if x > y else [-1, 1, 0]
     return eval_func
 
 
