@@ -325,7 +325,7 @@ class Population:
         self.logger.log(population=self, **kwargs)
         return self
 
-    def callback(self, callback_function: Callable[['Population'], None],
+    def callback(self, callback_function: Callable[..., None],
                  **kwargs) -> 'Population':
         """
         Performs a callback function on the population. Can be used for
