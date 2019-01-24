@@ -1,7 +1,7 @@
 from random import sample
 from typing import Any, Tuple
 
-from .._utils import select_partition
+from ..utils import select_partition
 
 
 def inversion(chromosome: Tuple[Any, ...], min_size: int = 2, max_size: int = None) -> Tuple[Any, ...]:
