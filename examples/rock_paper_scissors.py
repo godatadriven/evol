@@ -34,7 +34,7 @@ class RockPaperScissorsPlayer:
 
 
 def evaluation_func(player_1, player_2):
-    choice_1, choice_2 = player_1.chromosome.play(), player_2.chromosome.play()
+    choice_1, choice_2 = player_1.play(), player_2.play()
     if choice_1 == choice_2:
         return [0, 0]
     elif choice_1 == 'rock':

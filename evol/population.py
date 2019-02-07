@@ -355,12 +355,16 @@ class Contest:
     :param competitors: Iterable of Individuals in this Contest.
     """
 
-    def __init__(self, competitors: Iterable):
-        self.competitors = competitors
+    def __init__(self, competitors: Iterable[Individual]):
+        self.competitors = list(competitors)
 
     def assign_scores(self, scores: Sequence[float]) -> None:
         for competitor, score in zip(self.competitors, scores):
             competitor.fitness += score
+
+    @property
+    def competitor_chromosomes(self):
+        return [competitor.chromosome for competitor in self.competitors]
 
     @classmethod
     def generate(cls, individuals: Sequence[Individual],
@@ -504,10 +508,10 @@ class ContestPopulation(Population):
                                     contests_per_round=contests_per_round)
         if self.pool is None:
             for contest in contests:
-                contest.assign_scores(self.eval_function(*contest.competitors))
+                contest.assign_scores(self.eval_function(*contest.competitor_chromosomes))
         else:
             f = self.eval_function  # We cannot refer to self in the map
-            results = self.pool.map(lambda c: f(*c.competitors), contests)
+            results = self.pool.map(lambda c: f(*c.competitor_chromosomes), contests)
             for result, contest in zip(results, contests):
                 contest.assign_scores(result)
         return self
