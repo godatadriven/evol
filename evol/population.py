@@ -10,13 +10,16 @@ from math import ceil
 from copy import copy
 from multiprocess.pool import Pool
 from random import choices, randint
-from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence
+from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence, TYPE_CHECKING
 from uuid import uuid4
 
 from evol import Individual
 from evol.utils import offspring_generator, select_arguments
 from evol.logger import BaseLogger
 from evol.serialization import SimpleSerializer
+
+if TYPE_CHECKING:
+    from .evolution import Evolution
 
 
 class Population:
@@ -322,7 +325,7 @@ class Population:
         self.logger.log(population=self, **kwargs)
         return self
 
-    def callback(self, callback_function: Callable[['Population'], None],
+    def callback(self, callback_function: Callable[..., None],
                  **kwargs) -> 'Population':
         """
         Performs a callback function on the population. Can be used for
