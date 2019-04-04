@@ -1,5 +1,6 @@
 
-[![Build Status](https://travis-ci.org/godatadriven/evol.svg?branch=master)](https://travis-ci.org/godatadriven/evol)
+[![Build Status](https://travis-ci.org/godatadriven/evol.svg?branch=master)](https://travis-ci.org/godatadriven/evol) [![Documentation Status](https://readthedocs.org/projects/evol/badge/?version=latest)](https://evol.readthedocs.io/en/latest/?badge=latest)
+
 
 ![Imgur](https://i.imgur.com/7MHcIq1.png)
 
