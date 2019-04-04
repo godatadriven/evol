@@ -71,10 +71,3 @@ can be very expensive to calculate so you might want to consider running
 it as late as possible and as few times as possible. The only command
 that needs a fitness is the "survive" method. All other methods can apply
 transformations to the chromosome without needing to evaluate the fitness.
-
-Intended Sizes
-**************
-
-Verbs
-*****
-
