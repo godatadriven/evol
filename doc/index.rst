@@ -58,17 +58,16 @@ You might notice that many parts of these algorithms are similar and it
 is the goal of this library is to automate these parts. We hope to
 provide an API that is fun to use and easy to tweak your heuristics in.
 
-A working example of something silimar to what is depicted above is shown below.
-You can also find this code as an example in the examples folder on github.
-
-.. literalinclude:: ../examples/simple_nonlinear.py
-   :language: python
-
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   quickstart
+   population
+   evolution
+   contests
+   problems
+   parallel
    development
 
 Indices and tables
