@@ -57,10 +57,6 @@ provide an API that is fun to use and easy to tweak your heuristics in.
 
    quickstart
    population
-   evolution
-   contests
-   problems
-   parallel
    development
 
 Indices and tables

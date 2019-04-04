@@ -1,5 +1,5 @@
-Population
-==========
+Population Guide
+================
 
 The "Population" object in **evol** is the base container for all your
 candidate solutions. Each candidate solution (sometimes referred to
