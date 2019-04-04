@@ -8,7 +8,7 @@ flake:
 install:
 	pip install -e .
 
-develop:
+develop: install
 	pip install -e ".[dev]"
 	python setup.py develop
 
@@ -18,6 +18,7 @@ test:
 check: test flake
 
 docs:
+	rm -rf docs
 	sphinx-apidoc -f -o doc/api evol
 	sphinx-build doc docs
 
@@ -28,3 +29,4 @@ clean:
 	rm -rf dist
 	rm -rf evol.egg-info
 	rm -rf .ipynb_checkpoints
+	rm -rf docs
