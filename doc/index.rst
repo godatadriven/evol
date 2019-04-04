@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 
-.. image:: https://i.imgur.com/7MHcIq1.png
+.. image:: _static/evol.png
    :align: center
 
 
