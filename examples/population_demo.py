@@ -24,9 +24,13 @@ pop2 = Population.generate(init_function=create_candidate,
                            size=5,
                            maximize=False)
 
+print("[i for i in pop1]:")
 print([i for i in pop1])
+print("[i.chromosome for i in pop1]:")
 print([i.chromosome for i in pop1])
+print("[i.fitness for i in pop1]:")
 print([i.fitness for i in pop1])
+print("[i.fitness for i in pop1.evaluate()]:")
 print([i.fitness for i in pop1.evaluate()])
 
 
@@ -36,3 +40,11 @@ def produce_clone(parent):
 
 def add_noise(x):
     return 0.1 * (random.random() - 0.5) + x
+
+
+print("[i.fitness for i in pop1.survive(n=3)]:")
+print([i.fitness for i in pop1.survive(n=3)])
+print("[i.fitness for i in pop1.survive(n=3).mutate(add_noise)]:")
+print([i.fitness for i in pop1.survive(n=3).mutate(add_noise)])
+print("[i.fitness for i in pop1.survive(n=3).mutate(add_noise).evaluate()]:")
+print([i.fitness for i in pop1.survive(n=3).mutate(add_noise).evaluate()])
