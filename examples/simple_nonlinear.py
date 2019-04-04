@@ -1,4 +1,5 @@
-from random import random
+import random
+from random import random as r
 from evol import Population, Evolution
 
 random.seed(42)
@@ -8,7 +9,7 @@ def random_start():
     """
     This function generates a random (x,y) coordinate
     """
-    return (random() - 0.5) * 20, (random() - 0.5) * 20
+    return (r() - 0.5) * 20, (r() - 0.5) * 20
 
 
 def func_to_optimise(xy):
@@ -44,8 +45,8 @@ def add_noise(chromosome, sigma):
     """
     This is a function that will add some noise to the chromosome.
     """
-    new_x = chromosome[0] + (random() - 0.5) * sigma
-    new_y = chromosome[1] + (random() - 0.5) * sigma
+    new_x = chromosome[0] + (r() - 0.5) * sigma
+    new_y = chromosome[1] + (r() - 0.5) * sigma
     return new_x, new_y
 
 
@@ -57,13 +58,13 @@ pop = Population(chromosomes=[random_start() for _ in range(200)],
 evo1 = (Evolution()
         .survive(fraction=0.5)
         .breed(parent_picker=pick_random_parents, combiner=make_child)
-        .mutate(func=add_noise, sigma=1))
+        .mutate(mutate_function=add_noise, sigma=1))
 
 # We define another sequence of steps to change these candidates
 evo2 = (Evolution()
         .survive(n=1)
         .breed(parent_picker=pick_random_parents, combiner=make_child)
-        .mutate(func=add_noise, sigma=0.2))
+        .mutate(mutate_function=add_noise, sigma=0.2))
 
 # We are combining two evolutions into a third one.
 # You don't have to but this approach demonstrates
