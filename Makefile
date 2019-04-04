@@ -12,13 +12,10 @@ develop:
 	pip install -e ".[dev]"
 	python setup.py develop
 
-doctest:
-	python -m doctest -v evol/*.py
-
-test: doctest
+test:
 	pytest --disable-warnings
 
-check: flake test
+check: test flake
 
 docs:
 	sphinx-apidoc -f -o doc/api evol
