@@ -24,6 +24,7 @@ pop2 = Population.generate(init_function=create_candidate,
                            size=5,
                            maximize=False)
 
+
 print("[i for i in pop1]:")
 print([i for i in pop1])
 print("[i.chromosome for i in pop1]:")
@@ -31,7 +32,6 @@ print([i.chromosome for i in pop1])
 print("[i.fitness for i in pop1]:")
 print([i.fitness for i in pop1])
 print("[i.fitness for i in pop1.evaluate()]:")
-print([i.fitness for i in pop1.evaluate()])
 
 
 def produce_clone(parent):
