@@ -1,0 +1,33 @@
+.wy-nav-side{
+	background-color: #f2f2f2;
+	color: black;
+}
+
+.wy-nav-content-wrap{
+	background-color: white;
+}
+
+a.reference.internal{
+	color: black;
+}
+
+pre{
+    background: #eeeeee29;
+}
+
+body{
+    font-family: "Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;
+}
+
+div.body p{
+    font-family: "Lato","proxima-nova","Helvetica Neue", Arial, sans-serif;
+}
+
+h1 a{
+    font-family: "Lato","proxima-nova","Helvetica Neue", Arial, sans-serif;
+}
+
+pre{
+    padding: 7px 10px;
+}
+
