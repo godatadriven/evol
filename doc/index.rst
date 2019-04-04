@@ -3,17 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-
-.. image:: https://i.imgur.com/7MHcIq1.png
-   :align: center
-
-
 **Evol** is clear dsl for composable evolutionary algorithms that optimised for joy.
 
-Installation
-************
-
-We currently support python3.6 and python3.7 and you can install it via pip.
+.. image:: _static/evol.png
+   :align: center
 
 .. code-block:: bash
 

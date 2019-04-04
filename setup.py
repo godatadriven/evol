@@ -44,7 +44,7 @@ setup(
         "pytest==3.3.1"
     ],
     extras_require={
-        "dev": ["flake8==3.6.0", "pytest==3.3.1", "multiprocess==0.70.6.1"]
+        "dev": ["flake8==3.6.0", "pytest==3.3.1", "multiprocess==0.70.6.1", "Sphinx>=2.0.0"]
     },
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',

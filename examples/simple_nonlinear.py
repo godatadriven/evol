@@ -17,7 +17,7 @@ def func_to_optimise(xy):
     This is the function we want to optimise (maximize)
     """
     x, y = xy
-    return -(1 - x) ** 2 - 2 * (2 - x ** 2) ** 2
+    return -(1 - x) ** 2 - (2 - y ** 2) ** 2
 
 
 def pick_random_parents(pop):
@@ -53,6 +53,27 @@ def add_noise(chromosome, sigma):
 # We start by defining a population with candidates.
 pop = Population(chromosomes=[random_start() for _ in range(200)],
                  eval_function=func_to_optimise, maximize=True)
+
+# We do a single step here and out comes a new population
+pop.survive(fraction=0.5)
+
+# We do two steps here and out comes a new population
+(pop
+ .survive(fraction=0.5)
+ .breed(parent_picker=pick_random_parents, combiner=make_child))
+
+# We do a three steps here and out comes a new population
+(pop
+ .survive(fraction=0.5)
+ .breed(parent_picker=pick_random_parents, combiner=make_child)
+ .mutate(mutate_function=add_noise, sigma=1))
+
+# This is inelegant but it works.
+for i in range(5):
+    pop = (pop
+           .survive(fraction=0.5)
+           .breed(parent_picker=pick_random_parents, combiner=make_child)
+           .mutate(mutate_function=add_noise, sigma=1))
 
 # We define a sequence of steps to change these candidates
 evo1 = (Evolution()
