@@ -1,5 +1,5 @@
-Population
-==========
+Population Guide
+================
 
 The "Population" object in **evol** is the base container for all your
 candidate solutions. Each candidate solution (sometimes referred to
@@ -71,3 +71,34 @@ can be very expensive to calculate so you might want to consider running
 it as late as possible and as few times as possible. The only command
 that needs a fitness is the "survive" method. All other methods can apply
 transformations to the chromosome without needing to evaluate the fitness.
+
+More Lazyness
+*************
+
+To demonstrate the effect of this lazyness, let's see the effect
+of the fitness of the individuals.
+
+First, note that after a survive method everything is evaluated.
+
+.. code-block:: python
+
+    > [i.fitness for i in pop1.survive(n=3)]
+    [0.4729424283280248, 0.2788535969157675, -0.4499413632617615]
+
+If we were to add a mutate step afterwards we will see that the
+lazyness kicks in again. Only if we add an evaluate step will we
+see fitness values again.
+
+.. code-block:: python
+
+    def add_noise(x):
+        return 0.1 * (random.random() - 0.5) + x
+
+    > [i.fitness for i in pop1.survive(n=3).mutate(add_noise)]
+    [None, None, None]
+    > [i.fitness for i in pop1.survive(n=3).mutate(add_noise).evaluate()]
+    [0.3564375534260752, 0.30990154209234466, -0.5356458732043454]
+
+If you want to work with fitness values explicitly it is good to know
+about this, otherwise the library will try to be as conservative as
+possible when it comes to evaluating the fitness function.
