@@ -57,6 +57,7 @@ provide an API that is fun to use and easy to tweak your heuristics in.
 
    quickstart
    population
+   problems
    development
 
 Indices and tables

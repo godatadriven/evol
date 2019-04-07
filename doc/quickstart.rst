@@ -229,13 +229,13 @@ These steps together give us an evolution program depicted below.
 The goal of evol is to make it easy to write heuristic pipelines
 that can help search towards a solution. Note that you don't need
 to write a genetic algorithm here. You could also implement simulated
-annealing in our library but we want to help you standardise your
-code such that testing, monitoring, parallism and checkpoint becomes
+annealing in our library just as easily but we want to help you standardise
+your code such that testing, monitoring, parallism and checkpoint becomes
 more joyful.
 
-You will need to write functions yourself because our library has no
-notion of your problem. Evol will help you structure your pipeline by
-giving a language that tells you *what* is happening but not *how* this
-is being done.
+Evol will help you structure your pipeline by giving a language that
+tells you *what* is happening but not *how* this is being done. For this
+you will need to write functions yourself because our library has no
+notion of your specific problem.
 
 We hope this makes writing heuristic software more fun.
