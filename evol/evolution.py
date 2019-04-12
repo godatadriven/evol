@@ -11,7 +11,7 @@ from typing import Any, Callable, Optional, Sequence
 from copy import copy
 
 from evol import Individual, Population
-from .step import CheckpointStep, LogStep, CallbackStep
+from .step import CheckpointStep, LogStep, CallbackStep, GroupedStep
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
@@ -29,6 +29,8 @@ class Evolution:
 
     def __iter__(self):
         return self.chain.__iter__()
+
+    # TODO: string representation
 
     def evaluate(self, lazy: bool = False, name: Optional[str] = None) -> 'Evolution':
         """Add an evaluation step to the Evolution.
@@ -197,6 +199,9 @@ class Evolution:
         :return: self
         """
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
+
+    def grouped_repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None, **kwargs):
+        return self._add_step(GroupedStep(name=name, evolution=evolution, n=n, **kwargs))
 
     def callback(self, callback_function: Callable[..., Any],
                  every: int = 1, name: Optional[str] = None) -> 'Evolution':

@@ -1,5 +1,8 @@
 from .population import Population
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from evol.evolution import Evolution
 
 
 class EvolutionStep:
@@ -92,6 +95,20 @@ class LogStep(EvolutionStep):
 class RepeatStep(EvolutionStep):
     def apply(self, population) -> Population:
         return population.evolve(**self.kwargs)
+
+
+class GroupedStep(EvolutionStep):
+    def __init__(self, name: str, evolution: 'Evolution', n: int, **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.evolution = evolution
+        self.n = n
+
+    def apply(self, population) -> Population:
+        intended_size = population.intended_size
+        groups = population.group(**self.kwargs)
+        # TODO: parallellize
+        return Population.combine(*[group.evolve(evolution=self.evolution, n=self.n) for group in groups],
+                                  intended_size=intended_size)
 
 
 class CallbackStep(EvolutionStep):

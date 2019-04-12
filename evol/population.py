@@ -11,10 +11,11 @@ from abc import ABCMeta, abstractmethod
 from copy import copy
 from multiprocess.pool import Pool
 from random import choices, randint
-from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence, TYPE_CHECKING
+from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence, Union, TYPE_CHECKING
 from uuid import uuid4
 
 from evol import Individual
+from evol.helpers.groups import group_random
 from evol.utils import offspring_generator, select_arguments
 from evol.logger import BaseLogger
 from evol.serialization import SimpleSerializer
@@ -259,7 +260,7 @@ class BasePopulation(metaclass=ABCMeta):
             resulting_size = min(round(fraction * len(self.individuals)), n)
         self.evaluate(lazy=True)
         if resulting_size == 0:
-            raise RuntimeError('no one survived!')
+            raise RuntimeError(f'No individual out of {len(self.individuals)} survived!')
         if resulting_size > len(self.individuals):
             raise ValueError('everyone survives! must provide "fraction" and/or "n" < population size')
         if luck:
@@ -281,6 +282,38 @@ class BasePopulation(metaclass=ABCMeta):
         self.evaluate(lazy=True)
         callback_function(copy(self), **kwargs)
         return self
+
+    def group(self, grouping_function: Callable[..., List[List[int]]] = group_random, **kwargs) -> List['Population']:
+        """TODO: docstring
+
+        :param grouping_function:
+        :param kwargs:
+        :return:
+        """
+        group_indexes = grouping_function(self.individuals, **kwargs)
+        # TODO: check index length > 0
+        result = [self._subset(index=index) for index in group_indexes]
+        print(f'Grouping into {len(result)} groups')
+        return result
+
+    @classmethod
+    def combine(cls, *populations: 'Population', intended_size: Optional[int] = None) -> 'Population':
+        # TODO: docstring
+        # TODO: check length populations > 0
+        result = copy(populations[0])
+        for pop in populations[1:]:
+            result.individuals += pop.individuals
+        result.intended_size = intended_size or sum([pop.intended_size for pop in populations])
+        print(f'Combining {len(populations)} into one')
+        return result
+
+    def _subset(self, index: List[int]) -> 'Population':
+        # TODO: docstring
+        result = copy(self)
+        result.individuals = [result.individuals[i] for i in index]
+        result.intended_size = len(result.individuals)
+        # TODO: intended size as fraction
+        return result
 
     def _update_documented_best(self):
         """Update the documented best"""
