@@ -213,5 +213,7 @@ class Evolution:
         return result
 
     def __repr__(self):
-        result = "<Evolution object with steps>\n"
-        return result + "\n".join([f"  -{str(step)}" for step in self.chain])
+        result = 'Evolution:\n'
+        for step in self:
+            result += '  - ' + repr(step).replace('\n', '\n    ') + '\n'
+        return result.strip('\n')
