@@ -297,13 +297,16 @@ class BasePopulation(metaclass=ABCMeta):
         return result
 
     @classmethod
-    def combine(cls, *populations: 'Population', intended_size: Optional[int] = None) -> 'Population':
+    def combine(cls, *populations: 'Population',
+                intended_size: Optional[int] = None,
+                pool: Pool = None) -> 'Population':
         # TODO: docstring
         # TODO: check length populations > 0
         result = copy(populations[0])
         for pop in populations[1:]:
             result.individuals += pop.individuals
         result.intended_size = intended_size or sum([pop.intended_size for pop in populations])
+        result.pool = pool
         print(f'Combining {len(populations)} into one')
         return result
 
@@ -312,6 +315,7 @@ class BasePopulation(metaclass=ABCMeta):
         result = copy(self)
         result.individuals = [result.individuals[i] for i in index]
         result.intended_size = len(result.individuals)
+        result.pool = None  # Subsets shouldn't parallelize anything
         # TODO: intended size as fraction
         return result
 

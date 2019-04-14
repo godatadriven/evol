@@ -106,9 +106,11 @@ class GroupedStep(EvolutionStep):
     def apply(self, population) -> Population:
         intended_size = population.intended_size
         groups = population.group(**self.kwargs)
-        # TODO: parallellize
-        return Population.combine(*[group.evolve(evolution=self.evolution, n=self.n) for group in groups],
-                                  intended_size=intended_size)
+        if population.pool:
+            results = population.pool.map(lambda group: group.evolve(evolution=self.evolution, n=self.n), groups)
+        else:
+            results = [group.evolve(evolution=self.evolution, n=self.n) for group in groups]
+        return Population.combine(*results, intended_size=intended_size, pool=population.pool)
 
 
 class CallbackStep(EvolutionStep):
