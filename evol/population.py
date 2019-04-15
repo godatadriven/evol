@@ -4,15 +4,15 @@ at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
 or by applying an `evol.Evolution` object.
 """
-from itertools import cycle, islice
-from math import ceil
-
 from abc import ABCMeta, abstractmethod
 from copy import copy
-from multiprocess.pool import Pool
+from itertools import cycle, islice
+from math import ceil
 from random import choices, randint
-from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence, Union, TYPE_CHECKING
+from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence, TYPE_CHECKING
 from uuid import uuid4
+
+from multiprocess.pool import Pool
 
 from evol import Individual
 from evol.helpers.groups import group_random
