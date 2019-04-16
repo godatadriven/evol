@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-**Evol** is clear dsl for composable evolutionary algorithms that optimised for joy.
+**Evol** is a clear dsl for composable evolutionary algorithms, optimised for joy.
 
 .. image:: _static/evol.png
    :align: center
