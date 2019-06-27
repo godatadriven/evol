@@ -6,9 +6,8 @@ but because an evolution is separate from a population you can
 play around with them more easily.
 """
 
-from typing import Any, Callable, Optional, Sequence
-
 from copy import copy
+from typing import Any, Callable, Optional, Sequence
 
 from evol import Individual, Population
 from .step import CheckpointStep, LogStep, CallbackStep, GroupedStep
@@ -30,7 +29,12 @@ class Evolution:
     def __iter__(self):
         return self.chain.__iter__()
 
-    # TODO: string representation
+    def __repr__(self):
+        result = 'Evolution('
+        for step in self:
+            result += '\n  ' + repr(step).replace('\n', '\n  ')
+        result += ')'
+        return result.strip('\n')
 
     def evaluate(self, lazy: bool = False, name: Optional[str] = None) -> 'Evolution':
         """Add an evaluation step to the Evolution.
@@ -222,9 +226,3 @@ class Evolution:
         result = copy(self)
         result.chain.append(step)
         return result
-
-    def __repr__(self):
-        result = 'Evolution:\n'
-        for step in self:
-            result += '  - ' + repr(step).replace('\n', '\n    ') + '\n'
-        return result.strip('\n')

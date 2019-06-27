@@ -12,7 +12,7 @@ class EvolutionStep:
         self.kwargs = kwargs
 
     def __repr__(self):
-        return f"{self.__class__.__name__} ({self.name or ''})"
+        return f"{self.__class__.__name__}({self.name or ''})"
 
 
 class EvaluationStep(EvolutionStep):
@@ -97,8 +97,8 @@ class RepeatStep(EvolutionStep):
         return population.evolve(**self.kwargs)
 
     def __repr__(self):
-        result = f"{self.__class__.__name__} ({self.name or ''}) with evolution ({self.kwargs['n']}x):\n"
-        result += repr(self.kwargs['evolution'])
+        result = f"{self.__class__.__name__}({self.name or ''}) with evolution ({self.kwargs['n']}x):\n  "
+        result += repr(self.kwargs['evolution']).replace('\n', '\n  ')
         return result
 
 
@@ -109,17 +109,16 @@ class GroupedStep(EvolutionStep):
         self.n = n
 
     def apply(self, population) -> Population:
-        intended_size = population.intended_size
         groups = population.group(**self.kwargs)
         if population.pool:
             results = population.pool.map(lambda group: group.evolve(evolution=self.evolution, n=self.n), groups)
         else:
             results = [group.evolve(evolution=self.evolution, n=self.n) for group in groups]
-        return Population.combine(*results, intended_size=intended_size, pool=population.pool)
+        return Population.combine(*results, intended_size=population.intended_size, pool=population.pool)
 
     def __repr__(self):
-        result = f"{self.__class__.__name__} ({self.name or ''}) with evolution ({self.n}x):\n"
-        result += repr(self.evolution)
+        result = f"{self.__class__.__name__}({self.name or ''}) with evolution ({self.n}x):\n  "
+        result += repr(self.evolution).replace('\n', '\n  ')
         return result
 
 
