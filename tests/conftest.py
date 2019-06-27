@@ -23,6 +23,14 @@ def simple_evaluation_function():
     return eval_func
 
 
+@fixture(scope='function')
+def evaluated_individuals(simple_chromosomes, simple_evaluation_function):
+    result = [Individual(chromosome=chromosome) for chromosome in simple_chromosomes]
+    for individual in result:
+        individual.fitness = individual.chromosome
+    return result
+
+
 @fixture(scope='module')
 def simple_contest_evaluation_function():
     def eval_func(x, y, z):

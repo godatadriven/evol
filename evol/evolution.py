@@ -193,7 +193,7 @@ class Evolution:
         This will add a step to the evolution that repeats another evolution
         several times.
 
-        :param evolution: The evolution to add.
+        :param evolution: Evolution to apply.
         :param n: Number of times to perform the evolution. Defaults to 1.
         :param name: Name of the repeat step.
         :return: self
@@ -201,6 +201,17 @@ class Evolution:
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
 
     def grouped_repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None, **kwargs):
+        """Add an evolution that will be applied to islands as a step.
+
+        This will add a step in which the population will be grouped into
+        islands, then the provided evolution will be applied a number of times,
+        and finally the population the islands will be recombined.
+
+        :param evolution: Evolution to apply.
+        :param n: Number of times to perform the evolution. Defaults to 1.
+        :param name: Name of the grouped repeat step.
+        :return: self
+        """
         return self._add_step(GroupedStep(name=name, evolution=evolution, n=n, **kwargs))
 
     def callback(self, callback_function: Callable[..., Any],

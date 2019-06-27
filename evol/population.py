@@ -284,39 +284,61 @@ class BasePopulation(metaclass=ABCMeta):
         return self
 
     def group(self, grouping_function: Callable[..., List[List[int]]] = group_random, **kwargs) -> List['Population']:
-        """TODO: docstring
+        """
+        Group a population into islands.
 
-        :param grouping_function:
-        :param kwargs:
-        :return:
+        Divides the population into multiple island populations, each of which
+        contains a subset of the original population. An individual from the
+        original population may end up in multiple (>= 0) island populations.
+
+        :param grouping_function: Function that allocates individuals to the
+            island populations. It will be passed a list of individuals plus
+            the kwargs passed to this method, and must return a list of lists
+            of integers, each sub-list representing an island and the integers
+            representing the index of an individual in the list. Each island
+            must contain at least one individual, and individual may be copied
+            to multiple islands.
+        :param kwargs: Additional keyworded arguments are passed to the
+            grouping function.
+        :return: List[Population]
         """
         group_indexes = grouping_function(self.individuals, **kwargs)
-        # TODO: check index length > 0
+        if len(group_indexes) == 0:
+            raise ValueError('Group yielded zero islands.')
         result = [self._subset(index=index) for index in group_indexes]
-        print(f'Grouping into {len(result)} groups')
         return result
 
     @classmethod
     def combine(cls, *populations: 'Population',
                 intended_size: Optional[int] = None,
-                pool: Pool = None) -> 'Population':
-        # TODO: docstring
-        # TODO: check length populations > 0
+                pool: Optional[Pool] = None) -> 'Population':
+        """
+        Combine multiple island populations into a single population.
+
+        :param populations: Populations to combine.
+        :param intended_size: Intended size of the resulting population.
+            Defaults to the sum of the intended sizes of the islands.
+        :param pool: Optionally provide a multiprocessing pool to be
+            used by the population.
+        :return: Population
+        """
+        if len(populations) == 0:
+            raise ValueError('Cannot combine zero islands into one.')
         result = copy(populations[0])
         for pop in populations[1:]:
             result.individuals += pop.individuals
         result.intended_size = intended_size or sum([pop.intended_size for pop in populations])
         result.pool = pool
-        print(f'Combining {len(populations)} into one')
         return result
 
     def _subset(self, index: List[int]) -> 'Population':
-        # TODO: docstring
+        """Create a new population that is a subset of this population."""
+        if len(index) == 0:
+            raise ValueError('Grouping yielded an empty island.')
         result = copy(self)
         result.individuals = [result.individuals[i] for i in index]
         result.intended_size = len(result.individuals)
         result.pool = None  # Subsets shouldn't parallelize anything
-        # TODO: intended size as fraction
         return result
 
     def _update_documented_best(self):
