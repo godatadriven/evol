@@ -177,7 +177,7 @@ class Population:
         result = copy(self)
         for _ in range(n):
             for step in evolution:
-                step.apply(result)
+                result = step.apply(result)
         return result
 
     def evaluate(self, lazy: bool = False) -> 'Population':
