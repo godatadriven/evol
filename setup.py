@@ -38,15 +38,13 @@ setup(
     url='https://github.com/godatadriven/evol',
     packages=find_packages(),
     keywords=['genetic', 'algorithms', 'heuristics'],
+    install_requires=['pathos>=0.2.2.1'],
     python_requires='>=3.6',
-    install_requires=[
-        "multiprocess==0.70.6.1"
-    ],
     tests_require=[
         "pytest==3.3.1"
     ],
     extras_require={
-        "dev": ["flake8==3.6.0", "pytest==3.3.1", "multiprocess==0.70.6.1"]
+        "dev": ["flake8==3.6.0", "pytest==3.3.1", "multiprocess==0.70.6.1", "Sphinx>=2.0.0"]
     },
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',

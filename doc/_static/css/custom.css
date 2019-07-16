@@ -1,0 +1,24 @@
+.wy-nav-side{
+	background-color: #f2f2f2;
+	color: black;
+}
+
+.wy-side-nav-search{
+    background-color: #404040;
+}
+
+.wy-nav-content{
+	background-color: #ffffff;
+}
+
+.wy-nav-content-wrap{
+	background-color: #ffffff;
+}
+
+a.reference.internal{
+	color: black;
+}
+
+pre{
+    background: #eeeeee29;
+}
