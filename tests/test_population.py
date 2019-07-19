@@ -131,8 +131,8 @@ class TestPopulationSurvive:
         assert len(pop2.survive(fraction=0.9, n=10)) == 10
         assert len(pop3.survive(fraction=0.5, n=190, luck=True)) == 100
 
-    def test_survive_increases_generation(self, any_population):
-        assert any_population.survive(fraction=0.5).generation == 1
+    def test_breed_increases_generation(self, any_population):
+        assert any_population.breed(parent_picker=pick_random, combiner=lambda mom, dad: mom).generation == 1
 
     def test_survive_throws_correct_errors(self, any_population):
         """If the resulting population is zero or larger than initial we need to see errors."""
@@ -156,6 +156,8 @@ class TestPopulationBreed:
                                  combiner=lambda mom, dad: (mom + dad) / 2, population_size=400)
         assert len(pop2) == 400
         assert pop2.intended_size == 400
+        assert pop1.generation == 1
+        assert pop2.generation == 1
 
     def test_breed_works_with_kwargs(self, simple_chromosomes, simple_evaluation_function):
         pop1 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)

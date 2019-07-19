@@ -32,7 +32,7 @@ class Population:
     :param logger: Logger object for the Population. If None, a new BaseLogger
         is created. Defaults to None.
     :param generation: Generation of the Population. This is incremented after
-        each survive call. Defaults to 0.
+        each breed call. Defaults to 0.
     :param intended_size: Intended size of the Population. The population will
         be replenished to this size by .breed(). Defaults to the number of
         chromosomes provided.
@@ -242,8 +242,6 @@ class Population:
         Remove part of the population. If both fraction and n are specified,
         the minimum resulting population size is taken.
 
-        This increments the generation of the Population.
-
         :param fraction: Fraction of the original population that survives.
             Defaults to None.
         :param n: Number of individuals of the population that survive.
@@ -265,7 +263,6 @@ class Population:
             raise RuntimeError('no one survived!')
         if resulting_size > len(self.individuals):
             raise ValueError('everyone survives! must provide "fraction" and/or "n" < population size')
-        self.generation += 1
         if luck:
             self.individuals = choices(self.individuals, k=resulting_size, weights=self._individual_weights)
         else:
@@ -279,6 +276,8 @@ class Population:
               population_size: Optional[int] = None,
               **kwargs) -> 'Population':
         """Create new individuals by combining existing individuals.
+
+        This increments the generation of the Population.
 
         :param parent_picker: Function that selects parents from a collection of individuals.
         :param combiner: Function that combines chromosomes into a new
@@ -298,6 +297,7 @@ class Population:
                                         combiner=select_arguments(combiner),
                                         **kwargs)
         self.individuals += list(islice(offspring, self.intended_size - len(self.individuals)))
+        self.generation += 1
         return self
 
     def mutate(self,
@@ -424,7 +424,8 @@ class ContestPopulation(Population):
         per round is a multiple of individuals_per_contest. Defaults to 10.
     :param logger: Logger object for the Population. If None, a new BaseLogger
         is created. Defaults to None.
-    :param generation: Generation of the Population. Defaults to 0.
+    :param generation: Generation of the Population. This is incremented after
+        echo survive call. Defaults to 0.
     :param intended_size: Intended size of the Population. The population will
         be replenished to this size by .breed(). Defaults to the number of
         chromosomes provided.
@@ -561,8 +562,6 @@ class ContestPopulation(Population):
         Remove part of the population. If both fraction and n are specified,
         the minimum resulting population size is taken. Resets the fitness
         of all individuals.
-
-        This increments the generation of the ContestPopulation.
 
         :param fraction: Fraction of the original population that survives.
             Defaults to None.
