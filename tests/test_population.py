@@ -238,7 +238,7 @@ class TestPopulationWeights:
             pop = Population(chromosomes=simple_chromosomes,
                              eval_function=simple_evaluation_function, maximize=maximize)
             with raises(RuntimeError):
-                pop._individual_weights
+                _ = pop._individual_weights
             pop.evaluate()
             assert max(pop._individual_weights) == 1
             assert min(pop._individual_weights) == 0
