@@ -1,7 +1,8 @@
 from collections import defaultdict
 from itertools import tee, islice, cycle
+
 from random import choice
-from typing import Iterable, Tuple, Generator, Any, Set, List, Dict
+from typing import Iterable, Generator, Any, Set, List, Dict, Tuple
 
 
 def construct_neighbors(*chromosome: Tuple[Any]) -> defaultdict:
