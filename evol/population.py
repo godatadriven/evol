@@ -15,7 +15,7 @@ from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional,
 from uuid import uuid4
 
 from evol import Individual
-from evol.helpers.utils import select_arguments, offspring_generator
+from evol.utils import offspring_generator, select_arguments
 from evol.logger import BaseLogger
 from evol.serialization import SimpleSerializer
 

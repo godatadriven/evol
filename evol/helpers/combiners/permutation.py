@@ -2,8 +2,8 @@ from itertools import islice, tee
 from random import choice
 from typing import Any, Tuple
 
-from ._utils import select_node, construct_neighbors, identify_cycles, cycle_parity
-from .._utils import select_partition
+from .utils import select_node, construct_neighbors, identify_cycles, cycle_parity
+from ..utils import select_partition
 
 
 def order_one_crossover(parent_1: Tuple, parent_2: Tuple) -> Tuple:
