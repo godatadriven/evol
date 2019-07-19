@@ -31,7 +31,8 @@ class Population:
         Defaults to True.
     :param logger: Logger object for the Population. If None, a new BaseLogger
         is created. Defaults to None.
-    :param generation: Generation of the Population. Defaults to 0.
+    :param generation: Generation of the Population. This is incremented after
+        each breed call. Defaults to 0.
     :param intended_size: Intended size of the Population. The population will
         be replenished to this size by .breed(). Defaults to the number of
         chromosomes provided.
@@ -276,6 +277,8 @@ class Population:
               **kwargs) -> 'Population':
         """Create new individuals by combining existing individuals.
 
+        This increments the generation of the Population.
+
         :param parent_picker: Function that selects parents from a collection of individuals.
         :param combiner: Function that combines chromosomes into a new
             chromosome. Must be able to handle the number of chromosomes
@@ -294,6 +297,7 @@ class Population:
                                         combiner=select_arguments(combiner),
                                         **kwargs)
         self.individuals += list(islice(offspring, self.intended_size - len(self.individuals)))
+        self.generation += 1
         return self
 
     def mutate(self,
@@ -420,7 +424,8 @@ class ContestPopulation(Population):
         per round is a multiple of individuals_per_contest. Defaults to 10.
     :param logger: Logger object for the Population. If None, a new BaseLogger
         is created. Defaults to None.
-    :param generation: Generation of the Population. Defaults to 0.
+    :param generation: Generation of the Population. This is incremented after
+        echo survive call. Defaults to 0.
     :param intended_size: Intended size of the Population. The population will
         be replenished to this size by .breed(). Defaults to the number of
         chromosomes provided.
