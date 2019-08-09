@@ -279,7 +279,7 @@ class BasePopulation(metaclass=ABCMeta):
         :return:
         """
         self.evaluate(lazy=True)
-        callback_function(copy(self), **kwargs)
+        callback_function(self, **kwargs)
         return self
 
     def _update_documented_best(self):
