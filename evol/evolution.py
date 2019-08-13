@@ -10,7 +10,7 @@ from copy import copy
 from typing import Any, Callable, Optional, Sequence
 
 from evol import Individual, Population
-from .step import CheckpointStep, LogStep, CallbackStep, GroupedStep
+from .step import CheckpointStep, LogStep, CallbackStep
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
@@ -191,32 +191,23 @@ class Evolution:
         """
         return self._add_step(LogStep(name, every=every, **kwargs))
 
-    def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None) -> 'Evolution':
+    def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None,
+               grouping_function: Optional[Callable] = None, **kwargs) -> 'Evolution':
         """Add an evolution as a step to this evolution.
 
         This will add a step to the evolution that repeats another evolution
-        several times.
+        several times. Optionally this step can be performed in groups.
 
         :param evolution: Evolution to apply.
         :param n: Number of times to perform the evolution. Defaults to 1.
         :param name: Name of the repeat step.
+        :param grouping_function: Optional function to use for grouping the population.
+            You can find built-in grouping functions in evol.helpers.groups.
+        :param kwargs: Kwargs to pass to the grouping function, for example n_groups.
         :return: self
         """
-        return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
-
-    def grouped_repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None, **kwargs):
-        """Add an evolution that will be applied to islands as a step.
-
-        This will add a step in which the population will be grouped into
-        islands, then the provided evolution will be applied a number of times,
-        and finally the population the islands will be recombined.
-
-        :param evolution: Evolution to apply.
-        :param n: Number of times to perform the evolution. Defaults to 1.
-        :param name: Name of the grouped repeat step.
-        :return: self
-        """
-        return self._add_step(GroupedStep(name=name, evolution=evolution, n=n, **kwargs))
+        return self._add_step(RepeatStep(name=name, evolution=evolution, n=n,
+                                         grouping_function=grouping_function, **kwargs))
 
     def callback(self, callback_function: Callable[..., Any],
                  every: int = 1, name: Optional[str] = None) -> 'Evolution':

@@ -270,7 +270,7 @@ class BasePopulation(metaclass=ABCMeta):
             self.individuals = sorted_individuals[:resulting_size]
         return self
 
-    def callback(self, callback_function: Callable[['BasePopulation'], None],
+    def callback(self, callback_function: Callable[..., None],
                  **kwargs) -> 'BasePopulation':
         """
         Performs a callback function on the population. Can be used for
@@ -280,7 +280,7 @@ class BasePopulation(metaclass=ABCMeta):
         :return:
         """
         self.evaluate(lazy=True)
-        callback_function(copy(self), **kwargs)
+        callback_function(self, **kwargs)
         return self
 
     def group(self, grouping_function: Callable[..., List[List[int]]] = group_random, **kwargs) -> List['Population']:
@@ -309,11 +309,13 @@ class BasePopulation(metaclass=ABCMeta):
         return result
 
     @classmethod
-    def combine(cls, *populations: 'Population',
+    def combine(cls, *populations: 'BasePopulation',
                 intended_size: Optional[int] = None,
-                pool: Optional[Pool] = None) -> 'Population':
+                pool: Optional[Pool] = None) -> 'BasePopulation':
         """
         Combine multiple island populations into a single population.
+
+        The resulting population is reduced to its intended size.
 
         :param populations: Populations to combine.
         :param intended_size: Intended size of the resulting population.
@@ -329,9 +331,9 @@ class BasePopulation(metaclass=ABCMeta):
             result.individuals += pop.individuals
         result.intended_size = intended_size or sum([pop.intended_size for pop in populations])
         result.pool = pool
-        return result
+        return result.survive(n=result.intended_size)
 
-    def _subset(self, index: List[int]) -> 'Population':
+    def _subset(self, index: List[int]) -> 'BasePopulation':
         """Create a new population that is a subset of this population."""
         if len(index) == 0:
             raise ValueError('Grouping yielded an empty island.')
