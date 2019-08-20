@@ -1,0 +1,4 @@
+
+
+class StopEvolution(Exception):
+    pass

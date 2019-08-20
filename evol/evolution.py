@@ -6,12 +6,13 @@ but because an evolution is separate from a population you can
 play around with them more easily.
 """
 
-from typing import Any, Callable, Optional, Sequence
+from typing import Any, Callable, Optional, Sequence, Union
 
 from copy import copy
 
 from evol import Individual, Population
-from .step import CheckpointStep, LogStep, CallbackStep
+from evol.stoppers import BaseStopper
+from .step import CheckpointStep, LogStep, CallbackStep, StopStep
 from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
@@ -197,6 +198,18 @@ class Evolution:
         :return: self
         """
         return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
+
+    def stop(self, stopper: Union[Callable[[Population], bool], BaseStopper],
+             name: Optional[str] = None) -> 'Evolution':
+        """Stop the evolution when a condition has been met.
+
+        :param stopper: Either a Stopper object from `evol.stoppers`, or a callable
+            that accepts a population and returns a boolean. The evolution is stopped
+            when True is returned.
+        :param name: Name of the stop step.
+        :return: self
+        """
+        return self._add_step(StopStep(stopper=stopper, name=name))
 
     def callback(self, callback_function: Callable[..., Any],
                  every: int = 1, name: Optional[str] = None) -> 'Evolution':

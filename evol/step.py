@@ -1,5 +1,8 @@
-from .population import Population
-from typing import Optional
+from typing import Callable, Optional, Union
+
+from evol import Population
+from evol.exceptions import StopEvolution
+from evol.stoppers import BaseStopper
 
 
 class EvolutionStep:
@@ -105,4 +108,15 @@ class CallbackStep(EvolutionStep):
         if self.count >= self.every:
             self.count = 0
             return population.callback(**self.kwargs)
+        return population
+
+
+class StopStep(EvolutionStep):
+    def __init__(self, name: str, stopper: Union[Callable[[Population], bool], BaseStopper]):
+        EvolutionStep.__init__(self, name)
+        self.stopper = stopper
+
+    def apply(self, population: 'Population') -> 'Population':
+        if self.stopper(population):
+            raise StopEvolution
         return population
