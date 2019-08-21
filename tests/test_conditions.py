@@ -43,6 +43,6 @@ class TestTimeLimit:
     def test_evolve(self, simple_population, simple_evolution):
         start_time = monotonic()
         with TimeLimit(seconds=1):
-            pop = simple_population.evolve(simple_evolution, n=1000)
+            pop = simple_population.evolve(simple_evolution, n=10000)
         assert monotonic() - start_time > 1
-        assert pop.generation < 1000
+        assert pop.generation < 10000
