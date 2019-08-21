@@ -8,10 +8,10 @@ if TYPE_CHECKING:
 
 
 class Condition:
-    """Stop the evolution once a condition has been met.
+    """Stop the evolution until a condition is no longer met.
 
     :param condition: A function that accepts a Population and returns a boolean.
-        If True is returned, then the evolution is stopped.
+        If the condition does not evaluate to True, then the evolution is stopped.
     """
     conditions = set()
 
@@ -26,7 +26,7 @@ class Condition:
         self.conditions.remove(self)
 
     def __call__(self, population: 'BasePopulation') -> None:
-        if self.condition and self.condition(population):
+        if self.condition and not self.condition(population):
             raise StopEvolution()
 
     @classmethod

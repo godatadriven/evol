@@ -17,13 +17,13 @@ class TestCondition:
         assert len(Condition.conditions) == 0
 
     def test_check(self, simple_population):
-        with Condition(lambda pop: True):
+        with Condition(lambda pop: False):
             with raises(StopEvolution):
                 Condition.check(simple_population)
         Condition.check(simple_population)
 
     def test_evolve(self, simple_population, simple_evolution):
-        with Condition(lambda pop: True):
+        with Condition(lambda pop: False):
             result = simple_population.evolve(simple_evolution, n=3)
         assert result.generation == 0
 
