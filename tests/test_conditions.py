@@ -1,4 +1,4 @@
-from time import monotonic
+from time import monotonic, sleep
 
 from pytest import raises
 
@@ -41,8 +41,9 @@ class TestMinimumProgress:
 class TestTimeLimit:
 
     def test_evolve(self, simple_population, simple_evolution):
+        evo = simple_evolution.callback(lambda p: sleep(1))
         start_time = monotonic()
-        with TimeLimit(seconds=1):
-            pop = simple_population.evolve(simple_evolution, n=10000)
+        with TimeLimit(seconds=2):
+            pop = simple_population.evolve(evo, n=10)
         assert monotonic() - start_time > 1
-        assert pop.generation < 10000
+        assert pop.generation == 2
