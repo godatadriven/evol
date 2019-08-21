@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/godatadriven/evol.svg?branch=master)](https://travis-ci.org/godatadriven/evol) [![Documentation Status](https://readthedocs.org/projects/evol/badge/?version=latest)](https://evol.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/godatadriven/evol.svg?branch=master)](https://travis-ci.org/godatadriven/evol) [![Documentation Status](https://readthedocs.org/projects/evol/badge/?version=latest)](https://evol.readthedocs.io/en/latest/?badge=latest)[![Downloads](https://pepy.tech/badge/evol)](https://pepy.tech/project/evol)
 
 
 ![Imgur](https://i.imgur.com/7MHcIq1.png)
@@ -16,7 +16,7 @@ pip install evol
 
 ## Documentation
 
-For more details you can read the [docs hosted on github](https://godatadriven.github.io/evol/) but we advice everyone to get start by first checking out the examples in the `/examples` directory. These stand alone examples should show the spirit of usage better than the docs.
+For more details you can read the [docs](https://evol.readthedocs.io/en/latest/) but we advice everyone to get start by first checking out the examples in the `/examples` directory. These stand alone examples should show the spirit of usage better than the docs.
 
 ## The Gist
 
