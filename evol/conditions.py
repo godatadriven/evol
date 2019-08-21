@@ -39,7 +39,7 @@ class MinimumProgress(Condition):
     """Stop the evolution if not enough progress is made.
 
     This condition stops the evolution if the best documented fitness
-    does not change enough within a given number of iterations.
+    does not improve enough within a given number of iterations.
 
     :param window: Number of iterations in which the minimum improvement must be made.
     :param change: Require more change in fitness than this value.
