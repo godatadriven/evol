@@ -43,6 +43,18 @@ class TestPopulationCopy:
             if key not in ('id', 'individuals'):
                 assert copied_population.__dict__[key] == any_population.__dict__[key]
 
+    def test_population_is_evaluated(self, simple_population):
+        evaluated_population = simple_population.evaluate()
+        copied_population = copy(evaluated_population)
+        assert evaluated_population.is_evaluated
+        assert copied_population.is_evaluated
+
+    def test_contestpopulation_is_evaluated(self, simple_contestpopulation):
+        evaluated_population = simple_contestpopulation.evaluate()
+        copied_population = copy(evaluated_population)
+        assert evaluated_population.is_evaluated
+        assert not copied_population.is_evaluated
+
 
 class TestPopulationEvaluate:
 
