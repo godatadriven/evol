@@ -283,7 +283,8 @@ class BasePopulation(metaclass=ABCMeta):
         callback_function(self, **kwargs)
         return self
 
-    def group(self, grouping_function: Callable[..., List[List[int]]] = group_random, **kwargs) -> List['Population']:
+    def group(self, grouping_function: Callable[..., List[List[int]]] = group_random,
+              **kwargs) -> List['BasePopulation']:
         """
         Group a population into islands.
 
