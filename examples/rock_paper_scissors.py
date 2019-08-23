@@ -83,8 +83,9 @@ class History:
             population_size = sum(df.iloc[0].values)
             n_populations = df.reset_index()['id'].nunique()
             fig, axes = plt.subplots(nrows=n_populations, figsize=(12, 2*n_populations),
-                                     sharex=True, sharey=True)
-            for ax, (_, pop) in zip(axes, df.groupby('id')):
+                                     sharex='all', sharey='all', squeeze=False)
+            for row, (_, pop) in zip(axes, df.groupby('id')):
+                ax = row[0]
                 pop.reset_index(level='id', drop=True).plot(ax=ax)
                 ax.set_ylim([0, population_size])
                 ax.set_xlabel('iteration')
@@ -100,8 +101,8 @@ class History:
 def run_rock_paper_scissors(population_size: int = 100,
                             n_iterations: int = 200,
                             random_seed: int = 42,
-                            survive_fraction: float = 0.90,
-                            arbitrariness: float = 0.0,
+                            survive_fraction: float = 0.8,
+                            arbitrariness: float = 0.2,
                             concurrent_workers: int = 1,
                             lizard_spock: bool = False,
                             grouped: bool = False,
@@ -142,11 +143,11 @@ def parse_arguments():
                         help='the number of iterations to run')
     parser.add_argument('--random-seed', dest='random_seed', type=int, default=42,
                         help='the random seed to set')
-    parser.add_argument('--survive-fraction', dest='survive_fraction', type=float, default=0.9,
+    parser.add_argument('--survive-fraction', dest='survive_fraction', type=float, default=0.8,
                         help='the fraction of the population to survive each iteration')
-    parser.add_argument('--arbitrariness', type=float, default=0.0,
+    parser.add_argument('--arbitrariness', type=float, default=0.2,
                         help='arbitrariness of the players. if zero, player will always choose its preference')
-    parser.add_argument('--concurrent_workers', type=int, default=None,
+    parser.add_argument('--concurrent_workers', type=int, default=1,
                         help='Concurrent workers to use to evaluate the population.')
     parser.add_argument('--lizard-spock', action='store_true', default=False,
                         help='Play rock-paper-scissors-lizard-spock.')
