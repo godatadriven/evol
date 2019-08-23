@@ -22,6 +22,20 @@ def test_group_random(simple_individuals):
     assert indexes != alt_indexes
 
 
+class TestGroupStratified:
+
+    def test_unique(self, evaluated_individuals):
+        indexes = group_stratified(evaluated_individuals, n_groups=2)
+        assert set(index for island in indexes for index in island) == set(range(len(evaluated_individuals)))
+
+    def test_is_stratified(self, simple_population):
+        indexes = group_stratified(simple_population.evaluate().individuals, n_groups=2)
+        islands = simple_population.group(group_stratified)
+        for island in islands:
+            print(sum(map(lambda i: i.fitness, island.individuals)))
+        print(islands)
+
+
 def test_group_stratified(evaluated_individuals):
     indexes = group_stratified(evaluated_individuals, n_groups=2)
     assert all(index % 2 == 0 for index in indexes[0])

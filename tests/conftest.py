@@ -5,7 +5,7 @@ from evol import Individual, Population, ContestPopulation
 
 @fixture(scope='module')
 def simple_chromosomes():
-    return list(range(-50, 50))
+    return list(range(-50, 50, 2)) + list(range(-49, 50, 2))
 
 
 @fixture(scope='function')
