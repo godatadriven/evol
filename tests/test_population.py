@@ -30,6 +30,10 @@ class TestPopulationSimple:
         assert pop.intended_size == 200
         assert pop.individuals[0].chromosome == 1
 
+    def test_is_evaluated(self, any_population):
+        assert not any_population.is_evaluated
+        assert any_population.evaluate().is_evaluated
+
 
 class TestPopulationCopy:
 

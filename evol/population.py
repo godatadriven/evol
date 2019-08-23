@@ -76,6 +76,10 @@ class BasePopulation(metaclass=ABCMeta):
         for individual in self.individuals:
             yield individual.chromosome
 
+    @property
+    def is_evaluated(self) -> bool:
+        return all(individual.fitness is not None for individual in self)
+
     @classmethod
     def generate(cls,
                  init_function: Callable[[], Any],
