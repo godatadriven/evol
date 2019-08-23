@@ -23,9 +23,17 @@ class TestCondition:
         Condition.check(simple_population)
 
     def test_evolve(self, simple_population, simple_evolution):
-        with Condition(lambda pop: False):
-            result = simple_population.evolve(simple_evolution, n=3)
-        assert result.generation == 0
+        with Condition(lambda pop: pop.generation < 3):
+            result = simple_population.evolve(simple_evolution, n=5)
+        assert result.generation == 3
+
+    def test_sequential(self, simple_population, simple_evolution):
+        with Condition(lambda pop: pop.generation < 3):
+            result = simple_population.evolve(simple_evolution, n=10)
+        assert result.generation == 3
+        with Condition(lambda pop: pop.generation < 6):
+            result = result.evolve(simple_evolution, n=10)
+        assert result.generation == 6
 
 
 class TestMinimumProgress:

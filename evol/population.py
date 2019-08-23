@@ -146,7 +146,7 @@ class BasePopulation(metaclass=ABCMeta):
         result = copy(self)
         try:
             for _ in range(n):
-                Condition.check(self)
+                Condition.check(result)
                 for step in evolution:
                     result = step.apply(result)
         except StopEvolution:
