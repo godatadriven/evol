@@ -130,9 +130,9 @@ def run_rock_paper_scissors(population_size: int = 100,
 
     pop.evolve(evo, n=4)
 
-    if silent:
-        return
-    history.plot()
+    if not silent:
+        history.plot()
+    return history
 
 
 def parse_arguments():

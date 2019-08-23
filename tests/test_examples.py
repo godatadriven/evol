@@ -16,9 +16,10 @@ def test_number_of_parents(concurrent_workers):
     run_evolutionary(verbose=False, workers=concurrent_workers)
 
 
-@mark.parametrize('concurrent_workers', N_WORKERS)
-def test_rock_paper_scissors(concurrent_workers):
-    run_rock_paper_scissors(silent=True, n_iterations=15, concurrent_workers=concurrent_workers)
+@mark.parametrize('grouped', (False, True))
+def test_rock_paper_scissors(grouped):
+    history = run_rock_paper_scissors(silent=True, n_iterations=16, grouped=grouped)
+    assert len(set(h['generation'] for h in history.history)) == 16
 
 
 @mark.parametrize('n_groups', (1, 4))
