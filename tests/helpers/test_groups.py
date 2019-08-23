@@ -36,6 +36,14 @@ class TestGroupStratified:
         # All islands should have the same total fitness
         assert len(set(sum(map(lambda i: i.fitness, island.individuals)) for island in islands)) == 1
 
+    @mark.parametrize('n_groups', (3, 5))
+    def test_is_nearly_stratified(self, shuffled_chromosomes, n_groups):
+        population = Population(shuffled_chromosomes, eval_function=lambda x: x).evaluate()
+        islands = population.group(group_stratified, n_groups=n_groups)
+        # All islands should have roughly the same total fitness
+        sum_fitnesses = [sum(map(lambda i: i.fitness, island.individuals)) for island in islands]
+        assert max(sum_fitnesses) - min(sum_fitnesses) < n_groups * len(islands[0])
+
     def test_must_be_evaluated(self, simple_population):
         with raises(RuntimeError):
             simple_population.group(group_stratified)
