@@ -310,7 +310,7 @@ class BasePopulation(metaclass=ABCMeta):
         group_indexes = grouping_function(self.individuals, **kwargs)
         if len(group_indexes) == 0:
             raise ValueError('Group yielded zero islands.')
-        result = [self._subset(index=index) for index in group_indexes]
+        result = [self._subset(index=index, subset_id=str(i)) for i, index in enumerate(group_indexes)]
         return result
 
     @classmethod
@@ -336,9 +336,10 @@ class BasePopulation(metaclass=ABCMeta):
             result.individuals += pop.individuals
         result.intended_size = intended_size or sum([pop.intended_size for pop in populations])
         result.pool = pool
+        result.id = result.id.split('-')[0]
         return result.survive(n=result.intended_size)
 
-    def _subset(self, index: List[int]) -> 'BasePopulation':
+    def _subset(self, index: List[int], subset_id: str) -> 'BasePopulation':
         """Create a new population that is a subset of this population."""
         if len(index) == 0:
             raise ValueError('Grouping yielded an empty island.')
@@ -346,6 +347,7 @@ class BasePopulation(metaclass=ABCMeta):
         result.individuals = [result.individuals[i] for i in index]
         result.intended_size = len(result.individuals)
         result.pool = None  # Subsets shouldn't parallelize anything
+        result.id += '-' + subset_id
         return result
 
     def _update_documented_best(self):
@@ -412,6 +414,7 @@ class Population(BasePopulation):
         result.concurrent_workers = self.concurrent_workers
         result.pool = self.pool
         result.documented_best = self.documented_best
+        result.id = self.id
         return result
 
     def evaluate(self, lazy: bool = False) -> 'Population':
@@ -574,6 +577,7 @@ class ContestPopulation(BasePopulation):
         result.concurrent_workers = self.concurrent_workers
         result.documented_best = None
         result.reset_fitness()
+        result.id = self.id
         return result
 
     def evaluate(self,

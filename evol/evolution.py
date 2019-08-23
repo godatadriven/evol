@@ -198,6 +198,9 @@ class Evolution:
         This will add a step to the evolution that repeats another evolution
         several times. Optionally this step can be performed in groups.
 
+        Note: if your population uses multiple concurrent workers and you use grouping,
+        any callbacks inside the evolution you apply here may not have the desired effect.
+
         :param evolution: Evolution to apply.
         :param n: Number of times to perform the evolution. Defaults to 1.
         :param name: Name of the repeat step.
