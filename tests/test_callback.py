@@ -41,3 +41,10 @@ class TestPopulationSimple:
         pop.evolve(evolution=evo, n=10)
         assert counter.count == len(simple_chromosomes) * 5
         assert counter.sum == sum(simple_chromosomes) * 5
+
+    def test_is_evaluated(self, simple_population):
+        def assert_is_evaluated(pop: Population):
+            assert pop.current_best is not None
+
+        simple_population.evaluate(lazy=True)
+        simple_population.callback(assert_is_evaluated)
