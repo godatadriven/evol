@@ -2,6 +2,7 @@ from random import seed
 
 from pytest import mark, raises
 
+from evol import Population
 from evol.helpers.groups import group_duplicate, group_stratified, group_random
 
 
@@ -28,19 +29,16 @@ class TestGroupStratified:
         indexes = group_stratified(evaluated_individuals, n_groups=2)
         assert set(index for island in indexes for index in island) == set(range(len(evaluated_individuals)))
 
-    def test_is_stratified(self, simple_population):
-        indexes = group_stratified(simple_population.evaluate().individuals, n_groups=2)
-        islands = simple_population.group(group_stratified)
-        for island in islands:
-            print(sum(map(lambda i: i.fitness, island.individuals)))
-        print(islands)
+    @mark.parametrize('n_groups', (2, 4))
+    def test_is_stratified(self, shuffled_chromosomes, n_groups):
+        population = Population(shuffled_chromosomes, eval_function=lambda x: x).evaluate()
+        islands = population.group(group_stratified, n_groups=n_groups)
+        # All islands should have the same total fitness
+        assert len(set(sum(map(lambda i: i.fitness, island.individuals)) for island in islands)) == 1
 
-
-def test_group_stratified(evaluated_individuals):
-    indexes = group_stratified(evaluated_individuals, n_groups=2)
-    assert all(index % 2 == 0 for index in indexes[0])
-    assert all(index % 2 != 0 for index in indexes[1])
-    assert sum(len(index) for index in indexes) == len(evaluated_individuals)
+    def test_must_be_evaluated(self, simple_population):
+        with raises(RuntimeError):
+            simple_population.group(group_stratified)
 
 
 def test_group_stratified_unevaluated(simple_individuals):

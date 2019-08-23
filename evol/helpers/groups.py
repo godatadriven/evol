@@ -50,11 +50,11 @@ def group_stratified(individuals: List[Individual], n_groups: int = 4) -> List[L
     :return: List of lists of ints
     """
     _ensure_evaluated(individuals)
-    individuals = sorted(individuals, key=lambda individual: individual.fitness)
-    return [
-        list(range(group, len(individuals), n_groups))
-        for group in range(n_groups)
-    ]
+    indexes = list(map(
+        lambda index_and_individual: index_and_individual[0],
+        sorted(enumerate(individuals), key=lambda index_and_individual: index_and_individual[1].fitness)
+    ))
+    return [indexes[i::n_groups] for i in range(n_groups)]
 
 
 def _ensure_evaluated(individuals: List[Individual]):

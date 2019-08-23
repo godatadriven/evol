@@ -1,3 +1,5 @@
+from random import seed, shuffle
+
 from pytest import fixture
 
 from evol import Individual, Population, ContestPopulation
@@ -5,7 +7,15 @@ from evol import Individual, Population, ContestPopulation
 
 @fixture(scope='module')
 def simple_chromosomes():
-    return list(range(-50, 50, 2)) + list(range(-49, 50, 2))
+    return list(range(-50, 50))
+
+
+@fixture(scope='module')
+def shuffled_chromosomes():
+    chromosomes = list(range(0, 100)) + list(range(0, 100)) + list(range(0, 100)) + list(range(0, 100))
+    seed(0)
+    shuffle(chromosomes)
+    return chromosomes
 
 
 @fixture(scope='function')
