@@ -15,6 +15,8 @@ from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional,
 from uuid import uuid4
 
 from evol import Individual
+from evol.conditions import Condition
+from evol.exceptions import StopEvolution
 from evol.utils import offspring_generator, select_arguments
 from evol.logger import BaseLogger
 from evol.serialization import SimpleSerializer
@@ -142,9 +144,13 @@ class BasePopulation(metaclass=ABCMeta):
         :return: Population
         """
         result = copy(self)
-        for _ in range(n):
-            for step in evolution:
-                result = step.apply(result)
+        try:
+            for _ in range(n):
+                Condition.check(result)
+                for step in evolution:
+                    result = step.apply(result)
+        except StopEvolution:
+            pass
         return result
 
     @abstractmethod

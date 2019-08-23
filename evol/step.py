@@ -95,7 +95,7 @@ class RepeatStep(EvolutionStep):
 
 
 class CallbackStep(EvolutionStep):
-    def __init__(self, name, every=1, **kwargs):
+    def __init__(self, name, every: int = 1, **kwargs):
         EvolutionStep.__init__(self, name, **kwargs)
         self.count = 0
         self.every = every

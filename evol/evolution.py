@@ -200,6 +200,19 @@ class Evolution:
 
     def callback(self, callback_function: Callable[..., Any],
                  every: int = 1, name: Optional[str] = None) -> 'Evolution':
+        """Call a function as a step in this evolution.
+
+        This will call the provided function with the population as argument.
+
+        Note that you can raise evol.exceptions.StopEvolution from within the
+        callback to stop further evolution.
+
+        :param callback_function: Function to call.
+        :param every: Only call the function once per `every` iterations.
+            Defaults to 1; every iteration.
+        :param name: Name of the callback step.
+        :return: self
+        """
         return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function))
 
     def _add_step(self, step):
