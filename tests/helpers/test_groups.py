@@ -39,9 +39,3 @@ class TestGroupStratified:
     def test_must_be_evaluated(self, simple_population):
         with raises(RuntimeError):
             simple_population.group(group_stratified)
-
-
-def test_group_stratified_unevaluated(simple_individuals):
-    simple_individuals[0].fitness = None
-    with raises(RuntimeError):
-        group_stratified(simple_individuals)
