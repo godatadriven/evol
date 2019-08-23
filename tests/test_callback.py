@@ -1,4 +1,5 @@
 from evol import Population, Evolution
+from evol.exceptions import StopEvolution
 
 
 class PopCounter:
@@ -48,3 +49,12 @@ class TestPopulationSimple:
 
         simple_population.evaluate(lazy=True)
         simple_population.callback(assert_is_evaluated)
+
+    def test_stop(self, simple_population, simple_evolution):
+
+        def func(pop):
+            if pop.generation == 5:
+                raise StopEvolution
+
+        evo = simple_evolution.callback(func)
+        assert simple_population.evolve(evo, n=10).generation == 5
