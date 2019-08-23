@@ -31,6 +31,10 @@ class TestPopulationSimple:
         assert pop.intended_size == 200
         assert pop.individuals[0].chromosome == 1
 
+    def test_is_evaluated(self, any_population):
+        assert not any_population.is_evaluated
+        assert any_population.evaluate().is_evaluated
+
 
 class TestPopulationCopy:
 
@@ -39,6 +43,18 @@ class TestPopulationCopy:
         for key in any_population.__dict__.keys():
             if key not in ('id', 'individuals'):
                 assert copied_population.__dict__[key] == any_population.__dict__[key]
+
+    def test_population_is_evaluated(self, simple_population):
+        evaluated_population = simple_population.evaluate()
+        copied_population = copy(evaluated_population)
+        assert evaluated_population.is_evaluated
+        assert copied_population.is_evaluated
+
+    def test_contestpopulation_is_evaluated(self, simple_contestpopulation):
+        evaluated_population = simple_contestpopulation.evaluate()
+        copied_population = copy(evaluated_population)
+        assert evaluated_population.is_evaluated
+        assert not copied_population.is_evaluated
 
 
 class TestPopulationEvaluate:
