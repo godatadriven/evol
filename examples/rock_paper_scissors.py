@@ -1,7 +1,9 @@
-from argparse import ArgumentParser
+#!/usr/bin/env python
 
+from argparse import ArgumentParser
 from collections import Counter
 from random import choice, random, seed
+from typing import List
 
 from evol import Evolution, ContestPopulation
 from evol.helpers.pickers import pick_random
@@ -12,7 +14,7 @@ class RockPaperScissorsPlayer:
     elements = ('rock', 'paper', 'scissors')
 
     def __init__(self, preference=None):
-        self.preference = preference if preference else choice(('rock', 'paper', 'scissors'))
+        self.preference = preference if preference else choice(self.elements)
 
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__, self.preference)
@@ -21,7 +23,7 @@ class RockPaperScissorsPlayer:
         if random() >= self.arbitrariness:
             return self.preference
         else:
-            return choice(('rock', 'paper', 'scissors'))
+            return choice(self.elements)
 
     def mutate(self, volatility=0.1):
         if random() < volatility:
@@ -33,56 +35,90 @@ class RockPaperScissorsPlayer:
         return self.__class__(choice([self.preference, other.preference]))
 
 
-def evaluation_func(player_1, player_2):
+class RockPaperScissorsLizardSpockPlayer(RockPaperScissorsPlayer):
+    elements = ('rock', 'paper', 'scissors', 'lizard', 'spock')
+
+
+COMBINATIONS = [
+    ('scissors', 'paper'),
+    ('paper', 'rock'),
+    ('rock', 'scissors'),
+    ('rock', 'lizard'),
+    ('lizard', 'spock'),
+    ('spock', 'scissors'),
+    ('scissors', 'lizard'),
+    ('lizard', 'paper'),
+    ('paper', 'spock'),
+    ('spock', 'rock'),
+]
+
+
+def evaluate(player_1: RockPaperScissorsPlayer, player_2: RockPaperScissorsPlayer) -> List[float]:
     choice_1, choice_2 = player_1.play(), player_2.play()
-    if choice_1 == choice_2:
+    player_choices = {choice_1, choice_2}
+    if len(player_choices) == 1:
         return [0, 0]
-    elif choice_1 == 'rock':
-        return [-1, 1] if choice_2 == 'paper' else [1, -1]
-    elif choice_1 == 'paper':
-        return [-1, 1] if choice_2 == 'scissors' else [1, -1]
-    else:
-        return [-1, 1] if choice_2 == 'rock' else [1, -1]
+    for combination in COMBINATIONS:
+        if set(combination) == player_choices:
+            return [1, -1] if choice_1 == combination[0] else [-1, 1]
 
 
-def run_rock_paper_scissors(population_size=100, n_iterations=200, random_seed=42,
-                            survive_fraction=0.90, arbitrariness=0.0, concurrent_workers=1,
+class History:
+
+    def __init__(self):
+        self.history = []
+
+    def log(self, population: ContestPopulation):
+        preferences = Counter()
+        for individual in population:
+            preferences.update([individual.chromosome.preference])
+        self.history.append(preferences)
+
+    def plot(self):
+        try:
+            import pandas as pd
+            import matplotlib.pylab as plt
+            population_size = sum(self.history[0].values())
+            fig, ax = plt.subplots()
+            pd.DataFrame(self.history).fillna(0).plot(figsize=(10, 4), ax=ax)
+            ax.set_ylim([0, population_size])
+            ax.set_xlabel('iteration')
+            ax.set_ylabel('# individuals with preference')
+            plt.show()
+        except ImportError:
+            print("If you install matplotlib and pandas you will get a pretty plot.")
+
+
+def run_rock_paper_scissors(population_size: int = 100,
+                            n_iterations: int = 200,
+                            random_seed: int = 42,
+                            survive_fraction: float = 0.90,
+                            arbitrariness: float = 0.0,
+                            concurrent_workers: int = 1,
+                            lizard_spock: bool = False,
                             silent: bool = False):
     seed(random_seed)
 
     RockPaperScissorsPlayer.arbitrariness = arbitrariness
 
-    pop = ContestPopulation(chromosomes=[RockPaperScissorsPlayer() for _ in range(population_size)],
-                            eval_function=evaluation_func, maximize=True,
+    player_class = RockPaperScissorsLizardSpockPlayer if lizard_spock else RockPaperScissorsPlayer
+    pop = ContestPopulation(chromosomes=[player_class() for _ in range(population_size)],
+                            eval_function=evaluate, maximize=True,
                             concurrent_workers=concurrent_workers).evaluate()
+    history = History()
 
     evo = (Evolution()
            .survive(fraction=survive_fraction)
            .breed(parent_picker=pick_random, combiner=lambda x, y: x.combine(y), n_parents=2)
            .mutate(lambda x: x.mutate())
-           .evaluate())
+           .evaluate()
+           .callback(history.log))
 
-    preferences_over_time = []
-    for _ in range(n_iterations):
-        preferences = Counter()
-        for individual in pop:
-            preferences.update([individual.chromosome.preference])
-        pop = pop.evolve(evo)
-        preferences_over_time.append(preferences)
+    pop.evolve(evo, n=n_iterations)
 
     if silent:
         return
-    try:
-        import matplotlib.pylab as plt
-        import pandas as pd
-    except ImportError:
-        print("If you install matplotlib and pandas you will get a pretty plot.")
-        return
-    ax = pd.DataFrame(preferences_over_time).fillna(0).plot(figsize=(10, 4))
-    ax.set_ylim([0, population_size])
-    ax.set_xlabel('iteration')
-    ax.set_ylabel('# individuals with preference')
-    plt.show()
+    history.plot()
 
 
 def parse_arguments():
@@ -99,6 +135,8 @@ def parse_arguments():
                         help='arbitrariness of the players. if zero, player will always choose its preference')
     parser.add_argument('--concurrent_workers', type=int, default=None,
                         help='Concurrent workers to use to evaluate the population.')
+    parser.add_argument('--lizard-spock', action='store_true', default=False,
+                        help='Play rock-paper-scissors-lizard-spock.')
     return parser.parse_args()
 
 

@@ -532,11 +532,11 @@ class ContestPopulation(BasePopulation):
     :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
         separate processes. If None, concurrent_workers is set to n_cpus. Defaults to 1.
     """
-    eval_function: Callable[[Iterable[Any]], Sequence[float]]  # This population expects a different eval signature
+    eval_function: Callable[..., Sequence[float]]  # This population expects a different eval signature
 
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[[Iterable[Any]], Sequence[float]],
+                 eval_function: Callable[..., Sequence[float]],
                  maximize: bool = True,
                  individuals_per_contest=2,
                  contests_per_round=10,
