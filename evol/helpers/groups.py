@@ -43,7 +43,7 @@ def group_stratified(individuals: List[Individual], n_groups: int = 4) -> List[L
     Group individuals into groups of roughly equal size in a stratified manner.
 
     This function groups such that each group contains individuals of
-    higher as well as lower fitness. This requires the individuals to have a fitness.dd
+    higher as well as lower fitness. This requires the individuals to have a fitness.
 
     :param individuals: List of individuals to group.
     :param n_groups: Number of groups to make.
