@@ -7,6 +7,7 @@ from typing import List
 
 from evol import Evolution, ContestPopulation
 from evol.helpers.pickers import pick_random
+from evol.helpers.groups import group_duplicate
 
 
 class RockPaperScissorsPlayer:
@@ -72,18 +73,25 @@ class History:
         preferences = Counter()
         for individual in population:
             preferences.update([individual.chromosome.preference])
-        self.history.append(preferences)
+        self.history.append(dict(**preferences, id=population.id, generation=population.generation))
 
     def plot(self):
         try:
             import pandas as pd
             import matplotlib.pylab as plt
-            population_size = sum(self.history[0].values())
-            fig, ax = plt.subplots()
-            pd.DataFrame(self.history).fillna(0).plot(figsize=(10, 4), ax=ax)
-            ax.set_ylim([0, population_size])
-            ax.set_xlabel('iteration')
-            ax.set_ylabel('# individuals with preference')
+            df = pd.DataFrame(self.history).set_index(['id', 'generation']).fillna(0)
+            population_size = sum(df.iloc[0].values)
+            n_populations = df.reset_index()['id'].nunique()
+            fig, axes = plt.subplots(nrows=n_populations, figsize=(12, 2*n_populations),
+                                     sharex=True, sharey=True)
+            for ax, (_, pop) in zip(axes, df.groupby('id')):
+                pop.reset_index(level='id', drop=True).plot(ax=ax)
+                ax.set_ylim([0, population_size])
+                ax.set_xlabel('iteration')
+                ax.set_ylabel('# w/ preference')
+                if n_populations > 1:
+                    for i in range(0, df.reset_index().generation.max(), 50):
+                        ax.axvline(i)
             plt.show()
         except ImportError:
             print("If you install matplotlib and pandas you will get a pretty plot.")
@@ -96,6 +104,7 @@ def run_rock_paper_scissors(population_size: int = 100,
                             arbitrariness: float = 0.0,
                             concurrent_workers: int = 1,
                             lizard_spock: bool = False,
+                            grouped: bool = False,
                             silent: bool = False):
     seed(random_seed)
 
@@ -107,14 +116,18 @@ def run_rock_paper_scissors(population_size: int = 100,
                             concurrent_workers=concurrent_workers).evaluate()
     history = History()
 
-    evo = (Evolution()
-           .survive(fraction=survive_fraction)
-           .breed(parent_picker=pick_random, combiner=lambda x, y: x.combine(y), n_parents=2)
-           .mutate(lambda x: x.mutate())
-           .evaluate()
-           .callback(history.log))
+    evo = Evolution().repeat(
+        evolution=(Evolution()
+                   .survive(fraction=survive_fraction)
+                   .breed(parent_picker=pick_random, combiner=lambda x, y: x.combine(y), n_parents=2)
+                   .mutate(lambda x: x.mutate())
+                   .evaluate()
+                   .callback(history.log)),
+        n=int(n_iterations / 4),
+        grouping_function=group_duplicate if grouped else None
+    )
 
-    pop.evolve(evo, n=n_iterations)
+    pop.evolve(evo, n=4)
 
     if silent:
         return
@@ -137,6 +150,8 @@ def parse_arguments():
                         help='Concurrent workers to use to evaluate the population.')
     parser.add_argument('--lizard-spock', action='store_true', default=False,
                         help='Play rock-paper-scissors-lizard-spock.')
+    parser.add_argument('--grouped', action='store_true', default=False,
+                        help='Run the evolution in four groups.')
     return parser.parse_args()
 
 
