@@ -78,6 +78,10 @@ class BasePopulation(metaclass=ABCMeta):
         for individual in self.individuals:
             yield individual.chromosome
 
+    @property
+    def is_evaluated(self) -> bool:
+        return all(individual.fitness is not None for individual in self)
+
     @classmethod
     def generate(cls,
                  init_function: Callable[[], Any],
@@ -340,7 +344,7 @@ class Population(BasePopulation):
                          serializer=serializer)
 
     def __copy__(self):
-        result = self.__class__(chromosomes=self.chromosomes,
+        result = self.__class__(chromosomes=[],
                                 eval_function=self.eval_function,
                                 maximize=self.maximize,
                                 serializer=self.serializer,
@@ -348,6 +352,7 @@ class Population(BasePopulation):
                                 logger=self.logger,
                                 generation=self.generation,
                                 concurrent_workers=1)  # Prevent new pool from being made
+        result.individuals = [copy(individual) for individual in self.individuals]
         result.concurrent_workers = self.concurrent_workers
         result.pool = self.pool
         result.documented_best = self.documented_best
@@ -498,7 +503,7 @@ class ContestPopulation(BasePopulation):
         self.individuals_per_contest = individuals_per_contest
 
     def __copy__(self):
-        result = self.__class__(chromosomes=self.chromosomes,
+        result = self.__class__(chromosomes=[],
                                 eval_function=self.eval_function,
                                 maximize=self.maximize,
                                 contests_per_round=self.contests_per_round,
@@ -508,6 +513,7 @@ class ContestPopulation(BasePopulation):
                                 logger=self.logger,
                                 generation=self.generation,
                                 concurrent_workers=1)
+        result.individuals = [copy(individual) for individual in self.individuals]
         result.pool = self.pool
         result.concurrent_workers = self.concurrent_workers
         result.documented_best = None
