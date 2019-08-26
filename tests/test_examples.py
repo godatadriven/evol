@@ -22,6 +22,7 @@ def test_rock_paper_scissors(grouped):
     assert len(set(h['generation'] for h in history.history)) == 16
 
 
+@mark.skipif(sys.version_info < (3, 7), reason='PyTest cannot deal with the multiprocessing in 3.6.')
 @mark.parametrize('n_groups', (1, 4))
 def test_travelling_salesman(n_groups):
     run_travelling_salesman(concurrent_workers=2, n_groups=n_groups, n_iterations=4, silent=True)
