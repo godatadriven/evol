@@ -99,6 +99,7 @@ class CallbackStep(EvolutionStep):
         EvolutionStep.__init__(self, name, **kwargs)
         self.count = 0
         self.every = every
+        self.kwargs = kwargs
 
     def apply(self, population) -> Population:
         self.count += 1
