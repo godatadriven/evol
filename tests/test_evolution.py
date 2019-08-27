@@ -14,6 +14,13 @@ class TestEvolution:
         assert len(evo.chain) == 0  # original unchanged
         assert evo_step.chain == ['step']  # copy with extra step
 
+    def test_repr(self):
+        assert repr(Evolution()) == 'Evolution()'
+        assert repr(Evolution().evaluate()) == 'Evolution(\n  EvaluationStep())'
+        r = 'Evolution(\n  RepeatStep() with evolution (10x):\n    Evolution(\n' \
+            '      EvaluationStep()\n      SurviveStep()))'
+        assert repr(Evolution().repeat(Evolution().survive(fraction=0.9), n=10)) == r
+
 
 class TestPopulationEvolve:
 

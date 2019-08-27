@@ -119,8 +119,8 @@ class RepeatStep(EvolutionStep):
         return Population.combine(*results, intended_size=population.intended_size, pool=population.pool)
 
     def __repr__(self):
-        result = f"{self.__class__.__name__}({self.name or ''}) with evolution ({self.kwargs['n']}x):\n  "
-        result += repr(self.kwargs['evolution']).replace('\n', '\n  ')
+        result = f"{self.__class__.__name__}({self.name or ''}) with evolution ({self.n}x):\n  "
+        result += repr(self.evolution).replace('\n', '\n  ')
         return result
 
 
