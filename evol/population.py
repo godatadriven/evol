@@ -582,7 +582,6 @@ class ContestPopulation(BasePopulation):
         result.pool = self.pool
         result.concurrent_workers = self.concurrent_workers
         result.documented_best = None
-        result.reset_fitness()
         result.id = self.id
         return result
 
