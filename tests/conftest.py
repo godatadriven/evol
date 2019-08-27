@@ -2,7 +2,8 @@ from random import seed, shuffle
 
 from pytest import fixture
 
-from evol import Individual, Population, ContestPopulation
+from evol import Individual, Population, ContestPopulation, Evolution
+from evol.helpers.pickers import pick_random
 
 
 @fixture(scope='module')
@@ -46,6 +47,16 @@ def simple_contest_evaluation_function():
     def eval_func(x, y, z):
         return [1, -1, 0] if x > y else [-1, 1, 0]
     return eval_func
+
+
+@fixture(scope='module')
+def simple_evolution():
+    return (
+        Evolution()
+        .survive(fraction=0.5)
+        .breed(parent_picker=pick_random, n_parents=2, combiner=lambda x, y: x + y)
+        .mutate(lambda x: x + 1, probability=0.1)
+    )
 
 
 @fixture(scope='function')
