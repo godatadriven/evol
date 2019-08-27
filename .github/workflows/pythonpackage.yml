@@ -19,8 +19,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: install dev deps
       run: pip install -e ".[dev]"
-    - name: develop
-      run: python setup.py develop
     - name: flake8
       run: python setup.py flake8
     - name: pytest
