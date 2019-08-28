@@ -124,7 +124,7 @@ def run_rock_paper_scissors(population_size: int = 100,
                    .mutate(lambda x: x.mutate())
                    .evaluate()
                    .callback(history.log)),
-        n=int(n_iterations / 4),
+        n=n_iterations // 4,
         grouping_function=group_duplicate if grouped else None
     )
 
