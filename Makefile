@@ -13,7 +13,7 @@ develop:
 	python setup.py develop
 
 test:
-	pytest --disable-warnings
+	python setup.py test
 
 check: test flake
 

@@ -1,0 +1,37 @@
+name: Unittests
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: install dev deps
+      run: pip install -e .
+    - name: flake8
+      run: python setup.py flake8
+    - name: pytest
+      run: python setup.py test
+    - name: examples
+      run: |
+        python examples/simple_nonlinear.py
+        python examples/number_of_parents.py --n-parents=2 --workers=1
+        python examples/number_of_parents.py --n-parents=3 --workers=1
+        python examples/number_of_parents.py --n-parents=4 --workers=1
+        python examples/number_of_parents.py --n-parents=2 --workers=2
+        python examples/number_of_parents.py --n-parents=3 --workers=2
+        python examples/number_of_parents.py --n-parents=4 --workers=2
+        python examples/very_basic_tsp.py
+        python examples/simple_logging.py
+        python examples/rock_paper_scissors.py
