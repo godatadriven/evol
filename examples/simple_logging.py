@@ -52,22 +52,22 @@ def add_noise(chromosome, sigma):
     return new_x, new_y
 
 
+logger = BaseLogger(target="/tmp/evol.log")
 pop = Population(chromosomes=[random_start() for _ in range(200)],
                  eval_function=func_to_optimise,
-                 maximize=True, concurrent_workers=2,
-                 logger=BaseLogger(target="/tmp/evol.log"))
+                 maximize=True, concurrent_workers=2)
 
 evo1 = (Evolution()
         .survive(fraction=0.1)
         .breed(parent_picker=pick_random_parents, combiner=make_child)
         .mutate(mutate_function=add_noise, sigma=0.2)
-        .log())
+        .callback(logger.log))
 
 evo2 = (Evolution()
         .survive(n=10)
         .breed(parent_picker=pick_random_parents, combiner=make_child)
         .mutate(mutate_function=add_noise, sigma=0.1)
-        .log())
+        .callback(logger.log))
 
 evo3 = (Evolution()
         .repeat(evo1, n=20)
