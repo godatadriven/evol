@@ -22,12 +22,6 @@ class EvaluationStep(EvolutionStep):
         return population.evaluate(**self.kwargs)
 
 
-class ApplyStep(EvolutionStep):
-
-    def apply(self, population) -> Population:
-        return population.apply(**self.kwargs)
-
-
 class CheckpointStep(EvolutionStep):
 
     def __init__(self, name, every=1, **kwargs):

@@ -9,9 +9,9 @@ play around with them more easily.
 from copy import copy
 from typing import Any, Callable, Optional, Sequence
 
-from evol import Individual, Population
+from evol import Individual
 from .step import CheckpointStep, LogStep, CallbackStep
-from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
+from .step import EvaluationStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
 
@@ -50,18 +50,6 @@ class Evolution:
         :return: This Evolution with an additional step.
         """
         return self._add_step(EvaluationStep(name=name, lazy=lazy))
-
-    def apply(self, func: Callable[..., Population], name: Optional[str] = None, **kwargs) -> 'Evolution':
-        """Add an apply step to the Evolution.
-
-        This applies the provided function to the population.
-
-        :param func: Function to apply to the population.
-        :param name: Name of the apply step.
-        :param kwargs: Arguments to pass to the function.
-        :return: This Evolution with an additional step.
-        """
-        return self._add_step(ApplyStep(name=name, func=func, **kwargs))
 
     def checkpoint(self,
                    target: Optional[str] = None,
