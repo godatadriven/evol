@@ -1,3 +1,5 @@
+from random import seed, shuffle
+
 from pytest import fixture
 
 from evol import Individual, Population, ContestPopulation, Evolution
@@ -7,6 +9,14 @@ from evol.helpers.pickers import pick_random
 @fixture(scope='module')
 def simple_chromosomes():
     return list(range(-50, 50))
+
+
+@fixture(scope='module')
+def shuffled_chromosomes():
+    chromosomes = list(range(0, 100)) + list(range(0, 100)) + list(range(0, 100)) + list(range(0, 100))
+    seed(0)
+    shuffle(chromosomes)
+    return chromosomes
 
 
 @fixture(scope='function')
@@ -22,6 +32,14 @@ def simple_evaluation_function():
     def eval_func(x):
         return -x ** 2
     return eval_func
+
+
+@fixture(scope='function')
+def evaluated_individuals(simple_chromosomes, simple_evaluation_function):
+    result = [Individual(chromosome=chromosome) for chromosome in simple_chromosomes]
+    for individual in result:
+        individual.fitness = individual.chromosome
+    return result
 
 
 @fixture(scope='module')

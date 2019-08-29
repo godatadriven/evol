@@ -6,6 +6,7 @@ from pytest import raises, mark
 from random import random, choices, seed
 
 from evol import Population, ContestPopulation
+from evol.helpers.groups import group_duplicate, group_stratified
 from evol.helpers.pickers import pick_random
 from evol.population import Contest
 
@@ -289,6 +290,52 @@ class TestPopulationBest:
         assert pop.documented_best.fitness == pop.current_best.fitness
         pop.mutate(mutate_function=lambda x: x - 10, probability=1).evaluate()
         assert pop.documented_best.fitness - 20 == pop.current_best.fitness
+
+
+class TestPopulationIslands:
+
+    @mark.parametrize('n_groups', [1, 2, 3, 4])
+    def test_groups(self, simple_population, n_groups):
+        groups = simple_population.group(group_duplicate, n_groups=n_groups)
+        assert len(groups) == n_groups
+        assert type(groups) == list
+        assert all(type(group) is Population for group in groups)
+
+    def test_no_groups(self, simple_population):
+        with raises(ValueError):
+            simple_population.group(group_duplicate, n_groups=0)
+
+    def test_empty_group(self, simple_population):
+        def rogue_grouping_function(*args):
+            return [[1, 2, 3], []]
+
+        with raises(ValueError):
+            simple_population.group(rogue_grouping_function)
+
+    @mark.parametrize('result, error', [
+        (['a', 'b', 'c'], TypeError),
+        ([None, None], TypeError),
+        ([10, 100, 1000], IndexError)
+    ])
+    def test_invalid_group(self, simple_population, result, error):
+        def rogue_grouping_function(*args):
+            return [result]
+
+        with raises(error):
+            simple_population.group(rogue_grouping_function)
+
+    def test_not_evaluated(self, simple_population):
+        with raises(RuntimeError):
+            simple_population.group(group_stratified, n_groups=3)
+
+    def test_combine(self, simple_population):
+        groups = simple_population.evaluate().group(group_stratified, n_groups=3)
+        combined = Population.combine(*groups)
+        assert combined.intended_size == simple_population.intended_size
+
+    def test_combine_nothing(self):
+        with raises(ValueError):
+            Population.combine()
 
 
 class TestContest:

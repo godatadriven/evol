@@ -1,5 +1,9 @@
+from typing import Callable, Optional, TYPE_CHECKING
+
 from .population import Population
-from typing import Optional
+
+if TYPE_CHECKING:
+    from evol.evolution import Evolution
 
 
 class EvolutionStep:
@@ -8,8 +12,8 @@ class EvolutionStep:
         self.name = name
         self.kwargs = kwargs
 
-    def __str__(self):
-        return f"{self.__class__.__name__} with name {self.name}"
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.name or ''})"
 
 
 class EvaluationStep(EvolutionStep):
@@ -90,8 +94,34 @@ class LogStep(EvolutionStep):
 
 
 class RepeatStep(EvolutionStep):
-    def apply(self, population) -> Population:
-        return population.evolve(**self.kwargs)
+
+    def __init__(self, name: str, evolution: 'Evolution', n: int,
+                 grouping_function: Optional[Callable] = None, **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.evolution = evolution
+        self.n = n
+        self.grouping_function = grouping_function
+
+    def apply(self, population: Population) -> Population:
+        if self.grouping_function is None:
+            if len(self.kwargs) > 0:
+                raise ValueError(f'Unexpected argument(s) for non-grouped repeat step: {self.kwargs}')
+            return population.evolve(evolution=self.evolution, n=self.n)
+        else:
+            return self._apply_grouped(population=population)
+
+    def _apply_grouped(self, population: Population) -> Population:
+        groups = population.group(grouping_function=self.grouping_function, **self.kwargs)
+        if population.pool:
+            results = population.pool.map(lambda group: group.evolve(evolution=self.evolution, n=self.n), groups)
+        else:
+            results = [group.evolve(evolution=self.evolution, n=self.n) for group in groups]
+        return Population.combine(*results, intended_size=population.intended_size, pool=population.pool)
+
+    def __repr__(self):
+        result = f"{self.__class__.__name__}({self.name or ''}) with evolution ({self.n}x):\n  "
+        result += repr(self.evolution).replace('\n', '\n  ')
+        return result
 
 
 class CallbackStep(EvolutionStep):

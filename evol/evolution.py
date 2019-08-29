@@ -6,9 +6,8 @@ but because an evolution is separate from a population you can
 play around with them more easily.
 """
 
-from typing import Any, Callable, Optional, Sequence
-
 from copy import copy
+from typing import Any, Callable, Optional, Sequence
 
 from evol import Individual, Population
 from .step import CheckpointStep, LogStep, CallbackStep
@@ -29,6 +28,13 @@ class Evolution:
 
     def __iter__(self):
         return self.chain.__iter__()
+
+    def __repr__(self):
+        result = 'Evolution('
+        for step in self:
+            result += '\n  ' + repr(step).replace('\n', '\n  ')
+        result += ')'
+        return result.strip('\n')
 
     def evaluate(self, lazy: bool = False, name: Optional[str] = None) -> 'Evolution':
         """Add an evaluation step to the Evolution.
@@ -185,18 +191,26 @@ class Evolution:
         """
         return self._add_step(LogStep(name, every=every, **kwargs))
 
-    def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None) -> 'Evolution':
+    def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None,
+               grouping_function: Optional[Callable] = None, **kwargs) -> 'Evolution':
         """Add an evolution as a step to this evolution.
 
         This will add a step to the evolution that repeats another evolution
-        several times.
+        several times. Optionally this step can be performed in groups.
 
-        :param evolution: The evolution to add.
+        Note: if your population uses multiple concurrent workers and you use grouping,
+        any callbacks inside the evolution you apply here may not have the desired effect.
+
+        :param evolution: Evolution to apply.
         :param n: Number of times to perform the evolution. Defaults to 1.
         :param name: Name of the repeat step.
+        :param grouping_function: Optional function to use for grouping the population.
+            You can find built-in grouping functions in evol.helpers.groups.
+        :param kwargs: Kwargs to pass to the grouping function, for example n_groups.
         :return: self
         """
-        return self._add_step(RepeatStep(name=name, evolution=evolution, n=n))
+        return self._add_step(RepeatStep(name=name, evolution=evolution, n=n,
+                                         grouping_function=grouping_function, **kwargs))
 
     def callback(self, callback_function: Callable[..., Any],
                  every: int = 1, name: Optional[str] = None, **kwargs) -> 'Evolution':
@@ -219,7 +233,3 @@ class Evolution:
         result = copy(self)
         result.chain.append(step)
         return result
-
-    def __repr__(self):
-        result = "<Evolution object with steps>\n"
-        return result + "\n".join([f"  -{str(step)}" for step in self.chain])

@@ -4,19 +4,20 @@ at some point in an evolutionary algorithm. You can apply
 evolutionary steps by directly calling methods on the population
 or by applying an `evol.Evolution` object.
 """
-from itertools import cycle, islice
-from math import ceil
-
 from abc import ABCMeta, abstractmethod
 from copy import copy
-from multiprocess.pool import Pool
+from itertools import cycle, islice
+from math import ceil
 from random import choices, randint
 from typing import Any, Callable, Generator, Iterable, Iterator, List, Optional, Sequence, TYPE_CHECKING
 from uuid import uuid4
 
+from multiprocess.pool import Pool
+
 from evol import Individual
 from evol.conditions import Condition
 from evol.exceptions import StopEvolution
+from evol.helpers.groups import group_random
 from evol.utils import offspring_generator, select_arguments
 from evol.serialization import SimpleSerializer
 
@@ -254,9 +255,10 @@ class BasePopulation(metaclass=ABCMeta):
             resulting_size = min(round(fraction * len(self.individuals)), n)
         self.evaluate(lazy=True)
         if resulting_size == 0:
-            raise RuntimeError('no one survived!')
+            raise RuntimeError(f'No individual out of {len(self.individuals)} survived!')
         if resulting_size > len(self.individuals):
-            raise ValueError('everyone survives! must provide "fraction" and/or "n" < population size')
+            raise ValueError(f'everyone survives in population {self.id}: '
+                             f'{resulting_size} out of {len(self.individuals)} must survive.')
         if luck:
             self.individuals = choices(self.individuals, k=resulting_size, weights=self._individual_weights)
         else:
@@ -264,7 +266,7 @@ class BasePopulation(metaclass=ABCMeta):
             self.individuals = sorted_individuals[:resulting_size]
         return self
 
-    def callback(self, callback_function: Callable[['BasePopulation'], None],
+    def callback(self, callback_function: Callable[..., None],
                  **kwargs) -> 'BasePopulation':
         """
         Performs a callback function on the population. Can be used for
@@ -276,6 +278,69 @@ class BasePopulation(metaclass=ABCMeta):
         self.evaluate(lazy=True)
         callback_function(self, **kwargs)
         return self
+
+    def group(self, grouping_function: Callable[..., List[List[int]]] = group_random,
+              **kwargs) -> List['BasePopulation']:
+        """
+        Group a population into islands.
+
+        Divides the population into multiple island populations, each of which
+        contains a subset of the original population. An individual from the
+        original population may end up in multiple (>= 0) island populations.
+
+        :param grouping_function: Function that allocates individuals to the
+            island populations. It will be passed a list of individuals plus
+            the kwargs passed to this method, and must return a list of lists
+            of integers, each sub-list representing an island and the integers
+            representing the index of an individual in the list. Each island
+            must contain at least one individual, and individual may be copied
+            to multiple islands.
+        :param kwargs: Additional keyworded arguments are passed to the
+            grouping function.
+        :return: List[Population]
+        """
+        group_indexes = grouping_function(self.individuals, **kwargs)
+        if len(group_indexes) == 0:
+            raise ValueError('Group yielded zero islands.')
+        result = [self._subset(index=index, subset_id=str(i)) for i, index in enumerate(group_indexes)]
+        return result
+
+    @classmethod
+    def combine(cls, *populations: 'BasePopulation',
+                intended_size: Optional[int] = None,
+                pool: Optional[Pool] = None) -> 'BasePopulation':
+        """
+        Combine multiple island populations into a single population.
+
+        The resulting population is reduced to its intended size.
+
+        :param populations: Populations to combine.
+        :param intended_size: Intended size of the resulting population.
+            Defaults to the sum of the intended sizes of the islands.
+        :param pool: Optionally provide a multiprocessing pool to be
+            used by the population.
+        :return: Population
+        """
+        if len(populations) == 0:
+            raise ValueError('Cannot combine zero islands into one.')
+        result = copy(populations[0])
+        for pop in populations[1:]:
+            result.individuals += pop.individuals
+        result.intended_size = intended_size or sum([pop.intended_size for pop in populations])
+        result.pool = pool
+        result.id = result.id.split('-')[0]
+        return result.survive(n=result.intended_size)
+
+    def _subset(self, index: List[int], subset_id: str) -> 'BasePopulation':
+        """Create a new population that is a subset of this population."""
+        if len(index) == 0:
+            raise ValueError('Grouping yielded an empty island.')
+        result = copy(self)
+        result.individuals = [result.individuals[i] for i in index]
+        result.intended_size = len(result.individuals)
+        result.pool = None  # Subsets shouldn't parallelize anything
+        result.id += '-' + subset_id
+        return result
 
     def _update_documented_best(self):
         """Update the documented best"""
@@ -336,6 +401,7 @@ class Population(BasePopulation):
         result.concurrent_workers = self.concurrent_workers
         result.pool = self.pool
         result.documented_best = self.documented_best
+        result.id = self.id
         return result
 
     def evaluate(self, lazy: bool = False) -> 'Population':
@@ -454,11 +520,11 @@ class ContestPopulation(BasePopulation):
     :param concurrent_workers: If > 1, evaluate individuals in {concurrent_workers}
         separate processes. If None, concurrent_workers is set to n_cpus. Defaults to 1.
     """
-    eval_function: Callable[[Iterable[Any]], Sequence[float]]  # This population expects a different eval signature
+    eval_function: Callable[..., Sequence[float]]  # This population expects a different eval signature
 
     def __init__(self,
                  chromosomes: Iterable,
-                 eval_function: Callable[[Iterable[Any]], Sequence[float]],
+                 eval_function: Callable[..., Sequence[float]],
                  maximize: bool = True,
                  individuals_per_contest=2,
                  contests_per_round=10,
@@ -492,6 +558,7 @@ class ContestPopulation(BasePopulation):
         result.pool = self.pool
         result.concurrent_workers = self.concurrent_workers
         result.documented_best = None
+        result.id = self.id
         return result
 
     def evaluate(self,
