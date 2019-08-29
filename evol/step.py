@@ -67,20 +67,6 @@ class MutateStep(EvolutionStep):
         return population.mutate(**self.kwargs)
 
 
-class LogStep(EvolutionStep):
-    def __init__(self, name, every=1, **kwargs):
-        EvolutionStep.__init__(self, name, **kwargs)
-        self.count = 0
-        self.every = every
-
-    def apply(self, population) -> Population:
-        self.count += 1
-        if self.count >= self.every:
-            self.count = 0
-            return population.log(**self.kwargs)
-        return population
-
-
 class RepeatStep(EvolutionStep):
 
     def __init__(self, name: str, evolution: 'Evolution', n: int,

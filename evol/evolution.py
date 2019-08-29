@@ -10,7 +10,7 @@ from copy import copy
 from typing import Any, Callable, Optional, Sequence
 
 from evol import Individual
-from .step import CheckpointStep, LogStep, CallbackStep
+from .step import CheckpointStep, CallbackStep
 from .step import EvaluationStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
@@ -164,20 +164,6 @@ class Evolution:
         :return: self
         """
         return self._add_step(MutateStep(name=name, probability=probability, mutate_function=mutate_function, **kwargs))
-
-    def log(self, every: int = 1, name: Optional[str] = None, **kwargs) -> 'Evolution':
-        """Logs a population.
-
-        If a Population object was initialized with a logger
-        object then you may specify how logging is handled. The base logging
-        operation just logs to standard out.
-
-        :param every: Setting to limit the logs being pushed. By setting this
-            parameter to 'n' we only once every 'n' log calls.
-        :param name: Name of the log step.
-        :return: self
-        """
-        return self._add_step(LogStep(name, every=every, **kwargs))
 
     def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None,
                grouping_function: Optional[Callable] = None, **kwargs) -> 'Evolution':
