@@ -49,7 +49,7 @@ setup(
         "flake8==3.6.0", "pytest-runner"
     ],
     install_requires=[
-        "multiprocess==0.70.6.1"
+        "multiprocess>=0.70.6.1"
     ],
     classifiers=['Intended Audience :: Developers',
                  'Intended Audience :: Science/Research',
