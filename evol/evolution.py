@@ -7,10 +7,10 @@ play around with them more easily.
 """
 
 from copy import copy
-from typing import Any, Callable, Optional, Sequence
+from typing import Any, Callable, Iterator, List, Optional, Sequence
 
 from evol import Individual
-from .step import CheckpointStep, CallbackStep
+from .step import CheckpointStep, CallbackStep, EvolutionStep
 from .step import EvaluationStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
@@ -19,17 +19,17 @@ class Evolution:
     """Describes the process a Population goes through when evolving."""
 
     def __init__(self):
-        self.chain = []
+        self.chain: List[EvolutionStep] = []
 
-    def __copy__(self):
+    def __copy__(self) -> 'Evolution':
         result = Evolution()
         result.chain = copy(self.chain)
         return result
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[EvolutionStep]:
         return self.chain.__iter__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         result = 'Evolution('
         for step in self:
             result += '\n  ' + repr(step).replace('\n', '\n  ')
@@ -203,7 +203,7 @@ class Evolution:
         """
         return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function, **kwargs))
 
-    def _add_step(self, step):
+    def _add_step(self, step: EvolutionStep) -> 'Evolution':
         result = copy(self)
         result.chain.append(step)
         return result
