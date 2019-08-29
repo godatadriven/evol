@@ -19,7 +19,6 @@ from evol.conditions import Condition
 from evol.exceptions import StopEvolution
 from evol.helpers.groups import group_random
 from evol.utils import offspring_generator, select_arguments
-from evol.logger import BaseLogger
 from evol.serialization import SimpleSerializer
 
 if TYPE_CHECKING:
@@ -34,7 +33,6 @@ class BasePopulation(metaclass=ABCMeta):
                  checkpoint_target: Optional[str] = None,
                  concurrent_workers: Optional[int] = 1,
                  maximize: bool = True,
-                 logger=None,
                  generation: int = 0,
                  intended_size: Optional[int] = None,
                  serializer=None):
@@ -45,7 +43,6 @@ class BasePopulation(metaclass=ABCMeta):
         self.id = str(uuid4())[:6]
         self.individuals = [Individual(chromosome=chromosome) for chromosome in chromosomes]
         self.intended_size = intended_size or len(self.individuals)
-        self.logger = logger or BaseLogger()
         self.maximize = maximize
         self.serializer = serializer or SimpleSerializer(target=checkpoint_target)
         self.pool = None if concurrent_workers == 1 else Pool(concurrent_workers)
@@ -209,18 +206,6 @@ class BasePopulation(metaclass=ABCMeta):
             individual.mutate(mutate_function, probability=probability, **kwargs)
         return self
 
-    def log(self, **kwargs) -> 'BasePopulation':
-        """
-        Logs a population. If a Population object was initialized with a logger
-        object then you may specify how logging is handled. The base logging
-        operation just logs to standard out.
-
-        :return: self
-        """
-        self.evaluate(lazy=True)
-        self.logger.log(population=self, **kwargs)
-        return self
-
     def map(self, func: Callable[..., Individual], **kwargs) -> 'BasePopulation':
         """Apply the provided function to each individual in the population.
 
@@ -372,8 +357,6 @@ class Population(BasePopulation):
     :param eval_function: Function that reduces a chromosome to a fitness.
     :param maximize: If True, fitness will be maximized, otherwise minimized.
         Defaults to True.
-    :param logger: Logger object for the Population. If None, a new BaseLogger
-        is created. Defaults to None.
     :param generation: Generation of the Population. This is incremented after
         each breed call. Defaults to 0.
     :param intended_size: Intended size of the Population. The population will
@@ -391,7 +374,6 @@ class Population(BasePopulation):
                  chromosomes: Iterable,
                  eval_function: Callable[..., float],
                  maximize: bool = True,
-                 logger=None,
                  generation: int = 0,
                  intended_size: Optional[int] = None,
                  checkpoint_target: Optional[str] = None,
@@ -402,7 +384,6 @@ class Population(BasePopulation):
                          checkpoint_target=checkpoint_target,
                          concurrent_workers=concurrent_workers,
                          maximize=maximize,
-                         logger=logger,
                          generation=generation,
                          intended_size=intended_size,
                          serializer=serializer)
@@ -413,7 +394,6 @@ class Population(BasePopulation):
                                 maximize=self.maximize,
                                 serializer=self.serializer,
                                 intended_size=self.intended_size,
-                                logger=self.logger,
                                 generation=self.generation,
                                 concurrent_workers=1)  # Prevent new pool from being made
         result.individuals = [copy(individual) for individual in self.individuals]
@@ -527,8 +507,6 @@ class ContestPopulation(BasePopulation):
     :param contests_per_round: Minimum number of contests each individual
         takes part in for each evaluation round. The actual number of contests
         per round is a multiple of individuals_per_contest. Defaults to 10.
-    :param logger: Logger object for the Population. If None, a new BaseLogger
-        is created. Defaults to None.
     :param generation: Generation of the Population. This is incremented after
         echo survive call. Defaults to 0.
     :param intended_size: Intended size of the Population. The population will
@@ -549,7 +527,6 @@ class ContestPopulation(BasePopulation):
                  maximize: bool = True,
                  individuals_per_contest=2,
                  contests_per_round=10,
-                 logger=None,
                  generation: int = 0,
                  intended_size: Optional[int] = None,
                  checkpoint_target: Optional[int] = None,
@@ -558,7 +535,6 @@ class ContestPopulation(BasePopulation):
         super().__init__(chromosomes=chromosomes,
                          eval_function=eval_function,
                          maximize=maximize,
-                         logger=logger,
                          generation=generation,
                          intended_size=intended_size,
                          checkpoint_target=checkpoint_target,
@@ -575,7 +551,6 @@ class ContestPopulation(BasePopulation):
                                 individuals_per_contest=self.individuals_per_contest,
                                 serializer=self.serializer,
                                 intended_size=self.intended_size,
-                                logger=self.logger,
                                 generation=self.generation,
                                 concurrent_workers=1)
         result.individuals = [copy(individual) for individual in self.individuals]

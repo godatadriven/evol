@@ -213,7 +213,7 @@ class Evolution:
                                          grouping_function=grouping_function, **kwargs))
 
     def callback(self, callback_function: Callable[..., Any],
-                 every: int = 1, name: Optional[str] = None) -> 'Evolution':
+                 every: int = 1, name: Optional[str] = None, **kwargs) -> 'Evolution':
         """Call a function as a step in this evolution.
 
         This will call the provided function with the population as argument.
@@ -227,7 +227,7 @@ class Evolution:
         :param name: Name of the callback step.
         :return: self
         """
-        return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function))
+        return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function, **kwargs))
 
     def _add_step(self, step):
         result = copy(self)
