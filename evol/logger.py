@@ -39,12 +39,19 @@ class BaseLogger:
                 self.logger.addHandler(stream_handler)
         self.logger.setLevel(level=logging.INFO)
 
+    @staticmethod
+    def check_population(population):
+        if any([i.fitness is None for i in population]):
+            # TODO: add a custom error type for PopulationNotEvaluated
+            raise RuntimeError("Population is not evaluated before logging!")
+
     def log(self, population, **kwargs):
         """
         The logger method of the Logger object determines what will be logged.
         :param population: `evol.Population` object
         :return: nothing, it merely logs to a file and perhaps stdout
         """
+        self.check_population(population)
         values = ','.join([str(item) for item in kwargs.values()])
         if values != '':
             values = f',{values}'
@@ -59,6 +66,7 @@ class SummaryLogger(BaseLogger):
     """
 
     def log(self, population, **kwargs):
+        self.check_population(population)
         values = ','.join([str(item) for item in kwargs.values()])
         if values != '':
             values = f',{values}'
