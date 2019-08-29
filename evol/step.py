@@ -55,12 +55,6 @@ class FilterStep(EvolutionStep):
         return population.filter(**self.kwargs)
 
 
-class UpdateStep(EvolutionStep):
-
-    def apply(self, population) -> Population:
-        return population.update(**self.kwargs)
-
-
 class SurviveStep(EvolutionStep):
 
     def apply(self, population) -> Population:
