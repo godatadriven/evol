@@ -272,7 +272,8 @@ class BasePopulation(metaclass=ABCMeta):
         if resulting_size == 0:
             raise RuntimeError(f'No individual out of {len(self.individuals)} survived!')
         if resulting_size > len(self.individuals):
-            raise ValueError('everyone survives! must provide "fraction" and/or "n" < population size')
+            raise ValueError(f'everyone survives in population {self.id}: '
+                             f'{resulting_size} out of {len(self.individuals)} must survive.')
         if luck:
             self.individuals = choices(self.individuals, k=resulting_size, weights=self._individual_weights)
         else:
