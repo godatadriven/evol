@@ -2,6 +2,7 @@ from random import shuffle
 from typing import List
 
 from evol import Individual
+from evol.exceptions import PopulationIsNotEvaluatedException
 
 """
 Below are functions that allocate individuals to the
@@ -66,4 +67,4 @@ def _ensure_evaluated(individuals: List[Individual]):
     """
     for individual in individuals:
         if individual.fitness is None:
-            raise RuntimeError(f'Individual {individual} has not been evaluated.')
+            raise PopulationIsNotEvaluatedException('Population must be evaluated.')
