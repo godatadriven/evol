@@ -7,11 +7,11 @@ play around with them more easily.
 """
 
 from copy import copy
-from typing import Any, Callable, Optional, Sequence
+from typing import Any, Callable, Iterator, List, Optional, Sequence
 
-from evol import Individual, Population
-from .step import CheckpointStep, LogStep, CallbackStep
-from .step import EvaluationStep, ApplyStep, MapStep, FilterStep
+from evol import Individual
+from .step import CheckpointStep, CallbackStep, EvolutionStep
+from .step import EvaluationStep, MapStep, FilterStep
 from .step import SurviveStep, BreedStep, MutateStep, RepeatStep
 
 
@@ -19,17 +19,17 @@ class Evolution:
     """Describes the process a Population goes through when evolving."""
 
     def __init__(self):
-        self.chain = []
+        self.chain: List[EvolutionStep] = []
 
-    def __copy__(self):
+    def __copy__(self) -> 'Evolution':
         result = Evolution()
         result.chain = copy(self.chain)
         return result
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[EvolutionStep]:
         return self.chain.__iter__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         result = 'Evolution('
         for step in self:
             result += '\n  ' + repr(step).replace('\n', '\n  ')
@@ -50,18 +50,6 @@ class Evolution:
         :return: This Evolution with an additional step.
         """
         return self._add_step(EvaluationStep(name=name, lazy=lazy))
-
-    def apply(self, func: Callable[..., Population], name: Optional[str] = None, **kwargs) -> 'Evolution':
-        """Add an apply step to the Evolution.
-
-        This applies the provided function to the population.
-
-        :param func: Function to apply to the population.
-        :param name: Name of the apply step.
-        :param kwargs: Arguments to pass to the function.
-        :return: This Evolution with an additional step.
-        """
-        return self._add_step(ApplyStep(name=name, func=func, **kwargs))
 
     def checkpoint(self,
                    target: Optional[str] = None,
@@ -177,20 +165,6 @@ class Evolution:
         """
         return self._add_step(MutateStep(name=name, probability=probability, mutate_function=mutate_function, **kwargs))
 
-    def log(self, every: int = 1, name: Optional[str] = None, **kwargs) -> 'Evolution':
-        """Logs a population.
-
-        If a Population object was initialized with a logger
-        object then you may specify how logging is handled. The base logging
-        operation just logs to standard out.
-
-        :param every: Setting to limit the logs being pushed. By setting this
-            parameter to 'n' we only once every 'n' log calls.
-        :param name: Name of the log step.
-        :return: self
-        """
-        return self._add_step(LogStep(name, every=every, **kwargs))
-
     def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None,
                grouping_function: Optional[Callable] = None, **kwargs) -> 'Evolution':
         """Add an evolution as a step to this evolution.
@@ -229,7 +203,7 @@ class Evolution:
         """
         return self._add_step(CallbackStep(name=name, every=every, callback_function=callback_function, **kwargs))
 
-    def _add_step(self, step):
+    def _add_step(self, step: EvolutionStep) -> 'Evolution':
         result = copy(self)
         result.chain.append(step)
         return result
