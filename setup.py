@@ -40,6 +40,7 @@ setup(
     keywords=['genetic', 'algorithms', 'heuristics'],
     python_requires='>=3.6',
     tests_require=[
+        "attrs>=17.4.0",
         "pytest==3.3.1",
     ],
     extras_require={
