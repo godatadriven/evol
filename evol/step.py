@@ -1,12 +1,13 @@
+from abc import ABCMeta, abstractmethod
 from typing import Callable, Optional, TYPE_CHECKING
 
-from .population import Population
+from evol.population import BasePopulation
 
 if TYPE_CHECKING:
     from evol.evolution import Evolution
 
 
-class EvolutionStep:
+class EvolutionStep(metaclass=ABCMeta):
 
     def __init__(self, name: Optional[str], **kwargs):
         self.name = name
@@ -15,17 +16,15 @@ class EvolutionStep:
     def __repr__(self):
         return f"{self.__class__.__name__}({self.name or ''})"
 
+    @abstractmethod
+    def apply(self, population: BasePopulation) -> BasePopulation:
+        pass
+
 
 class EvaluationStep(EvolutionStep):
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         return population.evaluate(**self.kwargs)
-
-
-class ApplyStep(EvolutionStep):
-
-    def apply(self, population) -> Population:
-        return population.apply(**self.kwargs)
 
 
 class CheckpointStep(EvolutionStep):
@@ -35,7 +34,7 @@ class CheckpointStep(EvolutionStep):
         self.count = 0
         self.every = every
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         self.count += 1
         if self.count >= self.every:
             self.count = 0
@@ -45,52 +44,32 @@ class CheckpointStep(EvolutionStep):
 
 class MapStep(EvolutionStep):
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         return population.map(**self.kwargs)
 
 
 class FilterStep(EvolutionStep):
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         return population.filter(**self.kwargs)
-
-
-class UpdateStep(EvolutionStep):
-
-    def apply(self, population) -> Population:
-        return population.update(**self.kwargs)
 
 
 class SurviveStep(EvolutionStep):
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         return population.survive(**self.kwargs)
 
 
 class BreedStep(EvolutionStep):
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         return population.breed(**self.kwargs)
 
 
 class MutateStep(EvolutionStep):
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         return population.mutate(**self.kwargs)
-
-
-class LogStep(EvolutionStep):
-    def __init__(self, name, every=1, **kwargs):
-        EvolutionStep.__init__(self, name, **kwargs)
-        self.count = 0
-        self.every = every
-
-    def apply(self, population) -> Population:
-        self.count += 1
-        if self.count >= self.every:
-            self.count = 0
-            return population.log(**self.kwargs)
-        return population
 
 
 class RepeatStep(EvolutionStep):
@@ -102,7 +81,7 @@ class RepeatStep(EvolutionStep):
         self.n = n
         self.grouping_function = grouping_function
 
-    def apply(self, population: Population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         if self.grouping_function is None:
             if len(self.kwargs) > 0:
                 raise ValueError(f'Unexpected argument(s) for non-grouped repeat step: {self.kwargs}')
@@ -110,13 +89,13 @@ class RepeatStep(EvolutionStep):
         else:
             return self._apply_grouped(population=population)
 
-    def _apply_grouped(self, population: Population) -> Population:
+    def _apply_grouped(self, population: BasePopulation) -> BasePopulation:
         groups = population.group(grouping_function=self.grouping_function, **self.kwargs)
         if population.pool:
             results = population.pool.map(lambda group: group.evolve(evolution=self.evolution, n=self.n), groups)
         else:
             results = [group.evolve(evolution=self.evolution, n=self.n) for group in groups]
-        return Population.combine(*results, intended_size=population.intended_size, pool=population.pool)
+        return population.combine(*results, intended_size=population.intended_size, pool=population.pool)
 
     def __repr__(self):
         result = f"{self.__class__.__name__}({self.name or ''}) with evolution ({self.n}x):\n  "
@@ -130,7 +109,7 @@ class CallbackStep(EvolutionStep):
         self.count = 0
         self.every = every
 
-    def apply(self, population) -> Population:
+    def apply(self, population: BasePopulation) -> BasePopulation:
         self.count += 1
         if self.count >= self.every:
             self.count = 0

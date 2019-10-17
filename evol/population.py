@@ -427,15 +427,6 @@ class Population(BasePopulation):
         self._update_documented_best()
         return self
 
-    def apply(self, func: Callable[..., 'Population'], **kwargs) -> 'Population':
-        """Apply the provided function to the population.
-
-        :param func: A function to apply to the population, which returns the (modified) population.
-        :param kwargs: Arguments to pass to the function.
-        :return: self
-        """
-        return func(self, **kwargs)
-
 
 class Contest:
     """A single contest among a group of competitors.

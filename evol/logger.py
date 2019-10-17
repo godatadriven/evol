@@ -11,6 +11,9 @@ import logging
 import sys
 import uuid
 
+from evol.exceptions import PopulationIsNotEvaluatedException
+from evol.population import BasePopulation
+
 
 class BaseLogger:
     """
@@ -40,10 +43,9 @@ class BaseLogger:
         self.logger.setLevel(level=logging.INFO)
 
     @staticmethod
-    def check_population(population):
-        if any([i.fitness is None for i in population]):
-            # TODO: add a custom error type for PopulationNotEvaluated
-            raise RuntimeError("Population is not evaluated before logging!")
+    def check_population(population: BasePopulation) -> None:
+        if not population.is_evaluated:
+            raise PopulationIsNotEvaluatedException('Population must be evaluated when logging.')
 
     def log(self, population, **kwargs):
         """
