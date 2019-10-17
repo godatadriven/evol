@@ -17,6 +17,7 @@ class Individual:
     :param fitness: The fitness of the individual, or None.
         Defaults to None.
     """
+    __slots__ = ['age', 'chromosome', 'fitness', 'id']
 
     def __init__(self, chromosome: Any, fitness: Optional[float] = None):
         self.age = 0
