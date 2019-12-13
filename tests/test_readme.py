@@ -9,7 +9,6 @@ def readme_code() -> str:
         for line in readme_file.readlines():
             if in_code_block:
                 if line == '```\n':
-                    in_code_block = False
                     return ''.join(content)
                 else:
                     content.append(line)
