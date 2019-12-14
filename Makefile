@@ -1,10 +1,7 @@
 .PHONY: docs
 
 flake:
-	flake8 evol
-	flake8 tests
-	flake8 setup.py
-	flake8 examples/*.py
+	python setup.py flake8
 
 install:
 	pip install -e .
