@@ -40,7 +40,7 @@ setup(
     keywords=['genetic', 'algorithms', 'heuristics'],
     python_requires='>=3.6',
     tests_require=[
-        "pytest>=3.3.1", "attrs==19.1.0", "flake8>=3.6.0"
+        "pytest>=3.3.1", "attrs==19.1.0", "flake8>=3.7.9"
     ],
     extras_require={
         "dev": ["Sphinx>=2.0.0", "pytest==3.3.1", "attrs==19.1.0", "flake8==3.6.0"]

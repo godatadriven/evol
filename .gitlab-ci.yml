@@ -45,4 +45,9 @@ docs:
   stage: docs
   script:
     - sphinx-apidoc -f -o doc/api evol
-    - sphinx-build doc docs
+    - sphinx-build doc public
+  artifacts:
+    paths:
+    - public
+    only:
+    - master
