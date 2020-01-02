@@ -2,6 +2,7 @@ image: python:3.6
 
 stages:
   - unittest
+  - docs
 
 before_script:
   - pip install --upgrade pip
@@ -38,3 +39,10 @@ py38:
   stage: unittest
   script:
     - echo $(python --version) is green
+
+docs:
+  image: python3.7
+  stage: docs
+  script:
+    - sphinx-apidoc -f -o doc/api evol
+    - sphinx-build doc docs
