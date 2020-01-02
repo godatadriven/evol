@@ -3,65 +3,38 @@ image: python:3.6
 stages:
   - unittest
 
+before_script:
+  - pip install --upgrade pip
+  - pip install -e .
+  - pip install .[dev]
+  - pip freeze
+  - python setup.py flake8
+  - python setup.py test
+  - python examples/simple_nonlinear.py
+  - python examples/number_of_parents.py --n-parents=2 --workers=1
+  - python examples/number_of_parents.py --n-parents=3 --workers=1
+  - python examples/number_of_parents.py --n-parents=4 --workers=1
+  - python examples/number_of_parents.py --n-parents=2 --workers=2
+  - python examples/number_of_parents.py --n-parents=3 --workers=2
+  - python examples/number_of_parents.py --n-parents=4 --workers=2
+  - python examples/very_basic_tsp.py
+  - python examples/simple_logging.py
+  - python examples/rock_paper_scissors.py
+
 py36:
   image: python:3.6
   stage: unittest
   script:
-    - pip install --upgrade pip
-    - pip install -e .
-    - pip install .[dev]
-    - pip freeze
-    - python setup.py flake8
-    - python setup.py test
-    - python examples/simple_nonlinear.py
-    - python examples/number_of_parents.py --n-parents=2 --workers=1
-    - python examples/number_of_parents.py --n-parents=3 --workers=1
-    - python examples/number_of_parents.py --n-parents=4 --workers=1
-    - python examples/number_of_parents.py --n-parents=2 --workers=2
-    - python examples/number_of_parents.py --n-parents=3 --workers=2
-    - python examples/number_of_parents.py --n-parents=4 --workers=2
-    - python examples/very_basic_tsp.py
-    - python examples/simple_logging.py
-    - python examples/rock_paper_scissors.py
+    - echo $(python --version) is green
 
 py37:
   image: python:3.7
   stage: unittest
   script:
-    - pip install --upgrade pip
-    - pip install -e .
-    - pip install .[dev]
-    - pip freeze
-    - python setup.py flake8
-    - python setup.py test
-    - python examples/simple_nonlinear.py
-    - python examples/number_of_parents.py --n-parents=2 --workers=1
-    - python examples/number_of_parents.py --n-parents=3 --workers=1
-    - python examples/number_of_parents.py --n-parents=4 --workers=1
-    - python examples/number_of_parents.py --n-parents=2 --workers=2
-    - python examples/number_of_parents.py --n-parents=3 --workers=2
-    - python examples/number_of_parents.py --n-parents=4 --workers=2
-    - python examples/very_basic_tsp.py
-    - python examples/simple_logging.py
-    - python examples/rock_paper_scissors.py
+    - echo $(python --version) is green
 
 py38:
   image: python:3.8
   stage: unittest
   script:
-    - pip install --upgrade pip
-    - pip install -e .
-    - pip install .[dev]
-    - pip freeze
-    - python setup.py flake8
-    - python setup.py test
-    - python examples/simple_nonlinear.py
-    - python examples/number_of_parents.py --n-parents=2 --workers=1
-    - python examples/number_of_parents.py --n-parents=3 --workers=1
-    - python examples/number_of_parents.py --n-parents=4 --workers=1
-    - python examples/number_of_parents.py --n-parents=2 --workers=2
-    - python examples/number_of_parents.py --n-parents=3 --workers=2
-    - python examples/number_of_parents.py --n-parents=4 --workers=2
-    - python examples/very_basic_tsp.py
-    - python examples/simple_logging.py
-    - python examples/rock_paper_scissors.py
+    - echo $(python --version) is green
