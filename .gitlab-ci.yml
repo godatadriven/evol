@@ -1,8 +1,8 @@
 image: python:3.6
 
 stages:
-  - docs
   - test
+  - docs
 
 before_script:
   - pip install --upgrade pip
@@ -44,6 +44,7 @@ docs:
     - public
 
 pages:
+  stage: docs
   extends: docs
   before_script:
     - pip install --upgrade pip
