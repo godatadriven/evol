@@ -43,9 +43,14 @@ py38:
 docs:
   image: python3.7
   stage: docs
+  before_script: []
   script:
-    - sphinx-apidoc -f -o doc/api evol
-    - sphinx-build doc public
+  - pip install --upgrade pip
+  - pip install -e .
+  - pip install .[dev]
+  - pip freeze
+  - sphinx-apidoc -f -o doc/api evol
+  - sphinx-build doc public
   only:
     - master
   artifacts:
