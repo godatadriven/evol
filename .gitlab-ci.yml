@@ -32,12 +32,11 @@ py37:
   extends: .test
   image: python:3.7
 
-.docs:
-  image: python:3.6
+docs:
+  image: python:3.7
   stage: docs
   script:
   - pip install -e .[docs]
-  - pip freeze
   - sphinx-apidoc -f -o doc/api evol
   - sphinx-build doc public
   artifacts:
@@ -45,6 +44,9 @@ py37:
     - public
 
 pages:
-  extends: .docs
+  extends: docs
+  before_script:
+    - pip install --upgrade pip
+    - pip install -e .[docs]
   only:
     - master
