@@ -6,8 +6,7 @@ stages:
 
 before_script:
   - pip install --upgrade pip
-  - pip install -e .
-  - pip install .[dev]
+  - pip install -e .[dev]
 
 .test:
   script:
@@ -45,5 +44,8 @@ docs:
 
 pages:
   extends: docs
+  before_script:
+    - pip install --upgrade pip
+    - pip install -e .[docs]
   only:
     - master
