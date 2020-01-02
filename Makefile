@@ -20,9 +20,16 @@ docs:
 	sphinx-build doc docs
 
 clean:
-	rm -rf .cachew
+	rm -rf .cache
+	rm -rf .eggs
 	rm -rf .pytest_cache
 	rm -rf build
 	rm -rf dist
 	rm -rf evol.egg-info
 	rm -rf .ipynb_checkpoints
+
+push:
+	rm -rf dist
+	python setup.py sdist
+	python setup.py bdist_wheel --universal
+	twine upload dist/*
