@@ -46,8 +46,8 @@ docs:
   script:
     - sphinx-apidoc -f -o doc/api evol
     - sphinx-build doc public
+  only:
+    - master
   artifacts:
     paths:
     - public
-    only:
-    - master
