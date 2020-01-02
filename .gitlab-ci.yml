@@ -1,8 +1,8 @@
 image: python:3.6
 
 stages:
-  - test
   - docs
+  - test
 
 before_script:
   - pip install --upgrade pip
@@ -34,7 +34,7 @@ py37:
   image: python:3.7
 
 docs:
-  image: python3.7
+  image: python:3.7
   stage: docs
   script:
   - sphinx-apidoc -f -o doc/api evol
