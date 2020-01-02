@@ -36,6 +36,7 @@ py37:
   image: python:3.6
   stage: docs
   script:
+  - pip install -e .[docs]
   - pip freeze
   - sphinx-apidoc -f -o doc/api evol
   - sphinx-build doc public
@@ -45,8 +46,5 @@ py37:
 
 pages:
   extends: .docs
-  before_script:
-    - pip install --upgrade pip
-    - pip install -e .[docs]
   only:
     - master
