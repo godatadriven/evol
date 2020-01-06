@@ -1,0 +1,75 @@
+trigger:
+- master
+pr:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+stages:
+- stage: Test
+  jobs:
+  - job: TestJob
+    strategy:
+      matrix:
+        Python35:
+          python.version: '3.5'
+        Python36:
+          python.version: '3.6'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+
+    - bash: |
+        pip install --upgrade pip
+        pip install -e .[dev]
+      displayName: 'Install'
+
+    - bash: flake8
+      displayName: 'Flake'
+
+    - bash: python setup.py test
+      displayName: 'Tests'
+      
+    - bash: |
+        set -e
+        python examples/simple_nonlinear.py
+        python examples/number_of_parents.py --n-parents=2 --workers=1
+        python examples/number_of_parents.py --n-parents=3 --workers=1
+        python examples/number_of_parents.py --n-parents=4 --workers=1
+        python examples/number_of_parents.py --n-parents=2 --workers=2
+        python examples/number_of_parents.py --n-parents=3 --workers=2
+        python examples/number_of_parents.py --n-parents=4 --workers=2
+        python examples/very_basic_tsp.py
+        python examples/simple_logging.py
+        python examples/rock_paper_scissors.py
+
+
+- stage: Docs
+  jobs:
+  - job: DocsJob
+    steps:
+    - bash: |
+        set -e
+        pip install --upgrade pip
+        pip install -e .[docs]
+        sphinx-apidoc -f -o doc/api evol
+        sphinx-build doc public
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: public
+        artifactName: BuildOutput
+
+
+- stage: Pages
+  condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
+  jobs:
+  - job: PagesJob
+    steps:
+    - bash: |
+        set -e
+        pip install --upgrade pip
+        pip install -e .[docs]
