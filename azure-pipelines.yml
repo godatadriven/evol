@@ -14,9 +14,9 @@ stages:
     strategy:
       matrix:
         Python35:
-          python.version: '3.5'
-        Python36:
           python.version: '3.6'
+        Python36:
+          python.version: '3.7'
     steps:
     - task: UsePythonVersion@0
       inputs:
@@ -48,6 +48,7 @@ stages:
 
 
 - stage: Docs
+  condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
   jobs:
   - job: DocsJob
     steps:
@@ -62,14 +63,3 @@ stages:
       inputs:
         pathToPublish: public
         artifactName: BuildOutput
-
-
-- stage: Pages
-  condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
-  jobs:
-  - job: PagesJob
-    steps:
-    - bash: |
-        set -e
-        pip install --upgrade pip
-        pip install -e .[docs]
