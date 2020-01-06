@@ -3,6 +3,7 @@ This example demonstrates how logging works in evolutions.
 """
 
 import random
+from tempfile import NamedTemporaryFile
 from evol import Population, Evolution
 from evol.logger import BaseLogger
 
@@ -52,25 +53,26 @@ def add_noise(chromosome, sigma):
     return new_x, new_y
 
 
-logger = BaseLogger(target="/tmp/evol.log")
-pop = Population(chromosomes=[random_start() for _ in range(200)],
-                 eval_function=func_to_optimise,
-                 maximize=True, concurrent_workers=2)
+with NamedTemporaryFile() as tmpfile:
+    logger = BaseLogger(target=tmpfile.name)
+    pop = Population(chromosomes=[random_start() for _ in range(200)],
+                     eval_function=func_to_optimise,
+                     maximize=True, concurrent_workers=2)
 
-evo1 = (Evolution()
-        .survive(fraction=0.1)
-        .breed(parent_picker=pick_random_parents, combiner=make_child)
-        .mutate(mutate_function=add_noise, sigma=0.2)
-        .callback(logger.log))
+    evo1 = (Evolution()
+            .survive(fraction=0.1)
+            .breed(parent_picker=pick_random_parents, combiner=make_child)
+            .mutate(mutate_function=add_noise, sigma=0.2)
+            .callback(logger.log))
 
-evo2 = (Evolution()
-        .survive(n=10)
-        .breed(parent_picker=pick_random_parents, combiner=make_child)
-        .mutate(mutate_function=add_noise, sigma=0.1)
-        .callback(logger.log))
+    evo2 = (Evolution()
+            .survive(n=10)
+            .breed(parent_picker=pick_random_parents, combiner=make_child)
+            .mutate(mutate_function=add_noise, sigma=0.1)
+            .callback(logger.log))
 
-evo3 = (Evolution()
-        .repeat(evo1, n=20)
-        .repeat(evo2, n=20))
+    evo3 = (Evolution()
+            .repeat(evo1, n=20)
+            .repeat(evo2, n=20))
 
-pop = pop.evolve(evo3, n=3)
+    pop = pop.evolve(evo3, n=3)
