@@ -1,5 +1,4 @@
-
-[![Build Status](https://travis-ci.org/godatadriven/evol.svg?branch=master)](https://travis-ci.org/godatadriven/evol) [![Documentation Status](https://readthedocs.org/projects/evol/badge/?version=latest)](https://evol.readthedocs.io/en/latest/?badge=latest)[![Downloads](https://pepy.tech/badge/evol)](https://pepy.tech/project/evol)
+[![Documentation Status](https://readthedocs.org/projects/evol/badge/?version=latest)](https://evol.readthedocs.io/en/latest/?badge=latest)[![Downloads](https://pepy.tech/badge/evol)](https://pepy.tech/project/evol)
 
 
 ![Imgur](https://i.imgur.com/7MHcIq1.png)
@@ -128,18 +127,6 @@ evo3 = (Evolution()
 pop = pop.evolve(evo3, n=5)
 print(f"the best score found: {max([i.fitness for i in pop])}")
 ```
-
-Roadmap 2019
---------
-
-For 2019 we have the following items on the shortlist, if you feel like 
-contributing or sharing thoughts, feel welcome to discuss it in the issues. 
-
-- parallel processing support
-- proper logging/serialising support via callback steps 
-- automatic generation of documentation 
-- more support for building blocks for certain problems 
-- more support for predefined problems to help students
 
 Getting Started
 ---------------------------------------
