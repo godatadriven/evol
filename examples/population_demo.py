@@ -11,7 +11,7 @@ def func_to_optimise(x):
 
 
 def pick_random_parents(pop):
-    return random.choice(pop)
+    return random.choice(pop),
 
 
 random.seed(42)

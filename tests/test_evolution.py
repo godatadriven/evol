@@ -41,7 +41,7 @@ class TestPopulationEvolve:
         sub_evo = (
             Evolution()
             .survive(fraction=0.5)
-            .breed(parent_picker=pick_random,
+            .breed(parent_picker=pick_random(n_parents=2),
                    combiner=lambda x, y: x + y)
             .callback(callback_function=callback)
         )

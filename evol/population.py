@@ -18,8 +18,8 @@ from evol import Individual
 from evol.conditions import Condition
 from evol.exceptions import StopEvolution
 from evol.helpers.groups import group_random
-from evol.utils import offspring_generator, select_arguments
 from evol.serialization import SimpleSerializer
+from evol.utils import offspring_generator, select_arguments
 
 if TYPE_CHECKING:
     from .evolution import Evolution
@@ -160,7 +160,7 @@ class BasePopulation(metaclass=ABCMeta):
         pass
 
     def breed(self,
-              parent_picker: Callable[..., Sequence[Individual]],
+              parent_picker: Callable[[Sequence[Individual]], Sequence[Individual]],
               combiner: Callable,
               population_size: Optional[int] = None,
               **kwargs) -> 'BasePopulation':
@@ -182,7 +182,7 @@ class BasePopulation(metaclass=ABCMeta):
         if population_size:
             self.intended_size = population_size
         offspring = offspring_generator(parents=self.individuals,
-                                        parent_picker=select_arguments(parent_picker),
+                                        parent_picker=parent_picker,
                                         combiner=select_arguments(combiner),
                                         **kwargs)
         self.individuals += list(islice(offspring, self.intended_size - len(self.individuals)))

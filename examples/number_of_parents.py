@@ -22,7 +22,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, workers=1,
     def eval_func(x, opt_value=opt_value):
         return -((x - opt_value) ** 2) + math.cos(x - opt_value)
 
-    def random_parent_picker(pop, n_parents):
+    def random_parent_picker(pop):
         return [random.choice(pop) for i in range(n_parents)]
 
     def mean_parents(*parents):
@@ -36,7 +36,7 @@ def run_evolutionary(opt_value=1, population_size=100, n_parents=2, workers=1,
 
     evo = (Evolution()
            .survive(fraction=survival)
-           .breed(parent_picker=random_parent_picker, combiner=mean_parents, n_parents=n_parents)
+           .breed(parent_picker=random_parent_picker, combiner=mean_parents)
            .mutate(mutate_function=add_noise, sigma=noise)
            .evaluate())
 

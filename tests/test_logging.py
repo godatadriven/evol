@@ -56,9 +56,8 @@ class TestLoggerSimple:
         pop = Population(chromosomes=range(10), eval_function=lambda x: x)
         evo = (Evolution()
                .survive(fraction=0.5)
-               .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
-                      n_parents=2)
+               .breed(parent_picker=pick_random(n_parents=2),
+                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5))
                .callback(logger.log, foo='bar'))
         pop.evolve(evolution=evo, n=2)
         # check characteristics of the file
@@ -132,9 +131,8 @@ class TestLoggerSimple:
         pop = Population(chromosomes=list(range(10)), eval_function=lambda x: x)
         evo = (Evolution()
                .survive(fraction=0.5)
-               .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5),
-                      n_parents=2)
+               .breed(parent_picker=pick_random(n_parents=2),
+                      combiner=lambda mom, dad: (mom + dad) / 2 + (random.random() - 0.5))
                .evaluate()
                .callback(logger.log, foo='bar'))
         pop.evolve(evolution=evo, n=5)
@@ -157,9 +155,8 @@ class TestLoggerSimple:
         pop2 = Population(chromosomes=list(range(10)), eval_function=lambda x: x)
         evo = (Evolution()
                .survive(fraction=0.5)
-               .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad) + 1,
-                      n_parents=2)
+               .breed(parent_picker=pick_random(n_parents=2),
+                      combiner=lambda mom, dad: (mom + dad) + 1)
                .evaluate()
                .callback(logger.log, foo="dino"))
         pop1.evolve(evolution=evo, n=5)
@@ -183,9 +180,8 @@ class TestLoggerSimple:
         pop = Population(chromosomes=list(range(10)), eval_function=lambda x: x)
         evo = (Evolution()
                .survive(fraction=0.5)
-               .breed(parent_picker=pick_random,
-                      combiner=lambda mom, dad: (mom + dad) + 1,
-                      n_parents=2)
+               .breed(parent_picker=pick_random(n_parents=2),
+                      combiner=lambda mom, dad: (mom + dad) + 1)
                .evaluate()
                .callback(logger.log, every=2))
         pop.evolve(evolution=evo, n=100)
