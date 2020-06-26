@@ -43,12 +43,12 @@ class TestLoggerSimple:
         logger.log(pop, foo="bar")
         with open(log_file, "r") as f:
             assert len(f.readlines()) == len(simple_chromosomes)
-            assert all(["bar" in l for l in f.readlines()])
+            assert all(["bar" in item for item in f.readlines()])
         # we should see that a file was created with an appropriate number of rows
         logger.log(pop, foo="meh")
         with open(log_file, "r") as f:
             assert len(f.readlines()) == (2 * len(simple_chromosomes))
-            assert all(['meh' in l for l in f.readlines()[-10:]])
+            assert all(['meh' in item for item in f.readlines()[-10:]])
 
     def test_baselogger_works_via_evolution_callback(self, tmpdir, capsys):
         log_file = tmpdir.join('log.txt')

@@ -1,7 +1,8 @@
 .PHONY: docs
 
 flake:
-	python setup.py flake8
+	python -m flake8 evol
+	python -m flake8 tests
 
 install:
 	pip install -e .
@@ -13,7 +14,7 @@ develop:
 test:
 	python setup.py test
 
-check: test flake
+check: flake test
 
 docs:
 	sphinx-apidoc -f -o doc/api evol
