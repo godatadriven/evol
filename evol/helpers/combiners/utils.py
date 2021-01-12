@@ -7,8 +7,8 @@ from typing import Iterable, Generator, Any, Set, List, Dict, Tuple
 
 def construct_neighbors(*chromosome: Tuple[Any]) -> defaultdict:
     result = defaultdict(set)
-    for l in chromosome:
-        for x, y in _neighbors_in(l):
+    for element in chromosome:
+        for x, y in _neighbors_in(element):
             result[x].add(y)
             result[y].add(x)
     return result
