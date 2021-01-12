@@ -191,7 +191,8 @@ class BasePopulation(metaclass=ABCMeta):
 
     def mutate(self,
                mutate_function: Callable[..., Any],
-               probability: float = 1.0, **kwargs) -> 'BasePopulation':
+               probability: float = 1.0,
+               elitist: bool = False, **kwargs) -> 'BasePopulation':
         """Mutate the chromosome of each individual.
 
         :param mutate_function: Function that accepts a chromosome and returns
@@ -199,11 +200,17 @@ class BasePopulation(metaclass=ABCMeta):
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
+        :param elitist: If True, do not mutate the current best individual(s).
+            Note that this only applies to evaluated individuals. Any unevaluated
+            individual will be treated as normal.
+            Defaults to False.
         :param kwargs: Arguments to pass to the mutation function.
         :return: self
         """
+        elite_fitness = self.current_best if elitist else None
         for individual in self.individuals:
-            individual.mutate(mutate_function, probability=probability, **kwargs)
+            if elite_fitness is None or individual.fitness != elite_fitness:
+                individual.mutate(mutate_function, probability=probability, **kwargs)
         return self
 
     def map(self, func: Callable[..., Individual], **kwargs) -> 'BasePopulation':
