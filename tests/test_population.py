@@ -241,6 +241,12 @@ class TestPopulationMutate:
         for chromosome in pop.chromosomes:
             assert chromosome == 17
 
+    def test_mutate_elitist(self):
+        pop = Population([1, 1, 3], eval_function=lambda x: x).evaluate().mutate(lambda x: x + 1, elitist=True)
+        for chromosome in pop.chromosomes:
+            assert chromosome > 1
+        assert len(pop) == 3
+
 
 class TestPopulationWeights:
 

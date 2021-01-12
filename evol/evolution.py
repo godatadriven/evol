@@ -147,6 +147,7 @@ class Evolution:
     def mutate(self,
                mutate_function: Callable[..., Any],
                probability: float = 1.0,
+               elitist: bool = False,
                name: Optional[str] = None,
                **kwargs) -> 'Evolution':
         """Add a mutate step to the Evolution.
@@ -158,12 +159,17 @@ class Evolution:
         :param probability: Probability that the individual mutates.
             The function is only applied in the given fraction of cases.
             Defaults to 1.0.
+        :param elitist: If True, do not mutate the current best individual(s).
+            Note that this only applies to evaluated individuals. Any unevaluated
+            individual will be treated as normal.
+            Defaults to False.
         :param name: Name of the mutate step.
         :param kwargs: Kwargs to pass to the parent_picker and combiner.
             Arguments are only passed to the functions if they accept them.
         :return: self
         """
-        return self._add_step(MutateStep(name=name, probability=probability, mutate_function=mutate_function, **kwargs))
+        return self._add_step(MutateStep(name=name, probability=probability, elitist=elitist,
+                                         mutate_function=mutate_function, **kwargs))
 
     def repeat(self, evolution: 'Evolution', n: int = 1, name: Optional[str] = None,
                grouping_function: Optional[Callable] = None, **kwargs) -> 'Evolution':
