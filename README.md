@@ -1,6 +1,4 @@
 [![Documentation Status](https://readthedocs.org/projects/evol/badge/?version=latest)](https://evol.readthedocs.io/en/latest/?badge=latest)[![Downloads](https://pepy.tech/badge/evol)](https://pepy.tech/project/evol)
-[![Build Status](https://dev.azure.com/godatadriven/evol/_apis/build/status/godatadriven.evol?branchName=master)](https://dev.azure.com/godatadriven/evol/_build/latest?definitionId=9&branchName=master) [![Documentation Status](https://readthedocs.org/projects/evol/badge/?version=latest)](https://evol.readthedocs.io/en/latest/?badge=latest)[![Downloads](https://pepy.tech/badge/evol)](https://pepy.tech/project/evol)
-
 
 ![Imgur](https://i.imgur.com/7MHcIq1.png)
 
