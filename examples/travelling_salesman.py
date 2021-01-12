@@ -48,7 +48,7 @@ def run_travelling_salesman(population_size: int = 100,
     island_evo = (Evolution()
                   .survive(fraction=0.5)
                   .breed(parent_picker=pick_random, combiner=cycle_crossover)
-                  .mutate(swap_elements))
+                  .mutate(swap_elements, elitist=True))
 
     evo = (Evolution()
            .evaluate(lazy=True)
