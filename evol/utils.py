@@ -1,11 +1,11 @@
 from inspect import signature
-from typing import List, Callable, Union, Sequence, Any, Generator
+from typing import List, Callable, Sequence, Any, Generator
 
 from evol import Individual
 
 
 def offspring_generator(parents: List[Individual],
-                        parent_picker: Callable[..., Union[Individual, Sequence]],
+                        parent_picker: Callable[[Sequence[Individual]], Sequence[Individual]],
                         combiner: Callable[..., Any],
                         **kwargs) -> Generator[Individual, None, None]:
     """Generator for offspring.
@@ -25,11 +25,8 @@ def offspring_generator(parents: List[Individual],
     """
     while True:
         # Obtain parent chromosomes
-        selected_parents = parent_picker(parents, **kwargs)
-        if isinstance(selected_parents, Individual):
-            chromosomes = (selected_parents.chromosome,)
-        else:
-            chromosomes = tuple(individual.chromosome for individual in selected_parents)
+        selected_parents = parent_picker(parents)
+        chromosomes = tuple(individual.chromosome for individual in selected_parents)
         # Create children
         combined = combiner(*chromosomes, **kwargs)
         if isinstance(combined, Generator):

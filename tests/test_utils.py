@@ -12,18 +12,18 @@ class TestOffspringGenerator:
             return 1
 
         result = offspring_generator(parents=simple_population.individuals,
-                                     parent_picker=pick_random, combiner=combiner)
+                                     parent_picker=pick_random(), combiner=combiner)
         assert isinstance(next(result), Individual)
         assert next(result).chromosome == 1
 
     @mark.parametrize('n_parents', [1, 2, 3, 4])
     def test_args(self, n_parents: int, simple_population: Population):
-        def combiner(*parents, n_parents):
+        def combiner(*parents):
             assert len(parents) == n_parents
             return 1
 
-        result = offspring_generator(parents=simple_population.individuals, n_parents=n_parents,
-                                     parent_picker=pick_random, combiner=combiner)
+        result = offspring_generator(parents=simple_population.individuals,
+                                     parent_picker=pick_random(n_parents=n_parents), combiner=combiner)
         assert isinstance(next(result), Individual)
         assert next(result).chromosome == 1
 
@@ -32,7 +32,7 @@ class TestOffspringGenerator:
             return 1
 
         def picker(parents):
-            return parents[0]
+            return parents[0],
 
         result = offspring_generator(parents=simple_population.individuals, parent_picker=picker, combiner=combiner)
         assert isinstance(next(result), Individual)
@@ -44,7 +44,7 @@ class TestOffspringGenerator:
             yield 2
 
         result = offspring_generator(parents=simple_population.individuals,
-                                     parent_picker=pick_random, combiner=combiner)
+                                     parent_picker=pick_random(), combiner=combiner)
         for _ in range(10):
             assert next(result).chromosome == 1
             assert next(result).chromosome == 2

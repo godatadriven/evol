@@ -172,14 +172,13 @@ class TestPopulationBreed:
 
     def test_breed_works_with_kwargs(self, simple_chromosomes, simple_evaluation_function):
         pop1 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
-        pop1.survive(n=50).breed(parent_picker=pick_random,
-                                 combiner=lambda mom, dad: (mom + dad) / 2,
-                                 n_parents=2)
+        pop1.survive(n=50).breed(parent_picker=pick_random(),
+                                 combiner=lambda mom, dad: (mom + dad) / 2)
         assert len(pop1) == len(simple_chromosomes)
         pop2 = Population(chromosomes=simple_chromosomes, eval_function=simple_evaluation_function)
-        pop2.survive(n=50).breed(parent_picker=pick_random,
+        pop2.survive(n=50).breed(parent_picker=pick_random(n_parents=3),
                                  combiner=lambda *parents: sum(parents)/len(parents),
-                                 population_size=400, n_parents=3)
+                                 population_size=400)
         assert len(pop2) == 400
         assert pop2.intended_size == 400
 
@@ -187,13 +186,13 @@ class TestPopulationBreed:
 
         (simple_population
             .survive(fraction=0.5)
-            .breed(parent_picker=pick_random,
+            .breed(parent_picker=pick_random(n_parents=2),
                    combiner=lambda x, y: x + y))
 
         with raises(TypeError):
             (simple_population
                 .survive(fraction=0.5)
-                .breed(parent_picker=pick_random,
+                .breed(parent_picker=pick_random(n_parents=2),
                        combiner=lambda x, y: x + y, y=2))
 
 

@@ -54,7 +54,7 @@ def simple_evolution():
     return (
         Evolution()
         .survive(fraction=0.5)
-        .breed(parent_picker=pick_random, n_parents=2, combiner=lambda x, y: x + y)
+        .breed(parent_picker=pick_random(n_parents=2), combiner=lambda x, y: x + y)
         .mutate(lambda x: x + 1, probability=0.1)
     )
 
