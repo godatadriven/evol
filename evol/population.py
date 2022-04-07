@@ -207,7 +207,7 @@ class BasePopulation(metaclass=ABCMeta):
         :param kwargs: Arguments to pass to the mutation function.
         :return: self
         """
-        elite_fitness = self.current_best if elitist else None
+        elite_fitness: Optional[float] = self.current_best.fitness if elitist else None
         for individual in self.individuals:
             if elite_fitness is None or individual.fitness != elite_fitness:
                 individual.mutate(mutate_function, probability=probability, **kwargs)
